@@ -1,0 +1,14 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "cypress open"
+  },
+  "author": "Ezra Gordon",
+  "license": "ISC",
+  "dependencies": {
+    "cypress": "^4.12.1"
+  }
+}
