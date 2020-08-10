@@ -1,6 +1,15 @@
+import { hasHeader, getLogo } from './helpers/header'
+
 describe('header', () => {
-  it('displays Efrat Baseball on load', () => {
+  it('has header', () => {
     cy.visit('/')
-    cy.contains(/^Efrat Baseball$/i)
+    hasHeader()
+  })
+
+  it('follows link to homepage when clicking on Efrat Baseball', () => {
+    cy.visit('/')
+    getLogo().click()
+
+    cy.url().should('eq', 'http://localhost:8010/')
   })
 })

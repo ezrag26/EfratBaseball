@@ -1,0 +1,17 @@
+header {
+    background-color: #f2f2f2;
+    padding: 1rem 0;
+}
+
+header > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 60%;
+    margin: auto;
+}
+
+a {
+    text-decoration: none;
+    color: blue;
+}

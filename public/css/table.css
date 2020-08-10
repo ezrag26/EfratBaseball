@@ -1,0 +1,16 @@
+table {
+    /*border-collapse: collapse;*/
+}
+
+table tr:not(:last-child) {
+    /*border-bottom: solid 1px black;*/
+}
+
+table td {
+    padding: .5rem 1rem;
+    font-size: 2rem;
+}
+
+.strudel {
+    padding: 0;
+}

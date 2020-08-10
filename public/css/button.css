@@ -1,0 +1,29 @@
+.header-button {
+    padding: 10px;
+    margin: auto 2px;
+    text-decoration: none;
+    color: black;
+}
+
+.header-button:hover {
+    cursor: pointer;
+    border-bottom: solid 2px blue;
+}
+
+.header-button:active, .header-button:visited {
+    color: black;
+}
+
+.form-button {
+    padding: 10px;
+    margin: auto 2px;
+    text-decoration: none;
+    border: solid 1px grey;
+    color: black;
+    background-color: dodgerblue;
+}
+
+.form-button:hover {
+    cursor: pointer;
+    opacity: 0.8;
+}

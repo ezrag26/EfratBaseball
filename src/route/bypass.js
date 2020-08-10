@@ -1,16 +1,6 @@
 const express = require('express')
-const path = require('path')
-const fs = require('fs').promises
-const bypass = require('./route/bypass')
 
-require('dotenv').config()
-const { PORT } = process.env
-
-const app = express()
-
-const authenticate = (req, res, next) => {
-  next()
-}
+const router = express.Router()
 
 const getSchedule = ({ leagueId }) => {
   return Promise.resolve({
@@ -28,33 +18,20 @@ const getStandings = ({ leagueId }) => {
   })
 }
 
-app.get('/', (req, res, next) => {
-  console.log('GET /')
-  next()
-})
-
-app.use('/bypass', bypass)
-
-app.get('/:leagueId/schedule', authenticate, (req, res, next) => {
-  const { leagueId } = req.param
-
-  console.log(`GET /${leagueId}/schedule`)
-  getSchedule({ leagueId })
+router.get('/schedule', (req, res, next) => {
+  console.log(`GET /bypass/schedule`)
+  getSchedule({ leagueId: 'bypass' })
     .then(schedule => {
       res.send(schedule)
     })
 })
 
-app.get('/:leagueId/standings', authenticate, (req, res, next) => {
-  const { leagueId } = req.param
-
-  console.log(`GET /${leagueId}/standings`)
-  getStandings({ leagueId })
+router.get('/standings', (req, res, next) => {
+  console.log(`GET /bypass/standings`)
+  getStandings({ leagueId: 'bypass' })
     .then(standings => {
       res.send(standings)
     })
 })
 
-app.use(express.static(path.join(__dirname, "..", "public")))
-
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
+module.exports = router
