@@ -1,31 +1,25 @@
 const express = require('express')
 const path = require('path')
 const fs = require('fs').promises
-const bypass = require('./route/bypass')
+const bodyParser = require('body-parser')
+// const bypass = require('./route/bypass')
+const {
+  addLeague,
+  addTeam,
+  addGame,
+  getSchedule,
+  getStandings
+} = require('../db/index')
 
 require('dotenv').config()
 const { PORT } = process.env
 
 const app = express()
 
+app.use(bodyParser.json())
+
 const authenticate = (req, res, next) => {
   next()
-}
-
-const getSchedule = ({ leagueId }) => {
-  return Promise.resolve({
-    1: { date: '19 Jun 2020', time: 'F', away: 'Ariyot', home: 'Bombers', awayColor: 'yellow', homeColor: 'dodgerblue' },
-    2: { date: '22 Jun 2020', time: 'F', away: 'BMKI', home: 'Ariyot', awayColor: 'green', homeColor: 'yellow' },
-    3: { date: '26 Jun 2020', time: '2:30PM', away: 'Bombers', home: 'BMKI', awayColor: 'dodgerblue', homeColor: 'green' }
-  })
-}
-
-const getStandings = ({ leagueId }) => {
-  return Promise.resolve({
-    2: { name: 'Ariyot', wins: 5, loses: 3, ties: 0, RS: 63, RA: 37 },
-    3: { name: 'Bombers', wins: 4, loses: 3, ties: 1, RS: 62, RA: 46 },
-    1: { name: 'MBKI', wins: 2, loses: 5, ties: 1, RS: 34, RA: 76 }
-  })
 }
 
 app.get('/', (req, res, next) => {
@@ -33,20 +27,46 @@ app.get('/', (req, res, next) => {
   next()
 })
 
-app.use('/bypass', bypass)
+// app.use('/bypass', bypass)
 
-app.get('/:leagueId/schedule', authenticate, (req, res, next) => {
-  const { leagueId } = req.param
+app.post('/leagues', authenticate, (req, res) => {
+  console.log(`POST /leagues`)
+  const { name } = req.body
 
-  console.log(`GET /${leagueId}/schedule`)
+  addLeague({ name })
+    .then(id => res.send(id))
+})
+
+app.post('/leagues/:leagueId/teams', authenticate, (req, res) => {
+  const { leagueId } = req.params
+  console.log(`POST /leagues/${leagueId}/teams`)
+  const { name, color } = req.body
+
+  addTeam({ name, color })
+    .then(id => res.send(id))
+})
+
+app.post('/leagues/:leagueId/games', authenticate, (req, res) => {
+  const { leagueId } = req.params
+  console.log(`POST /leagues/${leagueId}/games`)
+  const { date, time, away, home } = req.body
+
+  addGame({ date, time, away, home })
+    .then(id => res.send(id))
+})
+
+app.get('/leagues/:leagueId/schedule', authenticate, (req, res, next) => {
+  const { leagueId } = req.params
+
+  console.log(`GET /leagues/${leagueId}/schedule`)
   getSchedule({ leagueId })
     .then(schedule => {
       res.send(schedule)
     })
 })
 
-app.get('/:leagueId/standings', authenticate, (req, res, next) => {
-  const { leagueId } = req.param
+app.get('/leagues/:leagueId/standings', authenticate, (req, res, next) => {
+  const { leagueId } = req.params
 
   console.log(`GET /${leagueId}/standings`)
   getStandings({ leagueId })
