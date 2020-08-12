@@ -1,9 +1,15 @@
 table {
-    /*border-collapse: collapse;*/
+    border-collapse: collapse;
+    border: solid 1px black;
 }
 
 table tr:not(:last-child) {
-    /*border-bottom: solid 1px black;*/
+    border-bottom: solid 1px black;
+}
+
+thead {
+    background-color: darkred;
+    color: #f2f2f2;
 }
 
 table td {

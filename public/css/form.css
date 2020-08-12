@@ -13,3 +13,17 @@ input:not([type='submit']) {
     font-size: 1.5rem;
     padding: .5rem;
 }
+
+.form-button {
+    padding: 10px;
+    margin: auto 2px;
+    text-decoration: none;
+    border: solid 1px grey;
+    color: black;
+    background-color: dodgerblue;
+}
+
+.form-button:hover {
+    cursor: pointer;
+    opacity: 0.8;
+}
