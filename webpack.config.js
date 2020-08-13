@@ -7,7 +7,8 @@ module.exports = {
     register: "./site/register/index.js",
     schedule: "./site/schedule/index.js",
     standings: "./site/standings/index.js",
-    gallery: "./site/gallery/index.js"
+    gallery: "./site/gallery/index.js",
+    "admin_login": "./site/admin/login/index.js"
   },
   output: {
     path: path.resolve(__dirname, "public", "dist"),

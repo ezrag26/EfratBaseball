@@ -1,5 +1,5 @@
-import { hasHeader } from './helpers/header'
-import { visitLoginPage } from './helpers/login'
+import { hasHeader } from '../helpers/header'
+import { visitLoginPage } from '../helpers/login'
 
 describe('login', () => {
   it('follows link to /login when clicking the login button', () => {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
-import Header from "../Header";
+import NonAdminHeader from "../NonAdminHeader";
 import { XMLHttpRequestAsPromise } from "../helpers/request";
 import { randomBits } from '../helpers/unique'
 import DateTime from 'luxon/src/datetime'
@@ -40,7 +40,7 @@ const Schedule = () => {
 
   return (
     <>
-      <Header />
+      <NonAdminHeader />
       <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '80%' }}>
           <ul style={{

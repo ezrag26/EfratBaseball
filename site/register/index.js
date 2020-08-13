@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Header from "../Header";
+import NonAdminHeader from "../NonAdminHeader";
 import { onBlur, onClick } from '../helpers/form'
 import { randomBits } from '../helpers/unique'
 
@@ -15,7 +15,7 @@ const DropDown = ({ items }) => {
 const Register = () => {
   return (
     <>
-      <Header />
+      <NonAdminHeader />
       <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2em' }}>
         <form>
           <div className={'input'}>

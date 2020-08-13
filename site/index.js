@@ -1,13 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import Header from "./Header";
+import NonAdminHeader from "./NonAdminHeader";
 
 const Index = () => {
 
   return (
     <>
-      <Header />
+      <NonAdminHeader />
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto', width: '70%' }}>
         <h1>Efrat Baseball</h1>
         <img alt={'homepage-image'} src={'/'} style={{ width: '70vw', height: '50vh', marginTop: '2rem' }}/>

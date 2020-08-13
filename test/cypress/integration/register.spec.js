@@ -1,5 +1,5 @@
-import { hasHeader } from "./helpers/header";
-import { visitRegisterPage } from './helpers/register'
+import { hasHeader } from "../helpers/header";
+import { visitRegisterPage } from '../helpers/register'
 
 describe('register', () => {
   it('follows link to /register when clicking the register button', () => {

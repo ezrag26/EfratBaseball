@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
-import Header from "../Header";
+import NonAdminHeader from "../NonAdminHeader";
 import { randomBits } from '../helpers/unique'
 
 const EnlargedImage = ({ url, setEnlarge }) => {
@@ -39,7 +39,7 @@ const Gallery = () => {
 
   return (
     <>
-      <Header />
+      <NonAdminHeader />
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', margin: '2rem auto', width: '80%' }}>
         {
           urls.map(url => {

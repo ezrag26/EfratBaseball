@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
-import Header from "../Header";
+import NonAdminHeader from "../NonAdminHeader";
 import { XMLHttpRequestAsPromise } from '../helpers/request'
 import { randomBits } from '../helpers/unique'
 
@@ -44,7 +44,7 @@ const Standings = () => {
 
   return (
     <>
-      <Header />
+      <NonAdminHeader />
       <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
         <table className={'standings'} style={{ minWidth: '80%' }}>
           <thead>

@@ -1,24 +1,17 @@
 import React from 'react'
+import Button from './Button'
+import { randomBits } from './helpers/unique'
 
-const Button = ({ text, path }) => {
-  return (
-    <a className={'header-button'} href={`${path}`}>{text}</a>
-  )
-}
-
-const Header = () => {
+const Header = ({ logo, nav, account }) => {
   return (
     <header>
       <div>
-        <a href={'/'}><img src={'/images/baseball.png'} style={{ width: '50px' }}/></a>
+        <a href={logo.href}><img src={logo.url} alt={logo.alt} style={{ width: '50px' }}/></a>
         <div>
-          <Button text={'Schedule'} path={'/schedule'}/>
-          <Button text={'Standings'} path={'/standings'}/>
-          <Button text={'Gallery'} path={'/gallery'}/>
+          { nav.map(navItem => <Button key={randomBits()} text={navItem.text} href={navItem.href}/>) }
         </div>
         <div>
-          <Button text={'Login'} path={'/login'}/>
-          <Button text={'Register'} path={'/register'}/>
+          { account.map(accountItem => <Button key={randomBits()} text={accountItem.text} href={accountItem.href}/>) }
         </div>
       </div>
     </header>

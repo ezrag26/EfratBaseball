@@ -1,4 +1,4 @@
-import { hasHeader, getLogo } from './helpers/header'
+import { hasHeader, getLogo } from '../helpers/header'
 
 describe('header', () => {
   it('has header', () => {
