@@ -16,30 +16,25 @@ module.exports = {
   getSchedule: ({ leagueId }) => {
     if (leagueId === '1') {
       return Promise.resolve({
-        1: {
-          date: '19 Jun 2020',
-          time: 'F',
-          away: {name: 'Ariyot', color: 'yellow'},
-          home: {name: 'Bombers', color: 'dodgerblue'}
+        "2020-06-22": {
+          away: { name: 'BMKI', color: 'green', runs: 7 },
+          home: { name: 'Ariyot', color: 'yellow', runs: 4 }
         },
-        2: {
-          date: '22 Jun 2020',
-          time: 'F',
-          away: {name: 'BMKI', color: 'green'},
-          home: {name: 'Ariyot', color: 'yellow'}
+        "2020-06-19": {
+          away: { name: 'Ariyot', color: 'yellow', runs: 3 },
+          home: { name: 'Bombers', color: 'dodgerblue', runs: 5 }
         },
-        3: {
-          date: '26 Jun 2020',
+        "2020-06-26": {
           time: '2:30PM',
-          away: {name: 'Bombers', color: 'dodgerblue'},
-          home: {name: 'BMKI', color: 'green'}
+          away: { name: 'Bombers', color: 'dodgerblue', runs: null },
+          home: { name: 'BMKI', color: 'green', runs: null }
         }
       })
     } else {
       return Promise.resolve({
-        1: { date: '19 Aug 2020', time: 'F', away: { name: 'BMKI', color: 'green' }, home: { name: 'Ariyot', color: 'yellow' } },
-        2: { date: '22 Aug 2020', time: 'F', away: { name: 'Ariyot', color: 'yellow' }, home: { name: 'Bombers', color: 'dodgerblue' } },
-        3: { date: '26 Aug 2020', time: '2:30PM', away: { name: 'Bombers', color: 'dodgerblue' }, home: { name: 'BMKI', color: 'green' } }
+        "2020-08-26": { time: '2:30PM', away: { name: 'Bombers', color: 'dodgerblue', runs: null }, home: { name: 'BMKI', color: 'green', runs: null } },
+        "2020-08-22": { away: { name: 'Ariyot', color: 'yellow', runs: 3 }, home: { name: 'Bombers', color: 'dodgerblue', runs: 8 } },
+        "2020-08-19": { away: { name: 'BMKI', color: 'green', runs: 2 }, home: { name: 'Ariyot', color: 'yellow', runs: 11 } }
       })
     }
   },
