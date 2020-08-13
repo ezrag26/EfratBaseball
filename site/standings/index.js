@@ -21,17 +21,17 @@ const Standings = () => {
 
   const calcGamesBack = ({ winLossDiffLeader, team }) => {
     // Doesn't take into account ties because GB can't really be calculated with ties
-    return (((winLossDiffLeader.wins - winLossDiffLeader.loses) - (team.wins - team.loses)) / 2)
+    const gamesBack = (((winLossDiffLeader.wins - winLossDiffLeader.loses) - (team.wins - team.loses)) / 2)
+    return gamesBack ? gamesBack.toFixed(1) : '--'
   }
 
   const sortByWinDifferential = () => {
     return Object.values(standings).sort((a, b) => {
       const aWinDiff = a.wins - (a.loses + a.ties)
       const bWinDiff = b.wins - (b.loses + b.ties)
+      const diff = bWinDiff - aWinDiff
 
-      if (aWinDiff > bWinDiff) return -1
-      if (aWinDiff < bWinDiff) return 1
-      return (b.RS - b.RA) - (a.RS - a.RA)
+      return diff ? diff : (b.RS - b.RA) - (a.RS - a.RA)
     })
   }
 
@@ -46,7 +46,7 @@ const Standings = () => {
     <>
       <Header />
       <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
-        <table>
+        <table className={'standings'} style={{ minWidth: '80%' }}>
           <thead>
             <tr>
               {
@@ -60,11 +60,11 @@ const Standings = () => {
           {
             sorted.map(team =>
               <tr key={randomBits()}>
-                <td>{team.name}</td>
+                <td style={{ backgroundColor: '#f2f2f2'}}>{team.name}</td>
                 <td>{team.wins}</td>
                 <td>{team.loses}</td>
                 <td>{team.ties}</td>
-                <td>{calcWinPercentage({ team })}</td>
+                <td>{calcWinPercentage({ team }).toFixed(3)}</td>
                 <td>{calcGamesBack({ winLossDiffLeader: sorted[0], team })}</td>
                 <td>{team.RS}</td>
                 <td>{team.RA}</td>

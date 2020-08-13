@@ -1,0 +1,9 @@
+.tab {
+    padding: 1rem;
+}
+
+.tab:hover {
+    cursor: pointer;
+    border-bottom: solid 2px darkred;
+    padding-bottom: calc(1rem - 2px);
+}

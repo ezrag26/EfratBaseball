@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import Header from "../Header";
 import { XMLHttpRequestAsPromise } from "../helpers/request";
 import { randomBits } from '../helpers/unique'
+import DateTime from 'luxon/src/datetime'
 
 const fetchSchedule = ({ leagueId }) => {
   return XMLHttpRequestAsPromise({
@@ -14,40 +15,63 @@ const fetchSchedule = ({ leagueId }) => {
   })
 }
 
+const formatMMMM_DD_YYYY = (date) => {
+  const asDate = DateTime.fromFormat(date, 'yyyy-MM-dd')
+
+  return `${asDate.monthLong} ${asDate.day}, ${asDate.year}`
+}
+
+const Tab = ({ text, onClick }) => {
+
+  return (
+    <li className={'tab'} onClick={onClick}>{text}</li>
+  )
+}
+
 const Schedule = () => {
+  const [leagueIds, setLeagueIds] = useState(["1", "2"])
+  const [leagueId, setLeagueId] = useState(leagueIds[0])
   const [schedule, setSchedule] = useState({})
 
   useEffect(() => {
-    fetchSchedule({ leagueId: 1 })
+    fetchSchedule({ leagueId })
       .then(schedule => setSchedule(schedule))
-  }, [])
+  }, [leagueId])
 
   return (
     <>
       <Header />
       <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <ul style={{ display: 'flex', justifyContent: 'space-evenly', listStyle: 'none', padding: '0', width: '100%' }}>
-            <li onClick={() => {
-              fetchSchedule({ leagueId: 1 })
-                .then(schedule => setSchedule(schedule))
-            }}>League 1</li>
-            <li onClick={() => {
-              fetchSchedule({ leagueId: 2 })
-                .then(schedule => setSchedule(schedule))
-            }}>League 2</li>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '80%' }}>
+          <ul style={{
+            display: 'flex',
+            listStyle: 'none',
+            padding: '1rem 0',
+            width: '100%',
+            marginBottom: '2rem',
+            fontSize: '2rem'
+          }}>
+            {
+              leagueIds.map(leagueId =>
+                <Tab key={randomBits()} text={`League ${leagueId}`} onClick={() => setLeagueId(leagueId)} />
+              )
+            }
           </ul>
-          <table>
+          <table className={'schedule'} style={{ width: '100%' }}>
             <tbody>
             {
-              Object.values(schedule).map(game => {
-                const { date, time, away, home } = game
+              Object.keys(schedule)
+                .sort((a, b) => {
+                  return DateTime.fromJSDate(new Date(a)).diff(DateTime.fromJSDate(new Date(b)))
+                })
+                .map(date => {
+                const { time, away, home } = schedule[date]
                 return <tr key={randomBits()}>
-                  <td>{date}</td>
-                  <td>{time}</td>
-                  <td style={{ backgroundColor: away.color }}>{away.name}</td>
-                  <td className={'strudel'}>@</td>
-                  <td style={{ backgroundColor: home.color }}>{home.name}</td>
+                  <td>{formatMMMM_DD_YYYY(date)}</td>
+                  <td>{time || 'F'}</td>
+                  <td style={{ backgroundColor: away.color }}>{away.name}<span> {away.runs || ''}</span></td>
+                  <td className={'atSign'}>@</td>
+                  <td style={{ backgroundColor: home.color }}>{home.name}<span> {home.runs || ''}</span></td>
                 </tr>
               })
             }
