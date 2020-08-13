@@ -1,22 +1,16 @@
 import React from 'react'
 import Button from '../Button'
+import Header from "../Header";
 
 const AdminHeader = () => {
   return (
-    <header>
-      <div>
-        <a href={'/'}><img src={'/images/baseball.png'} style={{ width: '50px' }}/></a>
-        <div>
-          <Button text={'Schedule'} path={'/schedule'}/>
-          <Button text={'Standings'} path={'/standings'}/>
-          <Button text={'Gallery'} path={'/gallery'}/>
-        </div>
-        <div>
-          <Button text={'Login'} path={'/login'}/>
-          <Button text={'Register'} path={'/register'}/>
-        </div>
-      </div>
-    </header>
+    <Header logo={{ href: '/', url: '/images/baseball.png', alt: 'admin-homepage' }}
+            nav={[
+              { text: 'Schedule', href: '/admin/schedule' },
+              { text: 'Standings', href: '/admin/standings' },
+              { text: 'Gallery', href: '/admin/gallery' }
+            ]}
+    />
   )
 }
 
