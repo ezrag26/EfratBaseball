@@ -1,5 +1,5 @@
 header {
-    background-color: #f2f2f2;
+    background-color: darkred;
     padding: 1rem 0;
 }
 
@@ -20,14 +20,10 @@ a {
     padding: 10px;
     margin: auto 2px;
     text-decoration: none;
-    color: black;
+    color: #f2f2f2;
 }
 
 .header-button:hover {
     cursor: pointer;
-    border-bottom: solid 2px darkred;
-}
-
-.header-button:active, .header-button:visited {
-    color: black;
+    border-bottom: solid 2px #f2f2f2;
 }

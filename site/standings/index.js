@@ -1,50 +1,66 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
+
 import NonAdminHeader from "../NonAdminHeader";
-import { XMLHttpRequestAsPromise } from '../helpers/request'
+import { fetchLeagues, fetchStats, fetchTeams } from '../helpers/api'
+import { DropDownMenu } from "../helpers/form";
+import Stack from "../helpers/Stack";
 import { randomBits } from '../helpers/unique'
 
-const fetchStandings = ({ leagueId }) => {
-  return XMLHttpRequestAsPromise({
-    method: 'GET',
-    url: `http://localhost:8010/leagues/${leagueId}/standings`,
-    options: {
-      responseType: 'json'
-    }
-  })
-}
-
 const Standings = () => {
-  const [standings, setStandings] = useState({})
+  const [leagues, setLeagues] = useState([])
+  const [league, setLeague] = useState({})
+  const [teams, setTeams] = useState({})
+  const [stats, setStats] = useState({})
 
-  const calcWinPercentage = ({ team }) => team.wins / (team.wins + team.loses + team.ties)
+  const calcWinPercentage = ({ team }) => (team.wins / (team.wins + team.losses + team.ties)) || 0
 
   const calcGamesBack = ({ winLossDiffLeader, team }) => {
     // Doesn't take into account ties because GB can't really be calculated with ties
-    const gamesBack = (((winLossDiffLeader.wins - winLossDiffLeader.loses) - (team.wins - team.loses)) / 2)
+    const gamesBack = (((winLossDiffLeader.wins - winLossDiffLeader.losses) - (team.wins - team.losses)) / 2)
     return gamesBack ? gamesBack.toFixed(1) : '--'
   }
 
-  const sortByWinDifferential = () => {
-    return Object.values(standings).sort((a, b) => {
-      const aWinDiff = a.wins - (a.loses + a.ties)
-      const bWinDiff = b.wins - (b.loses + b.ties)
+  const sortByWinDifferential = (stats) => {
+    return Object.keys(stats).sort((aId, bId) => {
+      const a = stats[aId]
+      const b = stats[bId]
+      const aWinDiff = a.wins - (a.losses + a.ties)
+      const bWinDiff = b.wins - (b.losses + b.ties)
       const diff = bWinDiff - aWinDiff
 
-      return diff ? diff : (b.RS - b.RA) - (a.RS - a.RA)
+      return diff ? diff : (b.rs - b.ra) - (a.rs - a.ra) // tie-break
     })
+      .reduce((reduced, id) => ({ ...reduced, [id]: stats[id] }), {})
   }
 
   useEffect(() => {
-    fetchStandings({ })
-      .then(standings => setStandings(standings))
+    fetchLeagues()
+      .then(leagues => {
+        setLeagues(leagues)
+        setLeague(leagues[0])
+      })
   }, [])
 
-  const sorted = sortByWinDifferential()
+  useEffect(() => {
+    if (!league.id) return
+
+    Promise.all([
+      fetchTeams({ leagueId: league.id }),
+      fetchStats({ leagueId: league.id })
+    ])
+      .then(([teams, stats]) => {
+        setTeams(teams)
+        setStats(sortByWinDifferential(stats))
+    })
+  }, [league])
 
   return (
     <>
       <NonAdminHeader />
+      <Stack.Small>
+        <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
+      </Stack.Small>
       <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
         <table className={'standings'} style={{ minWidth: '80%' }}>
           <thead>
@@ -58,19 +74,22 @@ const Standings = () => {
           </thead>
           <tbody>
           {
-            sorted.map(team =>
-              <tr key={randomBits()}>
-                <td style={{ backgroundColor: '#f2f2f2'}}>{team.name}</td>
-                <td>{team.wins}</td>
-                <td>{team.loses}</td>
-                <td>{team.ties}</td>
-                <td>{calcWinPercentage({ team }).toFixed(3)}</td>
-                <td>{calcGamesBack({ winLossDiffLeader: sorted[0], team })}</td>
-                <td>{team.RS}</td>
-                <td>{team.RA}</td>
-                <td>{team.RS - team.RA}</td>
-              </tr>
-            )
+            Object.keys(stats).map(teamId => {
+              const team = stats[teamId]
+              return (
+                <tr key={randomBits()}>
+                  <td style={{backgroundColor: '#f2f2f2'}}>{teams[teamId] && teams[teamId].name}</td>
+                  <td>{team.wins}</td>
+                  <td>{team.losses}</td>
+                  <td>{team.ties}</td>
+                  <td>{calcWinPercentage({team}).toFixed(3)}</td>
+                  <td>{calcGamesBack({winLossDiffLeader: Object.values(stats)[0], team })}</td>
+                  <td>{team.rs}</td>
+                  <td>{team.ra}</td>
+                  <td>{team.rs - team.ra}</td>
+                </tr>
+              )
+            })
           }
           </tbody>
         </table>

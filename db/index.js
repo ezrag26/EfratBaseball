@@ -1,49 +1,132 @@
-const randomBits = () => Math.random().toString(36).slice(2)
+const { Sequelize, DataTypes } = require('sequelize')
+const sequelize = new Sequelize('postgres://dev:dev@localhost:5432/dev')
+
+const { League, Team, Game, User, LeagueUpdate, TeamUpdate, AuthToken } = require('./models')({ sequelize, DataTypes })
+
+League.hasMany(Team)
+Game.belongsTo(Team, { as: 'away' })
+Game.belongsTo(Team, { as: 'home' })
+League.hasMany(LeagueUpdate)
+Team.hasMany(TeamUpdate)
+AuthToken.belongsTo(User)
+
+// sequelize.query('CREATE TABLE "session" (  "sid" varchar NOT NULL COLLATE "default", "sess" json NOT NULL, "expire" timestamp(6) NOT NULL)WITH (OIDS=FALSE);ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;')
+
+// League.sync({ force: true })
+//   .then(() => LeagueUpdate.sync({ force: true }))
+//   .then(() => Team.sync({ force: true }))
+//   .then(() => TeamUpdate.sync({ force: true }))
+//   .then(() => Game.sync({ force: true }))
+//   .then(() => User.sync({ force: true }))
+//   .then(() => AuthToken.sync({ force: true }))
+//   .then(() => User.create({ role: 'superadmin', firstName: '', lastName: '', email: 'admin@efratbaseball.com', password: 'admin', carrier: '', phone: '' }))
+
+const gameStats = ({ runs, oppRS }) => {
+  const thisOtherRunDiff = runs - oppRS
+
+  return { wins: +(thisOtherRunDiff > 0), losses: +(thisOtherRunDiff < 0), ties: +(thisOtherRunDiff === 0), rs: runs, ra: oppRS }
+}
+
+const addStats = ({ accumulated = {}, current }) => {
+  const { wins, losses, ties, rs, ra } = accumulated
+
+  return {
+    wins: wins + current.wins,
+    losses: losses + current.losses,
+    ties: ties + current.ties,
+    rs: rs + current.rs,
+    ra: ra + current.ra
+  }
+}
+
+const defaultStats = ({ teams }) => teams.reduce((reduced, team) => ({
+  ...reduced,
+  [team.id]: { wins: 0, losses: 0, ties: 0, rs: 0, ra: 0 }
+}), {})
 
 module.exports = {
-  addLeague: ({ name }) => {
-    return Promise.resolve(randomBits())
-  },
+  addAuthTokenByUserId: ({ userId }) => AuthToken.create({
+    token: '1',
+    userId
+  }),
 
-  addTeam: ({ name, color }) => {
-    return Promise.resolve(randomBits())
-  },
+  getUserIdByAuthToken: ({ token }) => AuthToken.findOne({ where: { token }, attributes: ['userId'] }),
 
-  addGame: ({ date, time, away, home }) => {
-    return Promise.resolve(randomBits())
-  },
+  getUserByEmail: ({ email }) => User.findOne({ where: { email } }),
 
-  getSchedule: ({ leagueId }) => {
-    if (leagueId === '1') {
-      return Promise.resolve({
-        "2020-06-22": {
-          away: { name: 'BMKI', color: 'green', runs: 7 },
-          home: { name: 'Ariyot', color: 'yellow', runs: 4 }
-        },
-        "2020-06-19": {
-          away: { name: 'Ariyot', color: 'yellow', runs: 3 },
-          home: { name: 'Bombers', color: 'dodgerblue', runs: 5 }
-        },
-        "2020-06-26": {
-          time: '2:30PM',
-          away: { name: 'Bombers', color: 'dodgerblue', runs: null },
-          home: { name: 'BMKI', color: 'green', runs: null }
-        }
-      })
-    } else {
-      return Promise.resolve({
-        "2020-08-26": { time: '2:30PM', away: { name: 'Bombers', color: 'dodgerblue', runs: null }, home: { name: 'BMKI', color: 'green', runs: null } },
-        "2020-08-22": { away: { name: 'Ariyot', color: 'yellow', runs: 3 }, home: { name: 'Bombers', color: 'dodgerblue', runs: 8 } },
-        "2020-08-19": { away: { name: 'BMKI', color: 'green', runs: 2 }, home: { name: 'Ariyot', color: 'yellow', runs: 11 } }
-      })
-    }
-  },
+  getUserById: ({ id }) => User.findOne({ where: { id } }),
 
-  getStandings: ({ leagueId }) => {
-    return Promise.resolve({
-      2: { name: 'Ariyot', wins: 5, loses: 3, ties: 0, RS: 63, RA: 37 },
-      3: { name: 'Bombers', wins: 4, loses: 3, ties: 1, RS: 62, RA: 46 },
-      1: { name: 'MBKI', wins: 2, loses: 5, ties: 1, RS: 34, RA: 76 }
-    })
-  }
+  addUser: ({ firstName, lastName, email, carrier, phone, password }) =>
+    User.create({ firstName, lastName, email, carrier, phone, password, role: 'user' }),
+
+  addLeague: () =>
+    League.create()
+      .then(({ id }) => id),
+
+  editLeague: ({ leagueId, name, youngestAge, oldestAge }) =>
+    LeagueUpdate.create({ leagueId, name, youngestAge, oldestAge })
+      .then(({ leagueId, name, youngestAge, oldestAge }) => ({ id: leagueId, name, youngestAge, oldestAge })),
+
+  getLeagues: ({ sort }) => League.findAll({ attributes: [ 'id' ] })
+    .then(leagues => Promise.all(leagues.map(({ id }) => LeagueUpdate.findOne({ where: { leagueId: id }, order: [['createdAt', 'DESC']] })))
+      .then(leagues => leagues.map(({ leagueId, name, youngestAge, oldestAge }) => ({ id: leagueId, name, youngestAge, oldestAge })))),
+
+  addTeam: ({ leagueId }) =>
+    Team.create({ leagueId })
+      .then(({ id }) => id),
+
+  editTeam: ({ teamId, name, color }) =>
+    TeamUpdate.create({ teamId, name, color })
+      .then(({ teamId, name, color }) => ({ id: teamId, name, color })),
+
+  getTeams: ({ leagueId }) => Team.findAll({ raw: true, where: { leagueId }, attributes: [ 'id' ] })
+    .then(teams => Promise.all(teams.map(team => TeamUpdate.findOne({ order: [['createdAt', 'DESC']], where: { teamId: team.id }, attributes: [ 'teamId', 'name', 'color' ] }))))
+    .then(teams => teams.reduce((reduced, team) => ({
+          ...reduced,
+          [team.teamId]: {
+            name: team.name,
+            color: team.color
+          }
+        }), {})),
+
+  addGame: ({ date, time, isFinal, awayId, homeId, awayRS, homeRS }) =>
+    Game.create({ date, time, isFinal, awayId, homeId, awayRS, homeRS })
+      .then(({ id, date, time, isFinal, awayId, homeId, awayRS, homeRS }) =>
+        ({ id, date, time, isFinal, awayId, homeId, awayRS, homeRS })
+      ),
+
+  getSchedule: ({ leagueId, options: { groupByDate, sortDateAscending } = {} }) =>
+    Promise.all([
+      Team.findAll({ where: { leagueId }, attributes: ['id'] }),
+      Game.findAll({ raw: true, order: [ ['date', 'ASC'], ['time', 'ASC'] ] })
+    ])
+      .then(([ teams, games ]) =>
+        games.filter(game => teams.some(team => team.id === game.awayId || team.id === game.homeId))
+          .reduce((schedule, game) => {
+            const { date, createdAt, updatedAt, deletedAt, ...details } = game
+
+            schedule[date] = schedule[date] || []
+            schedule[date].push(details)
+
+            return schedule
+          }, {})
+      ),
+
+  getStats: ({ leagueId }) =>
+    Promise.all([
+      Team.findAll({ where: { leagueId }, attributes: ['id'] }),
+      Game.findAll({ where: { isFinal: true } })
+    ])
+      .then(([teams, games]) =>
+        games.filter(game => teams.some(team => team.id === game.awayId || team.id === game.homeId))
+          .reduce((accumStats, game) => {
+            const { awayId, homeId, awayRS, homeRS } = game
+
+            return {
+              ...accumStats,
+              [awayId]: addStats({ accumulated: accumStats[awayId], current: gameStats({ runs: awayRS, oppRS: homeRS}) }),
+              [homeId]: addStats({ accumulated: accumStats[homeId], current: gameStats({ runs: homeRS, oppRS: awayRS}) })
+            }
+          }, defaultStats({ teams }))
+      )
 }

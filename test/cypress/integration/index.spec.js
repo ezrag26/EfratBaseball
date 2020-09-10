@@ -6,7 +6,7 @@ describe('header', () => {
     hasHeader()
   })
 
-  it('follows link to homepage when clicking on Efrat Baseball', () => {
+  it.skip('follows link to homepage when clicking on logo', () => {
     cy.visit('/')
     getLogo().click()
 

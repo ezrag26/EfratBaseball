@@ -1,42 +1,58 @@
-const expectTeamData = ({ name, wins, loses, ties, RS, RA }) => {
+const expectTeamData = ({ name, wins, losses, ties, rs, ra }) => {
   cy.get('table tbody')
     .contains(name)
     .next().contains(wins)
-    .next().contains(loses)
+    .next().contains(losses)
     .next().contains(ties)
-    .next().contains(wins / (wins + loses + ties))
+    .next().contains(wins / (wins + losses + ties))
     .next()
-    .next().contains(RS)
-    .next().contains(RA)
-    .next().contains(RS - RA)
+    .next().contains(rs)
+    .next().contains(ra)
+    .next().contains(rs - ra)
 }
 
 describe('standings', () => {
+  beforeEach(() => {
+    // cy.server()
+    cy.route2(/\/leagues\?sort=name\/?/, [
+        { id: 'league1Id', name: 'League 1' },
+        { id: 'league2Id', name: 'League 2' }
+    ]).as('leagues')
+
+    cy.route2(/\/leagues\/.+\/teams\/?/, {
+      "Bronx Bombers":    { name: 'Yankees',   color: '#1c2841' },
+      "RedBirds":         { name: 'Cardinals', color: '#C41E3A' },
+      "Patches OHulihan": { name: 'Pirates',   color: '#FDB827' }
+    }).as('teams')
+
+  })
   it('shows the standings', () => {
-    cy.server()
-    cy.route('/leagues/*/standings', {
-      2: { name: 'Yankees', wins: 5, loses: 3, ties: 0, RS: 63, RA: 37 },
-      3: { name: 'Cardinals', wins: 4, loses: 3, ties: 1, RS: 62, RA: 46 },
-      1: { name: 'Pirates', wins: 2, loses: 5, ties: 1, RS: 34, RA: 76 }
+    // cy.server()
+    cy.route2(/\/leagues\/league1Id\/stats\/?/, {
+      "Bronx Bombers":    { wins: 5, losses: 3, ties: 0, rs: 63, ra: 37 },
+      "RedBirds":         { wins: 4, losses: 3, ties: 1, rs: 62, ra: 46 },
+      "Patches OHulihan": { wins: 2, losses: 5, ties: 1, rs: 34, ra: 76 }
     }).as('standings')
 
     cy.visit('/standings')
+    cy.wait('@leagues')
     cy.wait('@standings')
 
-    expectTeamData({ name: 'Yankees', wins: 5, loses: 3, ties: 0, RS: 63, RA: 37 })
-    expectTeamData({ name: 'Cardinals', wins: 4, loses: 3, ties: 1, RS: 62, RA: 46 })
-    expectTeamData({ name: 'Pirates', wins: 2, loses: 5, ties: 1, RS: 34, RA: 76 })
+    expectTeamData({ name: 'Yankees', wins: 5, losses: 3, ties: 0, rs: 63, ra: 37 })
+    expectTeamData({ name: 'Cardinals', wins: 4, losses: 3, ties: 1, rs: 62, ra: 46 })
+    expectTeamData({ name: 'Pirates', wins: 2, losses: 5, ties: 1, rs: 34, ra: 76 })
   })
 
-  it('displays winning percent as number between 0 and 1 with 3 decimal places', () => {
-    cy.server()
-    cy.route('/leagues/*/standings', {
-      2: { name: 'Yankees', wins: 5, loses: 0, ties: 0, RS: 63, RA: 37 },
-      3: { name: 'Cardinals', wins: 1, loses: 15, ties: 0, RS: 62, RA: 46 },
-      1: { name: 'Pirates', wins: 0, loses: 5, ties: 1, RS: 34, RA: 76 }
+  it('displays winning percent as number in range [0, 1] with 3 decimal places', () => {
+    // cy.server()
+    cy.route2(/\/leagues\/.+\/stats\/?/, {
+      "Bronx Bombers":    { wins: 5, losses: 0, ties: 0, rs: 63, ra: 37 },
+      "RedBirds":         { wins: 1, losses: 15, ties: 0, rs: 62, ra: 46 },
+      "Patches OHulihan": { wins: 0, losses: 5, ties: 1, rs: 34, ra: 76 }
     }).as('standings')
 
     cy.visit('/standings')
+    cy.wait('@leagues')
     cy.wait('@standings')
 
     cy.contains('Yankees').parent().contains(/^1.000$/)
@@ -45,14 +61,15 @@ describe('standings', () => {
   })
 
   it(`displays games back with 1 decimal place and leader with 2 dashes (--)`, () => {
-    cy.server()
-    cy.route('/leagues/*/standings', {
-      2: { name: 'Yankees', wins: 5, loses: 3, ties: 0, RS: 63, RA: 37 },
-      3: { name: 'Cardinals', wins: 4, loses: 3, ties: 1, RS: 62, RA: 46 },
-      1: { name: 'Pirates', wins: 2, loses: 4, ties: 1, RS: 34, RA: 76 }
+    // cy.server()
+    cy.route2(/\/leagues\/.+\/stats\/?/, {
+      "Bronx Bombers":    { wins: 5, losses: 3, ties: 0, rs: 63, ra: 37 },
+      "RedBirds":         { wins: 4, losses: 3, ties: 1, rs: 62, ra: 46 },
+      "Patches OHulihan": { wins: 2, losses: 4, ties: 1, rs: 34, ra: 76 }
     }).as('standings')
 
     cy.visit('/standings')
+    cy.wait('@leagues')
     cy.wait('@standings')
 
     cy.contains('Yankees').parent().contains(/^--$/)

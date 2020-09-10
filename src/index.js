@@ -1,80 +1,156 @@
 const express = require('express')
 const path = require('path')
 const fs = require('fs').promises
-const bodyParser = require('body-parser')
-// const bypass = require('./route/bypass')
+const session = require('express-session')
+const pgSession = require('connect-pg-simple')(session)
+const admin = require('./route/admin')
+const { guest, loggedIn } = require('./middleware/authentication/authentication')()
+const { validate } = require('./middleware/validation/validate')
+
 const {
-  addLeague,
-  addTeam,
-  addGame,
+  addUser,
+  getUserByEmail,
+  getLeagues,
+  getTeams,
   getSchedule,
-  getStandings
-} = require('../db/index')
+  getStats,
+} = require('../db')
 
 require('dotenv').config()
-const { PORT } = process.env
+const { PORT, SECRET, IN_PROD } = process.env
 
 const app = express()
 
-app.use(bodyParser.json())
+app.use(session({
+  store: new pgSession({ conString: 'postgres://dev:dev@localhost:5432/dev' }),
+  name: 'session',
+  resave: false,
+  saveUninitialized: false,
+  secret: SECRET,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24, // 1 day
+    sameSite: true
+  }
+}))
 
-const authenticate = (req, res, next) => {
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use('/admin', admin)
+
+app.get('/me', loggedIn, (req, res) => {
+  console.log('GET /me')
+  res.sendStatus(200)
+})
+
+app.get('/login', guest, (req, res, next) => {
+  console.log('GET /login')
   next()
-}
+})
+
+app.post('/login', guest, (req, res) => {
+  console.log('POST /login')
+  const { email, password } = req.body
+  getUserByEmail({ email })
+    .then(user => {
+      if (user.password === password) {
+        req.session.userId = user.id
+        res.redirect('/')
+      } else {
+        res.redirect('/login')
+      }
+    })
+    .catch(err => res.redirect('/login'))
+})
+
+app.post('/register', validate, (req, res) => {
+  console.log('POST /register')
+  const { 'first-name': firstName, 'last-name': lastName, email, carrier, phone, password } = req.body
+
+  getUserByEmail({ email })
+    .then(user => {
+      if (user) res.sendStatus(200)
+      else addUser({ firstName, lastName, email, carrier, phone, password })
+        .then(user => res.sendStatus(200))
+    })
+})
 
 app.get('/', (req, res, next) => {
   console.log('GET /')
   next()
 })
 
+app.get('/logout', (req, res) => {
+  console.log('GET /logout')
+  req.session.destroy(err => {
+    if (err) res.sendStatus(403)
+
+    res.clearCookie( 'session')
+    res.redirect('/login')
+  })
+})
+
+app.use(express.static(path.join(__dirname, "..", "public")))
+
 // app.use('/bypass', bypass)
 
-app.post('/leagues', authenticate, (req, res) => {
-  console.log(`POST /leagues`)
-  const { name } = req.body
+app.get('/leagues', (req, res) => {
+  console.log(`GET /leagues`)
+  const { sort } = req.query
 
-  addLeague({ name })
-    .then(id => res.send(id))
+  getLeagues({ sort })
+    .then(leagues => res.send(leagues))
 })
 
-app.post('/leagues/:leagueId/teams', authenticate, (req, res) => {
+// app.post('/leagues', (req, res) => {
+//   console.log(`POST /leagues`)
+//   const { name, youngestAge, oldestAge } = req.body
+//
+//   addLeague({ name, youngestAge, oldestAge })
+//     .then(league => res.send(league))
+// })
+
+// app.post('/leagues/:leagueId/teams', (req, res) => {
+//   const { leagueId } = req.params
+//   console.log(`POST /leagues/${leagueId}/teams`)
+//
+//   const { name, color } = req.body
+//
+//   return addTeam({ leagueId })
+//     .then(teamId => editTeam({ teamId, name, color }))
+//     .then(team => res.send(team))
+// })
+
+app.get('/leagues/:leagueId/teams', (req, res) => {
   const { leagueId } = req.params
-  console.log(`POST /leagues/${leagueId}/teams`)
-  const { name, color } = req.body
+  console.log(`GET /leagues/${leagueId}/teams`)
 
-  addTeam({ name, color })
-    .then(id => res.send(id))
+  getTeams({ leagueId })
+    .then(teams => res.send(teams))
 })
 
-app.post('/leagues/:leagueId/games', authenticate, (req, res) => {
-  const { leagueId } = req.params
-  console.log(`POST /leagues/${leagueId}/games`)
-  const { date, time, away, home } = req.body
+// app.post('/leagues/:leagueId/games', (req, res) => {
+//   const { leagueId } = req.params
+//   console.log(`POST /leagues/${leagueId}/games`)
+//   const { date = null, time = null, awayId, homeId, isFinal = false, awayRS = 0, homeRS = 0 } = req.body
+//
+//   addGame({ date, time, awayId, homeId, isFinal, awayRS, homeRS })
+//     .then(game => res.send(game))
+// })
 
-  addGame({ date, time, away, home })
-    .then(id => res.send(id))
-})
-
-app.get('/leagues/:leagueId/schedule', authenticate, (req, res, next) => {
+app.get('/leagues/:leagueId/schedule', (req, res) => {
   const { leagueId } = req.params
 
   console.log(`GET /leagues/${leagueId}/schedule`)
   getSchedule({ leagueId })
-    .then(schedule => {
-      res.send(schedule)
-    })
+    .then(schedule => res.send(schedule))
 })
 
-app.get('/leagues/:leagueId/standings', authenticate, (req, res, next) => {
+app.get('/leagues/:leagueId/stats', (req, res) => {
   const { leagueId } = req.params
 
-  console.log(`GET /${leagueId}/standings`)
-  getStandings({ leagueId })
-    .then(standings => {
-      res.send(standings)
-    })
+  console.log(`GET /${leagueId}/stats`)
+  getStats({ leagueId })
+    .then(stats => res.send(stats))
 })
-
-app.use(express.static(path.join(__dirname, "..", "public")))
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`))

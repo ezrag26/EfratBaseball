@@ -1,5 +1,5 @@
 module.exports = {
-  XMLHttpRequestAsPromise: ({method, url, options}) => {
+  XMLHttpRequestAsPromise: ({ method, url, options }) => {
     return new Promise((resolve, reject) => {
       const request = new XMLHttpRequest()
       request.onload = () => {
@@ -13,8 +13,25 @@ module.exports = {
         }
       }
       request.open(method, url)
+      if (method === 'POST') request.setRequestHeader("Content-Type", options.contentType)
       request.responseType = options.responseType
-      request.send(options.body)
+      request.send(JSON.stringify(options.body))
+    })
+  },
+
+  fetchGetJson: ({ url }) => {
+    return fetch(url, {
+      method: 'GET',
+    })
+  },
+
+  fetchPostJson: ({ url, body }) => {
+    return fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
   }
 }

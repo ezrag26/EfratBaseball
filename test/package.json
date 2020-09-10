@@ -9,6 +9,6 @@
   "author": "Ezra Gordon",
   "license": "ISC",
   "dependencies": {
-    "cypress": "^4.12.1"
+    "cypress": "^5.1.0"
   }
 }

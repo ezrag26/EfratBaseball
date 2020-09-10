@@ -1,39 +1,34 @@
-import React from 'react'
+import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
-import { onBlur, onClick } from '../helpers/form'
+import { FormRow, Input } from '../helpers/form'
 import NonAdminHeader from "../NonAdminHeader";
-
-const LoginForm = ({ options }) => {
-  return (
-    <form>
-      <div className={'input'}>
-        <input type={'email'} name={'email'} onBlur={onBlur}/>
-        <label className={'label'} htmlFor={'email'} onClick={onClick}>Email</label>
-      </div>
-
-      <div className={'input'}>
-        <input type={'password'} name={'password'} onBlur={onBlur}/>
-        <label className={'label'} htmlFor={'password'} onClick={onClick}>Password</label>
-      </div>
-
-      <input className={'form-button'} type={'submit'} value={'Login'}/>
-      {options.passwordReset && <p><a href={'/reset-password'}>Forgot password?</a></p>}
-      {options.noAccount && <p>Don't have an account? <a href={'/register'}>Register</a></p>}
-    </form>
-  )
-}
+import validator from 'validator'
 
 const Login = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const validForm = () => validator.isEmail(email) && (password.length >= 5)
+
   return (
     <>
       <NonAdminHeader />
       <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2em' }}>
-        <LoginForm options={{ passwordReset: true, noAccount: true }}/>
+        <form method={'POST'} action={'/login'}>
+          <h1 style={{ textAlign: 'center' }}>Login</h1>
+          <FormRow>
+            <Input type={'text'} name={'email'} placeHolder={'Email'} value={email} onChange={setEmail}/>
+          </FormRow>
+          <FormRow>
+            <Input type={'password'} name={'password'} placeHolder={'Password'} value={password} onChange={setPassword}/>
+          </FormRow>
+          <input className={`form-button ${!validForm() ? 'invalid-form' : ''}`} type={'submit'} value={'Login'} disabled={!validForm()}/>
+          <p><a href={'/reset-password'}>Forgot password?</a></p>
+          <p>Don't have an account? <a href={'/register'}>Register</a></p>
+        </form>
       </div>
     </>
   )
 }
-
-export default LoginForm
 
 ReactDOM.render(<Login />, document.querySelector('#root'))
