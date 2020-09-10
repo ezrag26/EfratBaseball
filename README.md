@@ -21,7 +21,7 @@ Once the database is connected, in the root directory, start and watch the clien
 
   ```sh
   npm run watch-client
-  npm run watch server
+  npm run watch-server
   ```
 
 ## Testing
