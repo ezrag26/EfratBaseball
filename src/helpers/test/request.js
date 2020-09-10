@@ -1,11 +1,12 @@
 const request = require('request-promise-native')
 
-const HOSTNAME = 'localhost:8010'
+// const { DEV_HOST } = process.env
+const DEV_HOST = 'dev.efratbaseball.com:8010'
 
 module.exports = {
   addLeague: ({ name, youngestAge, oldestAge }) => request({
     method: 'POST',
-    url: `http://${HOSTNAME}/admin/leagues`,
+    url: `http://${DEV_HOST}/admin/leagues`,
     json: true,
     bypass: true,
     body: {
@@ -18,7 +19,7 @@ module.exports = {
 
   addTeam: ({ leagueId, name, color }) => request({
     method: 'POST',
-    url: `http://${HOSTNAME}/admin/leagues/${leagueId}/teams`,
+    url: `http://${DEV_HOST}/admin/leagues/${leagueId}/teams`,
     json: true,
     body: {
       name,
@@ -29,7 +30,7 @@ module.exports = {
 
   addGame: ({ leagueId, date, time, awayId, homeId, isFinal, awayRS, homeRS }) => request({
     method: 'POST',
-    url: `http://${HOSTNAME}/admin/leagues/${leagueId}/games`,
+    url: `http://${DEV_HOST}/admin/leagues/${leagueId}/games`,
     json: true,
     body: {
       date,
@@ -45,19 +46,19 @@ module.exports = {
 
   getTeams: ({ leagueId }) => request({
     method: 'GET',
-    url: `http://${HOSTNAME}/leagues/${leagueId}/teams`,
+    url: `http://${DEV_HOST}/leagues/${leagueId}/teams`,
     json: true
   }),
 
   getSchedule: ({ leagueId }) => request({
     method: 'GET',
-    url: `http://${HOSTNAME}/leagues/${leagueId}/schedule`,
+    url: `http://${DEV_HOST}/leagues/${leagueId}/schedule`,
     json: true
   }),
 
   getStats: ({ leagueId }) => request({
     method: 'GET',
-    url: `http://${HOSTNAME}/leagues/${leagueId}/stats`,
+    url: `http://${DEV_HOST}/leagues/${leagueId}/stats`,
     json: true
   })
 }

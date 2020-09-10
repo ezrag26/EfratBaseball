@@ -10,6 +10,6 @@ describe('header', () => {
     cy.visit('/')
     getLogo().click()
 
-    cy.url().should('eq', 'http://localhost:8010/')
+    cy.url().should('eq', 'http://dev.efratbaseball.com/')
   })
 })

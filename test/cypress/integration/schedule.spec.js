@@ -104,8 +104,8 @@ describe('schedule', () => {
     cy.get('ul').contains('League 2').click() // should send request => requests.length === 2
       .then(() => {
         expect(requests.length).to.equal(2)
-        expect(requests[0]).to.equal('http://localhost:8010/leagues/league1Id/schedule')
-        expect(requests[1]).to.equal('http://localhost:8010/leagues/league2Id/schedule')
+        expect(requests[0]).to.equal('http://dev.efratbaseball.com:8010/leagues/league1Id/schedule')
+        expect(requests[1]).to.equal('http://dev.efratbaseball.com:8010/leagues/league2Id/schedule')
       })
   })
 })

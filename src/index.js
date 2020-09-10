@@ -17,7 +17,7 @@ const {
 } = require('../db')
 
 require('dotenv').config()
-const { PORT, SECRET, IN_PROD } = process.env
+const { PORT, SECRET, IN_PROD, DEV_HOST } = process.env
 
 const app = express()
 
