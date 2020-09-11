@@ -112,7 +112,7 @@ const Teams = () => {
   return (
     <>
       <AdminHeader />
-      <Stack.Small>
+      <Stack.Small style={{ display: 'flex', justifyContent: 'space-around' }}>
         <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
       </Stack.Small>
       {

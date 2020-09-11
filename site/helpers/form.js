@@ -39,9 +39,13 @@ const DropDownMenu = ({ selection, setSelection, items }) => {
   const [hideDropdown, setHideDropdown] = useState(true)
 
   return (
-    <div style={{ display: 'flex', alignSelf: 'flex-start', position: 'relative' }}>
-      <div style={{ backgroundColor: 'white', fontSize: '2rem', padding: '1rem' }} onMouseOver={() => setHideDropdown(false) }>{selection?.name || 'No Leagues'}</div>
-      <ul className={hideDropdown ? 'hidden' : ''} style={{ position: 'absolute', top: '100%', backgroundColor: 'grey', listStyle: 'none', paddingLeft: 0 }}>
+    <div className={'dropdown'} onBlur={() => setHideDropdown(true)} tabIndex={0}>
+      <div className={'dropdown-btn'} onClick={() => setHideDropdown(false)}>
+        <div>{selection?.name || 'No Leagues'}</div>
+        <div>&#x25BE;</div>
+      </div>
+
+      <ul className={`dropdown-content ${hideDropdown ? 'hidden' : ''}`}>
         {
           items.map(item =>
             <Tab key={randomBits()} text={`${item.name}`} onClick={() => {

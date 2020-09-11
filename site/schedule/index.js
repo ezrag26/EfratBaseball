@@ -56,11 +56,11 @@ const Schedule = () => {
   return (
     <>
       <NonAdminHeader />
-      <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
+      <Stack.Small style={{ display: 'flex', justifyContent: 'space-around' }}>
+        <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
+      </Stack.Small>
+      <main style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '80%' }}>
-          <Stack.Small>
-            <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
-          </Stack.Small>
           {
             schedule ?
               Object.keys(schedule)
@@ -91,7 +91,7 @@ const Schedule = () => {
             : <div>No games scheduled</div>
           }
         </div>
-      </div>
+      </main>
     </>
   )
 }

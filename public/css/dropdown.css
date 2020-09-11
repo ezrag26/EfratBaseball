@@ -1,0 +1,34 @@
+.dropdown {
+    display: flex;
+    align-self: flex-start;
+    position: relative;
+    outline: none;
+}
+
+.dropdown-btn {
+    display: flex;
+    justify-content: space-between;
+    background-color: white;
+    font-size: 2rem;
+    border-radius: 5px 5px;
+    border: 1px solid #ddd;
+}
+
+/*.dropdown:focus .dropdown-btn div:last-child,*/ /* doesn't fully work as focus stays after item is selected */
+.dropdown-btn:hover div:last-child {
+    background-color: rgba(0, 0, 0, .1);
+}
+
+.dropdown-btn div {
+    padding: 0 1rem;
+}
+
+.dropdown-content {
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    list-style: none;
+    padding-left: 0;
+}
