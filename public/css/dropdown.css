@@ -9,7 +9,7 @@
     display: flex;
     justify-content: space-between;
     background-color: white;
-    font-size: 2rem;
+    font-size: 1.75rem;
     border-radius: 5px 5px;
     border: 1px solid #ddd;
 }
@@ -31,4 +31,5 @@
     border: 1px solid #ddd;
     list-style: none;
     padding-left: 0;
+    z-index: 999;
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import NonAdminHeader from "../NonAdminHeader";
-import { FormRow, Input, DropDown } from '../helpers/form'
+import {FormRow, Input, DropDownMenu} from '../helpers/form'
 import { XMLHttpRequestAsPromise, fetchPostJson } from '../helpers/request'
 import validator from 'validator';
 
@@ -32,7 +32,16 @@ const Register = () => {
   const [first, setFirst] = useState('')
   const [last, setLast] = useState('')
   const [email, setEmail] = useState('')
-  const [carrier, setCarrier] = useState('050')
+  const carriers = [
+    { name: '050' },
+    { name: '051' },
+    { name: '052' },
+    { name: '053' },
+    { name: '054' },
+    { name: '055' },
+    { name: '058' }
+  ]
+  const [carrier, setCarrier] = useState(carriers[0])
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -42,7 +51,7 @@ const Register = () => {
     return first &&
     last &&
     email && validator.isEmail(email) &&
-    carrier &&
+    carrier.name &&
     phone &&
     password && password.length >= 5 && confirmPassword === password
   }
@@ -57,7 +66,7 @@ const Register = () => {
         "first-name": first,
         "last-name": last,
         email,
-        carrier,
+        carrier: carrier.name,
         phone,
         password
       }
@@ -100,7 +109,9 @@ const Register = () => {
           </FormRow>
 
           <FormRow>
-            <DropDown items={['050', '051', '052', '053', '054', '055', '058']} value={carrier} onChange={setCarrier}/>
+            <div style={{ margin: 'auto 5px 0 0' }}>
+              <DropDownMenu items={carriers} selection={carrier} setSelection={setCarrier}/>
+            </div>
             <Input type={'text'} name={'phone'} placeHolder={'Phone Number'} value={phone} onChange={setPhone}/>
           </FormRow>
 
