@@ -39,7 +39,7 @@ const DropDownMenu = ({ selection, setSelection, items }) => {
   const [hideDropdown, setHideDropdown] = useState(true)
 
   return (
-    <div className={'dropdown'} onBlur={() => setHideDropdown(true)} tabIndex={0}>
+    <div className={'dropdown'} onBlur={() => setHideDropdown(true)} tabIndex={-1}>
       <div className={'dropdown-btn'} onClick={() => setHideDropdown(false)}>
         <div>{selection?.name || 'No Leagues'}</div>
         <div>&#x25BE;</div>
