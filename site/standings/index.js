@@ -58,7 +58,7 @@ const Standings = () => {
   return (
     <>
       <NonAdminHeader />
-      <Stack.Small>
+      <Stack.Small style={{ display: 'flex', justifyContent: 'space-around' }}>
         <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
       </Stack.Small>
       <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
