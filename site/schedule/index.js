@@ -6,7 +6,7 @@ import NonAdminHeader from "../NonAdminHeader";
 import { fetchLeagues, fetchSchedule, fetchTeams } from '../helpers/api'
 import { randomBits } from '../helpers/unique'
 import { DropDownMenu } from "../helpers/form";
-import Stack from "../helpers/Stack";
+import { Center, Stack } from "../helpers/Typography";
 
 const formatMMMM_DD_YYYY = (date) => {
   const asDate = DateTime.fromFormat(date, 'yyyy-MM-dd')
@@ -56,10 +56,20 @@ const Schedule = () => {
   return (
     <>
       <NonAdminHeader />
-      <Stack.Small style={{ display: 'flex', justifyContent: 'space-around' }}>
-        <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
-      </Stack.Small>
-      <main style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
+
+      <Center>
+        <Stack.Small>
+          <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
+        </Stack.Small>
+      </Center>
+
+      <Center>
+        <Stack.Small>
+          <h1>Schedule</h1>
+        </Stack.Small>
+      </Center>
+
+      <Center>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '80%' }}>
           {
             schedule ?
@@ -88,10 +98,10 @@ const Schedule = () => {
                     </div>
                   </div>
                 ))
-            : <div>No games scheduled</div>
+            : <div>There are no games scheduled for this league</div>
           }
         </div>
-      </main>
+      </Center>
     </>
   )
 }

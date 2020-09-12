@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 
 import AdminHeader from "../AdminHeader";
 import { fetchLeagues, fetchTeams, editTeam, addTeam } from '../../helpers/api'
-import Stack from "../../helpers/Stack";
+import { Center, Stack } from "../../helpers/Typography";
 import { DropDownMenu } from "../../helpers/form";
 
 const HEX_RE = new RegExp(/^#[a-fA-F0-9]{6}$/)
@@ -42,7 +42,6 @@ const Table = ({ items, addTeam, saveEdit }) => {
 
   return (
     <table style={{ margin: 'auto', width: '70%', tableLayout: 'fixed' }}>
-      <caption>Teams</caption>
       <thead>
       <tr>
         {['Name', 'Color', ''].map(col =>
@@ -112,9 +111,18 @@ const Teams = () => {
   return (
     <>
       <AdminHeader />
-      <Stack.Small style={{ display: 'flex', justifyContent: 'space-around' }}>
-        <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
-      </Stack.Small>
+      <Center>
+        <Stack.Small>
+          <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
+        </Stack.Small>
+      </Center>
+
+      <Center>
+        <Stack.Small>
+          <h1>Teams</h1>
+        </Stack.Small>
+      </Center>
+
       {
         leagues.length > 0 &&
         <Table

@@ -26,4 +26,12 @@ const Stack = {
   }
 }
 
-export default Stack
+const Center = ({ children }) => {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+      {children}
+    </div>
+  )
+}
+
+export { Stack, Center }

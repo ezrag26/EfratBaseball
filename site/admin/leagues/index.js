@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import AdminHeader from "../AdminHeader";
 import { fetchLeagues, addLeague, editLeague } from '../../helpers/api'
+import { Center, Stack } from "../../helpers/Typography";
 
 const Table = ({ items, addLeague, saveEdit }) => {
   const [editing, setEditing] = useState({ leagueId: undefined })
@@ -31,7 +32,6 @@ const Table = ({ items, addLeague, saveEdit }) => {
 
   return (
     <table style={{ margin: 'auto', width: '70%', tableLayout: 'fixed' }}>
-      <caption>Leagues</caption>
       <thead>
       <tr>
         {['Name', ''].map(col =>
@@ -85,7 +85,13 @@ const Leagues = () => {
   return (
     <>
       <AdminHeader />
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem', width: '100%' }}>
+      <Center>
+        <Stack.Small>
+          <h1>Leagues</h1>
+        </Stack.Small>
+      </Center>
+
+      <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
         <Table
           items={
             leagues.reduce((reduced, { id, ...rest }) => ({

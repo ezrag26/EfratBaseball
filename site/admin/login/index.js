@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import AdminHeader from "../AdminHeader";
 import { FormRow, Input } from "../../helpers/form"
 import validator from "validator";
+import { Center, Stack } from "../../helpers/Typography";
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -13,9 +14,15 @@ const Login = () => {
   return (
     <>
       <AdminHeader />
+
       <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
         <form method={'POST'} action={'/admin/login'}>
-          <h1>Admin Login</h1>
+          <Center>
+            <Stack.Small>
+              <h1>Admin Login</h1>
+            </Stack.Small>
+          </Center>
+
           <FormRow>
             <Input type={'email'} name={'email'} placeHolder={'Email'} value={email} onChange={setEmail}/>
           </FormRow>

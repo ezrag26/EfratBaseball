@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import AdminHeader from "../AdminHeader";
 import { fetchLeagues, fetchTeams, fetchSchedule, addGame } from '../../helpers/api'
 import { DropDownMenu } from "../../helpers/form";
-import Stack from "../../helpers/Stack";
+import { Center, Stack } from "../../helpers/Typography";
 import { randomBits } from '../../helpers/unique'
 
 const minsToHours = mins => ( mins / 60 )
@@ -56,7 +56,6 @@ const Table = ({ items, teams, addGame, saveEdit }) => {
 
   return (
     <table style={{ margin: 'auto', width: '90%', tableLayout: 'fixed' }}>
-      <caption style={{ fontSize: '2rem' }}>Games</caption>
       <thead>
       <tr>
         {['Date', 'Time', 'Away', '', 'Home', 'Away - Runs', 'Home - Runs', 'Final', ''].map(col =>
@@ -156,11 +155,19 @@ const Schedule = () => {
   return (
     <>
       <AdminHeader />
-      <Stack.Small style={{ display: 'flex', justifyContent: 'space-around' }}>
-        <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
-      </Stack.Small>
-      {
+      <Center>
+        <Stack.Small>
+          <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
+        </Stack.Small>
+      </Center>
 
+      <Center>
+        <Stack.Small>
+          <h1>Games</h1>
+        </Stack.Small>
+      </Center>
+
+      {
       <Table
         items={schedule}
         teams={teams}
