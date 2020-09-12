@@ -1,35 +1,49 @@
 .dropdown {
     display: flex;
-    align-self: flex-start;
     position: relative;
-    outline: none;
 }
 
 .dropdown-btn {
     display: flex;
-    justify-content: space-between;
     background-color: white;
     font-size: 1.75rem;
     border-radius: 5px 5px;
     border: 1px solid #ddd;
+    cursor: pointer;
 }
 
-/*.dropdown:focus .dropdown-btn div:last-child,*/ /* doesn't fully work as focus stays after item is selected */
+.dropdown-btn div {
+    padding: .5rem 1rem;
+}
+
+.dropdown-btn div:last-child {
+    transition-duration: .5s;
+    border-left: 1px solid #ddd;
+    border-radius: 0 5px 5px 0;
+}
+
 .dropdown-btn:hover div:last-child {
     background-color: rgba(0, 0, 0, .1);
 }
 
-.dropdown-btn div {
-    padding: 0 1rem;
-}
-
 .dropdown-content {
     position: absolute;
-    width: 100%;
+    /*width: 100%;*/
     top: 100%;
     background-color: #fff;
     border: 1px solid #ddd;
+    border-top: none;
     list-style: none;
     padding-left: 0;
     z-index: 999;
+    outline: none;
+}
+
+.dropdown-content li {
+    padding: 1rem;
+}
+
+.dropdown-content li:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, .1);
 }
