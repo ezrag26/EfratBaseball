@@ -14,10 +14,19 @@ form {
     margin-top: 2rem;
     padding: 1.35rem .75rem .4rem 1rem;
     border-radius: .35rem .35rem 0 0;
-    border-bottom: solid 1px grey;
+    border-bottom: solid 1px #aaa;
     background-color: white;
     outline: none;
     cursor: text;
+}
+
+.input:hover {
+    border-bottom: solid 1px black;
+}
+
+.input:focus-within {
+    background-color: #ddd;
+    border-bottom: solid 1px darkred;
 }
 
 .input:not(:only-child):not(:first-child) {
@@ -36,17 +45,22 @@ form {
     position: absolute;
     top: .875rem;
     left: 1rem;
-    font-size: 1.25rem;
-
-    color: darkred;
-    opacity: .3;
     transition-duration: .2s;
+
+    font-size: 1.25rem;
+    color: black;
+    opacity: .3;
 }
 
 .input input:focus + .label, .label.raise {
     top: .5rem;
-    opacity: 1;
     font-size: .75rem;
+    color: darkred;
+    opacity: 1;
+}
+
+.label.raise {
+    opacity: .5;
 }
 
 .input p {
