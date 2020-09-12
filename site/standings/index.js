@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 import NonAdminHeader from "../NonAdminHeader";
 import { fetchLeagues, fetchStats, fetchTeams } from '../helpers/api'
 import { DropDownMenu } from "../helpers/form";
-import Stack from "../helpers/Stack";
+import { Center, Stack } from "../helpers/Typography";
 import { randomBits } from '../helpers/unique'
 
 const Standings = () => {
@@ -13,11 +13,11 @@ const Standings = () => {
   const [teams, setTeams] = useState({})
   const [stats, setStats] = useState({})
 
-  const calcWinPercentage = ({ team }) => (team.wins / (team.wins + team.losses + team.ties)) || 0
+  const calcWinPercentage = ({ wins, losses, ties }) => (wins / (wins + losses + ties)) || 0
 
-  const calcGamesBack = ({ winLossDiffLeader, team }) => {
+  const calcGamesBack = ({ winLossDiffLeader, teamStats }) => {
     // Doesn't take into account ties because GB can't really be calculated with ties
-    const gamesBack = (((winLossDiffLeader.wins - winLossDiffLeader.losses) - (team.wins - team.losses)) / 2)
+    const gamesBack = (((winLossDiffLeader.wins - winLossDiffLeader.losses) - (teamStats.wins - teamStats.losses)) / 2)
     return gamesBack ? gamesBack.toFixed(1) : '--'
   }
 
@@ -50,50 +50,66 @@ const Standings = () => {
       fetchStats({ leagueId: league.id })
     ])
       .then(([teams, stats]) => {
-        setTeams(teams)
-        setStats(sortByWinDifferential(stats))
+        ReactDOM.unstable_batchedUpdates(() => {
+          setTeams(teams)
+          setStats(sortByWinDifferential(stats))
+        })
     })
   }, [league])
 
   return (
     <>
       <NonAdminHeader />
-      <Stack.Small style={{ display: 'flex', justifyContent: 'space-around' }}>
-        <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
-      </Stack.Small>
-      <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
-        <table className={'standings'} style={{ minWidth: '80%' }}>
-          <thead>
-            <tr>
-              {
-                ['', 'W', 'L', 'T', 'W%', 'GB', 'RS', 'RA', 'RD'].map(column =>
-                  <td key={randomBits()}>{column}</td>
+      <Center>
+        <Stack.Small>
+          <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
+        </Stack.Small>
+      </Center>
+
+      <Center>
+        <Stack.Small>
+          <h1>Standings</h1>
+        </Stack.Small>
+      </Center>
+
+      <Center>
+        {
+          Object.keys(stats).length ?
+          <table className={'standings'} style={{ minWidth: '80%' }}>
+            <thead>
+              <tr>
+                {
+                  ['', 'W', 'L', 'T', 'W%', 'GB', 'RS', 'RA', 'RD'].map(column =>
+                    <td key={randomBits()}>{column}</td>
+                  )
+                }
+              </tr>
+            </thead>
+            <tbody>
+            {
+              Object.keys(stats).map(teamId => {
+                const { wins, losses, ties, rs, ra } = stats[teamId]
+                const { name, color } = teams[teamId]
+                return (
+                  <tr key={randomBits()}>
+                    <td style={{ backgroundColor: color }}>{name}</td>
+                    <td>{wins}</td>
+                    <td>{losses}</td>
+                    <td>{ties}</td>
+                    <td>{calcWinPercentage({ wins, losses, ties }).toFixed(3)}</td>
+                    <td>{calcGamesBack({ winLossDiffLeader: Object.values(stats)[0], teamStats: { wins, losses } })}</td>
+                    <td>{rs}</td>
+                    <td>{ra}</td>
+                    <td>{rs - ra}</td>
+                  </tr>
                 )
-              }
-            </tr>
-          </thead>
-          <tbody>
-          {
-            Object.keys(stats).map(teamId => {
-              const team = stats[teamId]
-              return (
-                <tr key={randomBits()}>
-                  <td style={{backgroundColor: '#f2f2f2'}}>{teams[teamId] && teams[teamId].name}</td>
-                  <td>{team.wins}</td>
-                  <td>{team.losses}</td>
-                  <td>{team.ties}</td>
-                  <td>{calcWinPercentage({team}).toFixed(3)}</td>
-                  <td>{calcGamesBack({winLossDiffLeader: Object.values(stats)[0], team })}</td>
-                  <td>{team.rs}</td>
-                  <td>{team.ra}</td>
-                  <td>{team.rs - team.ra}</td>
-                </tr>
-              )
-            })
-          }
-          </tbody>
-        </table>
-      </div>
+              })
+            }
+            </tbody>
+          </table> :
+          <div>There are no standings for this league</div>
+        }
+      </Center>
     </>
   )
 }
