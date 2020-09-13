@@ -7,11 +7,11 @@ const FormRow = ({ children }) => {
   )
 }
 
-const Input = ({ type, name, placeHolder, value = '', onChange, helpText, error }) => {
+const Input = ({ type, name, placeHolder, value = '', required, onChange, onBlur, helpText, error }) => {
   const [raise, setRaise] = useState(false)
   const inputRef = useRef(null)
 
-  const onBlur = e => {
+  const handleOnBlur = e => {
     // raise label if input has text inside
     setRaise(e.target.value !== '')
   }
@@ -21,8 +21,11 @@ const Input = ({ type, name, placeHolder, value = '', onChange, helpText, error 
   return (
     <>
       <div className={'input'} onClick={onClick}>
-        <input type={type} name={name} ref={inputRef} value={value} onBlur={onBlur} onChange={e => onChange(e.target.value)}/>
-        <label className={`label ${raise ? 'raise' : ''}`} htmlFor={name}>{placeHolder}</label>
+        <input type={type} name={name} ref={inputRef} value={value} onBlur={e => {
+          handleOnBlur(e)
+          onBlur && onBlur(e.target.value)
+        }} onChange={e => onChange(e.target.value)}/>
+        <label className={`label ${raise ? 'raise' : ''}`} htmlFor={name}>{required && '*'} {placeHolder}</label>
         <p className={error ? 'error' : 'help'} onClick={e => {}}>{error ? error : helpText}</p>
       </div>
     </>
