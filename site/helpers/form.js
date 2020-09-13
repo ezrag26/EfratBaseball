@@ -10,6 +10,7 @@ const FormRow = ({ children }) => {
 const Input = ({ type, name, placeHolder, value = '', required, onChange, onBlur, helpText, error }) => {
   const [raise, setRaise] = useState(false)
   const inputRef = useRef(null)
+  const [mask, setMask] = useState(type === 'password')
 
   const handleOnBlur = e => {
     // raise label if input has text inside
@@ -21,11 +22,12 @@ const Input = ({ type, name, placeHolder, value = '', required, onChange, onBlur
   return (
     <>
       <div className={'input'} onClick={onClick}>
-        <input type={type} name={name} ref={inputRef} value={value} onBlur={e => {
+        <input type={type === 'password' ? (mask ? 'password' : 'text') : type} name={name} ref={inputRef} value={value} onBlur={e => {
           handleOnBlur(e)
           onBlur && onBlur(e.target.value)
         }} onChange={e => onChange(e.target.value)}/>
         <label className={`label ${raise ? 'raise' : ''}`} htmlFor={name}>{required && '*'} {placeHolder}</label>
+        {type === 'password' && <p className={'mask'} onClick={() => setMask(prev => !prev)}>{mask ? 'Show' : 'Hide'}</p>}
         <p className={error ? 'error' : 'help'} onClick={e => {}}>{error ? error : helpText}</p>
       </div>
     </>

@@ -78,6 +78,12 @@ form {
     color: black
 }
 
+.mask {
+    position: absolute;
+    top: -1.2rem;
+    left: 1rem;
+}
+
 .form-button {
     padding: 10px;
     /*margin: 2rem 0;*/
