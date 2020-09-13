@@ -30,7 +30,10 @@ const Login = () => {
             <Input type={'password'} name={'password'} placeHolder={'Password'} value={password} onChange={setPassword}/>
           </FormRow>
 
-          <input className={`form-button ${!validForm() ? 'invalid-form' : ''}`} type={'submit'} value={'Login'} disabled={!validForm()}/>
+          <Stack.Medium>
+            <input className={`form-button ${!validForm() ? 'invalid-form' : ''}`} type={'submit'} value={'Login'} disabled={!validForm()}/>
+          </Stack.Medium>
+
           <p><a href={'/reset-password'}>Forgot password?</a></p>
         </form>
       </div>

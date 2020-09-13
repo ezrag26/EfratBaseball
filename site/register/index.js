@@ -136,30 +136,34 @@ const Register = () => {
           </Center>
 
           <FormRow>
-            <Input type={'text'} name={'first-name'} placeHolder={'First Name'} value={first} onChange={setFirst}/>
-            <Input type={'text'} name={'last-name'} placeHolder={'Last Name'} value={last} onChange={setLast}/>
+            <Input type={'text'} name={'first-name'} placeHolder={'First Name'} value={first} required={true} onChange={setFirst}/>
+            <Input type={'text'} name={'last-name'} placeHolder={'Last Name'} value={last} required={true} onChange={setLast}/>
           </FormRow>
 
           <FormRow>
             <div style={{ margin: 'auto 0 0' }}>
               <DropDownMenu items={carriers} selection={carrier} setSelection={setCarrier}/>
             </div>
-            <Input type={'text'} name={'phone'} placeHolder={'Phone Number'} value={phone} onChange={maskPhone} error={phoneError}/>
+            <Input type={'text'} name={'phone'} placeHolder={'Phone Number'} value={phone} required={true} onChange={maskPhone} error={phoneError}/>
           </FormRow>
 
           <FormRow>
-            <Input type={'text'} name={'email'} placeHolder={'Email'} value={email} onChange={setEmail}/>
+            <Input type={'text'} name={'email'} placeHolder={'Email'} value={email} required={true} onChange={setEmail} onBlur={v => {
+              if (v && !validator.isEmail(v)) return setEmail(prev => prev, 'Invalid Email')
+            }} error={emailError}/>
           </FormRow>
 
           <FormRow>
-            <Input type={'password'} name={'password'} placeHolder={'Password'} value={password} onChange={setPassword}/>
-            <Input type={'password'} name={'confirm-password'} placeHolder={'Confirm Password'} value={confirmPassword} onChange={v => {
-              if (v.length >= password.length && v !== password) return setConfirmPassword(v, 'Passwords do not match')
+            <Input type={'password'} name={'password'} placeHolder={'Password'} value={password} required={true} onChange={setPassword}/>
+            <Input type={'password'} name={'confirm-password'} placeHolder={'Confirm Password'} value={confirmPassword} required={true} onChange={v => {
+              if (v !== password.substr(0, v.length)) return setConfirmPassword(v, 'Passwords do not match to this point')
               setConfirmPassword(v)
             }} error={confirmPasswordError}/>
           </FormRow>
 
-          <input className={`form-button ${!validForm() ? 'invalid-form' : ''}`} type={'submit'} value={'Register'} disabled={!validForm()}/>
+          <Stack.Medium>
+            <input className={`form-button ${!validForm() ? 'invalid-form' : ''}`} type={'submit'} value={'Register'} disabled={!validForm()}/>
+          </Stack.Medium>
           <p>Already have an account? <a href={'/login'}>Login</a></p>
         </form>
       </div>
