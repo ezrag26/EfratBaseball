@@ -5,6 +5,7 @@ const models = {
   User: require('./Users'),
   LeagueUpdate: require('./LeagueUpdates'),
   TeamUpdate: require('./TeamUpdates'),
+  GameUpdate: require('./GameUpdates'),
   AuthToken: require('./AuthTokens')
 }
 
