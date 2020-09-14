@@ -1,13 +1,14 @@
 const { Sequelize, DataTypes } = require('sequelize')
 const sequelize = new Sequelize('postgres://dev:dev@localhost:5432/dev')
 
-const { League, Team, Game, User, LeagueUpdate, TeamUpdate, AuthToken } = require('./models')({ sequelize, DataTypes })
+const { League, Team, Game, User, LeagueUpdate, TeamUpdate, GameUpdate, AuthToken } = require('./models')({ sequelize, DataTypes })
 
 League.hasMany(Team)
-Game.belongsTo(Team, { as: 'away' })
-Game.belongsTo(Team, { as: 'home' })
+GameUpdate.belongsTo(Team, { as: 'away' })
+GameUpdate.belongsTo(Team, { as: 'home' })
 League.hasMany(LeagueUpdate)
 Team.hasMany(TeamUpdate)
+Game.hasMany(GameUpdate)
 AuthToken.belongsTo(User)
 
 // sequelize.query('CREATE TABLE "session" (  "sid" varchar NOT NULL COLLATE "default", "sess" json NOT NULL, "expire" timestamp(6) NOT NULL)WITH (OIDS=FALSE);ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;')
@@ -17,6 +18,7 @@ AuthToken.belongsTo(User)
 //   .then(() => Team.sync({ force: true }))
 //   .then(() => TeamUpdate.sync({ force: true }))
 //   .then(() => Game.sync({ force: true }))
+//   .then(() => GameUpdate.sync({ force: true }))
 //   .then(() => User.sync({ force: true }))
 //   .then(() => AuthToken.sync({ force: true }))
 //   .then(() => User.create({ role: 'superadmin', firstName: '', lastName: '', email: 'admin@efratbaseball.com', password: 'admin', carrier: '', phone: '' }))
@@ -90,18 +92,25 @@ module.exports = {
         }), {})),
 
   addGame: ({ date, time, isFinal, awayId, homeId, awayRS, homeRS }) =>
-    Game.create({ date, time, isFinal, awayId, homeId, awayRS, homeRS })
-      .then(({ id, date, time, isFinal, awayId, homeId, awayRS, homeRS }) =>
-        ({ id, date, time, isFinal, awayId, homeId, awayRS, homeRS })
-      ),
+    Game.create({ })
+      .then(({ id: gameId }) => GameUpdate.create({ gameId, date, time, isFinal, awayId, homeId, awayRS, homeRS }))
+      .then(({ gameId, date, time, isFinal, awayId, homeId, awayRS, homeRS }) =>
+        ({ gameId, date, time, isFinal, awayId, homeId, awayRS, homeRS })),
+
+  editGame: ({ gameId, date, time, isFinal, awayId, homeId, awayRS, homeRS }) =>
+    GameUpdate.create({ gameId, date, time, isFinal, awayId, homeId, awayRS, homeRS })
+      .then(({ gameId, date, time, isFinal, awayId, homeId, awayRS, homeRS }) =>
+        ({ gameId, date, time, isFinal, awayId, homeId, awayRS, homeRS })),
 
   getSchedule: ({ leagueId, options: { groupByDate, sortDateAscending } = {} }) =>
     Promise.all([
       Team.findAll({ where: { leagueId }, attributes: ['id'] }),
-      Game.findAll({ raw: true, order: [ ['date', 'ASC'], ['time', 'ASC'] ] })
+      Game.findAll({ attributes: ['id'] }),
+      GameUpdate.findAll({ raw: true, order: [ ['createdAt', 'DESC']/*, ['date', 'ASC'], ['time', 'ASC']*/ ] })
     ])
-      .then(([ teams, games ]) =>
-        games.filter(game => teams.some(team => team.id === game.awayId || team.id === game.homeId))
+      .then(([ teams, games, gameUpdates ]) =>
+        games.map(game => gameUpdates.find(gameUpdate => game.id === gameUpdate.gameId))
+          .filter(game => teams.some(team => team.id === game.awayId || team.id === game.homeId))
           .reduce((schedule, game) => {
             const { date, createdAt, updatedAt, deletedAt, ...details } = game
 
@@ -115,10 +124,13 @@ module.exports = {
   getStats: ({ leagueId }) =>
     Promise.all([
       Team.findAll({ where: { leagueId }, attributes: ['id'] }),
-      Game.findAll({ where: { isFinal: true } })
+      Game.findAll({ attributes: ['id'] }),
+      GameUpdate.findAll({ raw: true, order: [ ['createdAt', 'DESC']/*, ['date', 'ASC'], ['time', 'ASC']*/ ] })
     ])
-      .then(([teams, games]) =>
-        games.filter(game => teams.some(team => team.id === game.awayId || team.id === game.homeId))
+      .then(([ teams, games, gameUpdates]) =>
+        games.map(game => gameUpdates.find(gameUpdate => game.id === gameUpdate.gameId))
+          .filter(game => game.isFinal)
+          .filter(game => teams.some(team => team.id === game.awayId || team.id === game.homeId))
           .reduce((accumStats, game) => {
             const { awayId, homeId, awayRS, homeRS } = game
 

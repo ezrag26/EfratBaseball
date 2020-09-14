@@ -7,6 +7,7 @@ import { fetchLeagues, fetchSchedule, fetchTeams } from '../helpers/api'
 import { randomBits } from '../helpers/unique'
 import { DropDownMenu } from "../helpers/form";
 import { Center, Stack } from "../helpers/Typography";
+import { sortAscending } from '../helpers/schedule'
 
 const formatMMMM_DD_YYYY = (date) => {
   const asDate = DateTime.fromFormat(date, 'yyyy-MM-dd')
@@ -49,7 +50,7 @@ const Schedule = () => {
       .then(([teams, schedule]) => {
         setTeamInfo(teams)
 
-        Object.keys(schedule).length !== 0 ? setSchedule(schedule) : setSchedule(null)
+        Object.keys(schedule).length !== 0 ? setSchedule(sortAscending({ schedule })) : setSchedule(null)
     })
   }, [league])
 

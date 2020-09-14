@@ -10,7 +10,8 @@ const {
   editLeague,
   addTeam,
   editTeam,
-  addGame
+  addGame,
+  editGame
 } = require('../../db/index')
 
 const admin = (req, res, next) => {
@@ -131,12 +132,20 @@ router.post('/teams/:teamId', admin, (req, res) => {
     .then(team => res.send(team))
 })
 
-router.post('/leagues/:leagueId/games', admin, (req, res) => {
-  const { leagueId } = req.params
-  console.log(`POST /leagues/${leagueId}/games`)
+router.post('/games', admin, (req, res) => {
+  console.log(`POST /games`)
   const { date = null, time = null, awayId, homeId, isFinal = false, awayRS = 0, homeRS = 0 } = req.body
 
   addGame({ date, time, awayId, homeId, isFinal, awayRS, homeRS })
+    .then(game => res.send(game))
+})
+
+router.post('/games/:gameId', admin, (req, res) => {
+  const { gameId } = req.params
+  console.log(`POST /games/${gameId}`)
+  const { date = null, time = null, awayId, homeId, isFinal = false, awayRS = 0, homeRS = 0 } = req.body
+
+  editGame({ gameId, date, time, awayId, homeId, isFinal, awayRS, homeRS })
     .then(game => res.send(game))
 })
 

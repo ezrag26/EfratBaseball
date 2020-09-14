@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import AdminHeader from "../AdminHeader";
-import { fetchLeagues, fetchTeams, fetchSchedule, addGame } from '../../helpers/api'
+import { fetchLeagues, fetchTeams, fetchSchedule, addGame, editGame } from '../../helpers/api'
 import { DropDownMenu } from "../../helpers/form";
 import { Center, Stack } from "../../helpers/Typography";
 import { randomBits } from '../../helpers/unique'
+import { sortAscending } from '../../helpers/schedule'
 
 const minsToHours = mins => ( mins / 60 )
 
@@ -18,9 +19,14 @@ const minsTo12HH_MM = mins => {
   return `${hrs < 10 ? `0${hrs}` : hrs}:${min < 10 ? `0${min}` : min}${AM_PM}`
 }
 
-const TableCell = ({ type, placeholder = '', value, onChange, disabled = false }) => {
+const TableCell = ({ children, type, placeholder = '', value, onChange, disabled = false }) => {
   return (
-    <td><input type={type} placeholder={placeholder} value={value} onChange={e => onChange(e.target.value)} disabled={disabled}/></td>
+    <>
+      {
+        children ||
+        <td><input type={type} placeholder={placeholder} value={value} onChange={e => onChange(e.target.value)} disabled={disabled}/></td>
+      }
+    </>
   )
 }
 
@@ -29,24 +35,59 @@ const Table = ({ items, teams, addGame, saveEdit }) => {
   const [newItem, setNewItem] = useState({ date: "", time: "", awayId: "", homeId: "" })
   const [edit, setEdit] = useState({})
   const [hover, setHover] = useState({ gameId: undefined })
+  const [teamInfo, setTeamInfo] = useState()
+  const [away, setAway] = useState()
+  const [home, setHome] = useState()
+
+  const editField = ({ setter, field, value }) => setter(prev => ({ ...prev, [field]: value }))
+
+  useEffect(() => {
+    setTeamInfo(Object.keys(teams).map(teamId => ({ id: teamId, name: teams[teamId].name })))
+  }, [teams])
+
+  useEffect(() => {
+    if (!teamInfo) return
+
+    setAway(teamInfo[0])
+    setHome(teamInfo[1])
+  }, [teamInfo])
+
+  useEffect(() => {
+    if (!away) return
+    editField({ setter: setEdit, field: 'awayId', value: away.id })
+  }, [away])
+
+  useEffect(() => {
+    if (!home) return
+    editField({ setter: setEdit, field: 'homeId', value: home.id })
+  }, [home])
 
   const editRow = ({ gameId, game }) => {
     setEditingId(gameId)
     setEdit({ ...game })
+    setAway(teamInfo.find(info => info.id === game.awayId))
+    setHome(teamInfo.find(info => info.id === game.homeId))
   }
 
-  const editField = ({ setter, field, value }) => setter(prev => ({ ...prev, [field]: value }))
-
   const save = ({ gameId }) => {
-    // const name = edit.name
-    // const color = edit.color
+    const { date, time, awayId, homeId, awayRS, homeRS, isFinal } = edit
 
     setEditingId(null)
     setEdit({})
 
-    // if (!name || !hexRE.test(color)) return
+    const gameDate = items[date] || []
 
-    // if (name !== items[gameId].name || color !== items[gameId].color) saveEdit({ gameId, name, color })
+    const game = gameDate.filter(game => gameId === game.gameId)[0]
+
+    if (
+      !game ||
+      game.time !== time ||
+      game.awayId !== awayId ||
+      game.homeId !== homeId ||
+      game.awayRS !== awayRS ||
+      game.homeRS !== homeRS ||
+      game.isFinal !== isFinal
+    ) saveEdit({ gameId, edit })
 
   }
 
@@ -67,15 +108,19 @@ const Table = ({ items, teams, addGame, saveEdit }) => {
       {
         Object.keys(items).map(date => items[date].map(game => {
           // console.log(teams, game)
-          const { id: gameId } = game
+          const { gameId } = game
           return editingId && editingId === gameId ? (
             <tr className={'tr edit'} key={gameId}>
               <TableCell type={'text'} placeholder={'yyyy-MM-dd'} value={edit.date} onChange={value => editField({ setter: setEdit, field: 'date', value })}/>
               <TableCell type={'text'} value={minsTo12HH_MM(edit.time)} onChange={value => editField({ setter: setEdit, field: 'time', value })}/>
               {/* if not using ReactDOM.unstable_batchUpdates() => teams[edit.home/awayId]?.name as the component will update with teams that are not in the schedule since schedule will still not be updated until next render */}
-              <TableCell type={'text'} value={teams[edit.awayId].name} onChange={value => editField({ setter: setEdit, field: 'awayId', value })}/>
+              <TableCell type={'text'} value={teams[edit.awayId].name} onChange={value => editField({ setter: setEdit, field: 'awayId', value })}>
+                <DropDownMenu items={teamInfo} selection={away} setSelection={setAway}/>
+              </TableCell>
               <td className={'atSign'}>@</td>
-              <TableCell type={'text'} value={teams[edit.homeId].name} onChange={value => editField({ setter: setEdit, field: 'homeId', value })}/>
+              <TableCell type={'text'} value={teams[edit.homeId].name} onChange={value => editField({ setter: setEdit, field: 'homeId', value })}>
+                <DropDownMenu items={teamInfo} selection={home} setSelection={setHome}/>
+              </TableCell>
               <TableCell type={'number'} value={edit.awayRS} onChange={value => editField({ setter: setEdit, field: 'awayRS', value })}/>
               <TableCell type={'number'} value={edit.homeRS} onChange={value => editField({ setter: setEdit, field: 'homeRS', value })}/>
               <td><input type={'checkbox'} checked={edit.isFinal} onChange={e => {
@@ -144,7 +189,7 @@ const Schedule = () => {
       .then(([teams, schedule]) => {
         ReactDOM.unstable_batchedUpdates(() => { // need teams and schedule to update in same render, otherwise might try to access team not in the schedule
           setTeams(teams)
-          setSchedule(schedule)
+          setSchedule(sortAscending({ schedule }))
         })
       })
   }, [league])
@@ -172,12 +217,25 @@ const Schedule = () => {
         items={schedule}
         teams={teams}
         addGame={({ date, time, awayId, homeId }) =>
-          addGame({ leagueId: league.id, date, time, awayId, homeId })
+          addGame({ date, time, awayId, homeId })
             .then(game => fetchSchedule({ leagueId: league.id })
                 .then(schedule => {
                   setSchedule(schedule)
                 })
             )
+        }
+        saveEdit={({ gameId, edit }) =>
+          editGame({ gameId, edit })
+            .then(({ date, ...editedGame }) => {
+              const newSched = Object.keys(schedule).reduce((reduced, date) => ({
+                ...reduced,
+                [date]: schedule[date].filter(game => game.gameId !== editedGame.gameId)
+              }), {})
+
+              newSched[date] = newSched[date]?.concat(editedGame) || [editedGame]
+
+              setSchedule(sortAscending({ schedule: newSched }))
+            })
         }
       />
       }

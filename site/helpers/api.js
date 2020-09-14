@@ -46,14 +46,31 @@ module.exports = {
     // })
   },
 
-  addGame: ({ leagueId, date, time, awayId, homeId }) => {
+  addGame: ({ date, time, awayId, homeId }) => {
     return fetchPostJson({
-      url: `http://${DEV_HOST}/admin/leagues/${leagueId}/schedule`,
+      url: `http://${DEV_HOST}/admin/games`,
       body: {
         date,
         time,
         awayId,
         homeId
+      }
+    })
+      .then(res => res.json())
+  },
+
+  editGame: ({ gameId, edit }) => {
+    const { date, time, awayId, homeId, awayRS, homeRS, isFinal } = edit
+    return fetchPostJson({
+      url: `http://${DEV_HOST}/admin/games/${gameId}`,
+      body: {
+        date,
+        time,
+        awayId,
+        homeId,
+        awayRS,
+        homeRS,
+        isFinal
       }
     })
       .then(res => res.json())
