@@ -28,9 +28,9 @@ module.exports = {
     }
   }),
 
-  addGame: ({ leagueId, date, time, awayId, homeId, isFinal, awayRS, homeRS }) => request({
+  addGame: ({ date, time, awayId, homeId, isFinal, awayRS, homeRS }) => request({
     method: 'POST',
-    url: `http://${DEV_HOST}/admin/leagues/${leagueId}/games`,
+    url: `http://${DEV_HOST}/admin/games`,
     json: true,
     body: {
       date,

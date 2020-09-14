@@ -22,15 +22,14 @@ const findIdByTeamName = ({ teams, name }) => {
 
 const setUpLeagueAndGames = ({ teams, gamesDetails }) => {
   return addLeague({ name: randomString() })
-    .then(({ id: leagueId }) => Promise.all(teams)
-      .then(teams => Promise.all(teams.map(team => addTeam({ leagueId, ...team }))))
+    .then(({ id: leagueId }) => Promise.all(teams.map(team => addTeam({ leagueId, ...team })))
       .then(() => getTeams({ leagueId }))
-      .then(teams => Promise.all(gamesDetails.map(({ away, home, ...rest }) => ({
+      .then(teams => gamesDetails.map(({ away, home, ...rest }) => ({
         ...rest,
         awayId: findIdByTeamName({ teams, name: away }),
         homeId: findIdByTeamName({ teams, name: home })
-      }))))
-      .then(games => Promise.all(games.map(game => addGame({ leagueId, ...game }))))
+      })))
+      .then(games => Promise.all(games.map(game => addGame({ ...game }))))
       .then(games => leagueId)
     )
 }
@@ -63,7 +62,7 @@ test('adds teams to a league', t => {
     )
 })
 
-test('adds games to a league', t => {
+test.serial('adds games to a league', t => {
   return addLeague({ name: randomString() })
     .then(({ id: leagueId }) => Promise.all([
       { name: 'Giants', color: '#fd5a1e' },
@@ -76,10 +75,10 @@ test('adds games to a league', t => {
         { date: '2019-05-14', time: 514, awayId: teams[1].id, homeId: teams[2].id },
         { date: '2019-05-14', time: MINS_DAY - 1, awayId: teams[2].id, homeId: teams[0].id }
       ])
-        .then(games => Promise.all(games.map(game => addGame({ leagueId, ...game }))))
+        .then(games => Promise.all(games.map(game => addGame({ ...game }))))
         .then(games => getTeams({ leagueId })
           .then(teams => {
-            games = games.map(({ id, ...rest }) => rest)
+            games = games.map(({ id, gameId, ...rest }) => rest)
             t.deepEqual(games[0], { date: '2019-05-14', time: 0, isFinal: false, awayId: findIdByTeamName({ teams, name: 'Giants' }), homeId: findIdByTeamName({ teams, name: 'Rays' }), awayRS: 0, homeRS: 0 })
             t.deepEqual(games[1], { date: '2019-05-14', time: 514, isFinal: false, awayId: findIdByTeamName({ teams, name: 'Rays' }), homeId: findIdByTeamName({ teams, name: 'Padres' }), awayRS: 0, homeRS: 0 })
             t.deepEqual(games[2], { date: '2019-05-14', time: MINS_DAY - 1, isFinal: false, awayId: findIdByTeamName({ teams, name: 'Padres' }), homeId: findIdByTeamName({ teams, name: 'Giants' }), awayRS: 0, homeRS: 0 })
@@ -89,7 +88,7 @@ test('adds games to a league', t => {
     )
 })
 
-test('retrieves schedule for specified leagueId', t => {
+test.serial('retrieves schedule for specified leagueId', t => {
   return setUpLeagueAndGames({
     teams: [
       { name: 'Royals', color: '#174885' },
@@ -106,7 +105,7 @@ test('retrieves schedule for specified leagueId', t => {
     .then(([schedule, teams]) => {
       const schedWithoutId = Object.keys(schedule).reduce(( reduced, date) => ({
         ...reduced,
-        [date]: schedule[date].map(({ id, ...game}) => game )
+        [date]: schedule[date].map(({ id, gameId, ...game}) => game )
       }), {})
       t.deepEqual(schedWithoutId, {
         '2019-05-14': [
@@ -118,7 +117,7 @@ test('retrieves schedule for specified leagueId', t => {
     })
 })
 
-test('retrieves wins, losses, ties, runs scored, and runs against for each team in a specified leagueId, based on all final games', t => {
+test.serial('retrieves wins, losses, ties, runs scored, and runs against for each team in a specified leagueId, based on all final games', t => {
   return setUpLeagueAndGames({
     teams: [
       { name: 'Yankees', color: '#1c2841' },
