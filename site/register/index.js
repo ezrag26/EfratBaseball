@@ -29,15 +29,7 @@ const useFormInput = (initialState) => {
   return [state, error, (newState, newError = '') => setStateAndError(newState, newError)]
 }
 
-const carriers = [
-  { name: '050' },
-  { name: '051' },
-  { name: '052' },
-  { name: '053' },
-  { name: '054' },
-  { name: '055' },
-  { name: '058' }
-]
+const carriers = ['050', '051', '052', '053', '054', '055', '058'].map(num => ({ name: num }))
 
 const Register = () => {
   const [first, setFirst] = useState('')
