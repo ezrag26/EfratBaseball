@@ -98,8 +98,7 @@ const Table = ({ items, teams, addGame, saveEdit }) => {
 
     if (!isValidDate(date) || !isValidTime(formattedTime)) return
 
-    const gameDate = items[date] || []
-    const game = gameDate.filter(game => gameId === game.gameId)[0]
+    const game = items[date]?.filter(game => gameId === game.gameId)[0] || undefined
     const time = _12HH_MM_ToMins(formattedTime)
     const awayId = away.id
     const homeId = home.id
