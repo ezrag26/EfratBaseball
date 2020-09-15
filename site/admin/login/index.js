@@ -24,7 +24,7 @@ const Login = () => {
           </Center>
 
           <FormRow>
-            <Input type={'email'} name={'email'} placeHolder={'Email'} value={email} onChange={setEmail}/>
+            <Input type={'email'} name={'email'} placeHolder={'Email'} value={email} onChange={setEmail} autofocus={true}/>
           </FormRow>
           <FormRow>
             <Input type={'password'} name={'password'} placeHolder={'Password'} value={password} onChange={setPassword}/>

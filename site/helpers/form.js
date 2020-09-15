@@ -7,7 +7,7 @@ const FormRow = ({ children }) => {
   )
 }
 
-const Input = ({ type, name, placeHolder, value = '', required, onChange, onBlur, helpText, error }) => {
+const Input = ({ type, name, placeHolder, value = '', autofocus, required, onChange, onBlur, helpText, error }) => {
   const [raise, setRaise] = useState(false)
   const inputRef = useRef(null)
   const [mask, setMask] = useState(type === 'password')
@@ -15,6 +15,7 @@ const Input = ({ type, name, placeHolder, value = '', required, onChange, onBlur
   const handleOnBlur = e => {
     // raise label if input has text inside
     setRaise(e.target.value !== '')
+    onBlur && onBlur(e.target.value)
   }
 
   const onClick = () => inputRef.current.focus() // focus the input element to raise label
@@ -22,10 +23,7 @@ const Input = ({ type, name, placeHolder, value = '', required, onChange, onBlur
   return (
     <>
       <div className={'input'} onClick={onClick}>
-        <input type={type === 'password' ? (mask ? 'password' : 'text') : type} name={name} ref={inputRef} value={value} onBlur={e => {
-          handleOnBlur(e)
-          onBlur && onBlur(e.target.value)
-        }} onChange={e => onChange(e.target.value)}/>
+        <input type={type === 'password' ? (mask ? 'password' : 'text') : type} name={name} ref={inputRef} value={value} autoFocus={autofocus} onBlur={handleOnBlur} onChange={e => onChange(e.target.value)}/>
         <label className={`label ${raise ? 'raise' : ''}`} htmlFor={name}>{required && '*'} {placeHolder}</label>
         {type === 'password' && <p className={'mask'} onClick={() => setMask(prev => !prev)}>{mask ? 'Show' : 'Hide'}</p>}
         <p className={error ? 'error' : 'help'} onClick={e => {}}>{error ? error : helpText}</p>
