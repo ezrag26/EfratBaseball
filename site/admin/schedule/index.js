@@ -135,23 +135,22 @@ const Table = ({ items, teams, addGame, saveEdit }) => {
       <tbody>
       {
         Object.keys(items).map(date => items[date].map(game => {
-          // console.log(teams, game)
           const { gameId } = game
           return editingId && editingId === gameId ? (
             <tr className={'tr edit'} key={gameId}>
               <TableCell placeholder={'yyyy-MM-dd'} value={edit.date} onChange={value => editField({ setter: setEdit, field: 'date', value })}/>
               <TableCell value={edit.time} onChange={value => editField({ setter: setEdit, field: 'time', value })}/>
               <TableCell>
-                {edit.away && <DropDownMenu items={teamInfo} selection={edit.away} setSelection={value => {
+                <DropDownMenu items={teamInfo} selection={edit.away} setSelection={value => {
                   editField({ setter: setEdit, field: 'away', value })
-                }}/>}
+                }}/>
               </TableCell>
               <TableCell type={'number'} value={edit.awayRS} onChange={value => editField({ setter: setEdit, field: 'awayRS', value })}/>
               <td className={'atSign'}>@</td>
               <TableCell>
-                {edit.home && <DropDownMenu items={teamInfo} selection={edit.home} setSelection={value => {
+                <DropDownMenu items={teamInfo} selection={edit.home} setSelection={value => {
                   editField({ setter: setEdit, field: 'home', value })
-                }}/>}
+                }}/>
               </TableCell>
               <TableCell type={'number'} value={edit.homeRS} onChange={value => editField({ setter: setEdit, field: 'homeRS', value })}/>
               <TableCell><input type={'checkbox'} checked={edit.isFinal} onChange={e => {
@@ -181,17 +180,17 @@ const Table = ({ items, teams, addGame, saveEdit }) => {
         <TableCell placeholder={'ex. 10:00AM'} value={newItem.time} onChange={value => editField({ setter: setNewItem, field: 'time', value })}/>
         {/*<TableCell placeholder={'Away'} value={newItem.awayId} onChange={value => editField({ setter: setNewItem, field: 'awayId', value })}/>*/}
         <TableCell>
-          {newItem.away && <DropDownMenu items={teamInfo} selection={newItem.away} setSelection={value => {
+          <DropDownMenu items={teamInfo} selection={newItem.away} setSelection={value => {
             editField({ setter: setNewItem, field: 'away', value })
-          }}/>}
+          }}/>
         </TableCell>
         <td></td>
         <td className={'atSign'}>@</td>
         {/*<TableCell placeholder={'Home'} value={newItem.homeId} onChange={value => editField({ setter: setNewItem, field: 'homeId', value })}/>*/}
         <TableCell>
-          {newItem.home && <DropDownMenu items={teamInfo} selection={newItem.home} setSelection={value => {
+          <DropDownMenu items={teamInfo} selection={newItem.home} setSelection={value => {
             editField({ setter: setNewItem, field: 'home', value })
-          }}/>}
+          }}/>
         </TableCell>
         <td></td>
         <td></td>
