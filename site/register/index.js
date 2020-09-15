@@ -8,10 +8,7 @@ import { Stack, Center } from "../helpers/Typography";
 
 const HYPHEN = '-'
 
-const beg3 = new RegExp(/^\d{0,3}$/)
-const full = new RegExp(/^\d{3}.?\d{0,4}$/)
-const onlyNumbers = new RegExp(/^\d{4,7}$/)
-const validNumber = new RegExp(/^\d{3}.?\d{4}$/)
+const validNumber = new RegExp(/^\d{3}[^\d]?\d{4}$/)
 
 const send = ({ body }) => {
   return fetchPostJson({
@@ -32,22 +29,14 @@ const useFormInput = (initialState) => {
   return [state, error, (newState, newError = '') => setStateAndError(newState, newError)]
 }
 
-const carriers = [
-  { name: '050' },
-  { name: '051' },
-  { name: '052' },
-  { name: '053' },
-  { name: '054' },
-  { name: '055' },
-  { name: '058' }
-]
+const carriers = ['050', '051', '052', '053', '054', '055', '058'].map(num => ({ name: num }))
 
 const Register = () => {
   const [first, setFirst] = useState('')
   const [last, setLast] = useState('')
   const [email, emailError, setEmail] = useFormInput('')
   const [carrier, setCarrier] = useState(carriers[0])
-  const [phone, phoneError, setPhone] = useFormInput('')
+  const [phone, setPhone] = useState('')
   const [password, passwordError, setPassword] = useFormInput('')
   const [confirmPassword, confirmPasswordError, setConfirmPassword] = useFormInput('')
   const [processed, setProcessed] = useState(false)
@@ -99,29 +88,11 @@ const Register = () => {
   }
 
   const maskPhone = v => {
-    const length = v.length
+    const str = v.replace(/[^\d]/g, '')
 
-    if ((length <= 3 && !beg3.test(v)) || (length > 3 && length <= 8 && !full.test(v))) {
-      return setPhone(prev => prev, 'Phone Number must be in format ###-####')
-    }
+    const length = str.length < 8 ? str.length : 7
 
-    setPhone(prev => {
-      if (length > 8) return prev // too many numbers, or trying to change hyphen
-
-      if (length > 3) {
-        if (onlyNumbers.test(v)) return v.substr(0, 3).concat(HYPHEN).concat(v.substr(3, length))
-
-        return v.replace(/[^\d]/, HYPHEN)
-      }
-
-      if (length === 3) {
-        if (prev.length > 4) return v.substr(0, 3).concat(HYPHEN)
-        if (prev.length === 4 && prev.substr(0, 3) === v) return v.substr(0, 2) // delete 3rd number => delete the hyphen
-        return v.concat(HYPHEN) // added 3rd number => add hyphen
-      }
-
-      return v
-    }, '')
+    setPhone(length <= 3 ? str : str.substr(0, 3).concat(HYPHEN).concat(str.substr(3, length - 3)))
   }
 
   return processed ? registerMessage() : (
@@ -144,7 +115,7 @@ const Register = () => {
             <div style={{ margin: 'auto 0 0' }}>
               <DropDownMenu items={carriers} selection={carrier} setSelection={setCarrier}/>
             </div>
-            <Input type={'text'} name={'phone'} placeHolder={'Phone Number'} value={phone} required={true} onChange={maskPhone} error={phoneError}/>
+            <Input type={'text'} name={'phone'} placeHolder={'Phone Number'} value={phone} required={true} onChange={maskPhone} helpText={'Phone Number must be 7 numbers in the format xxx-xxxx'}/>
           </FormRow>
 
           <FormRow>
