@@ -81,10 +81,12 @@ const Table = ({ items, teams, addGame, saveEdit }) => {
     setNewItem(prev => ({ ...prev, away: teamInfo[0], home: teamInfo[1] }))
   }, [teamInfo])
 
-  const editRow = ({ gameId, game }) => {
+  const editRow = ({ game }) => {
+    const { gameId, ...g } = game
+
     setEditingId(gameId)
     setEdit({
-      ...game,
+      ...g,
       time: minsTo12HH_MM(game.time),
       away: teamInfo.find(team => team.id === game.awayId),
       home: teamInfo.find(team => team.id === game.homeId)
@@ -169,7 +171,7 @@ const Table = ({ items, teams, addGame, saveEdit }) => {
               <TableCell value={teams[game.homeId].name} disabled={true}/>
               <TableCell value={game.homeRS} disabled={true}/>
               <TableCell><input type={'checkbox'} checked={game.isFinal} disabled={true}/></TableCell>
-              <td onClick={e => editRow({ gameId, game: { ...game, date } })}>{hover.gameId === gameId ? 'Edit' : ''}</td>
+              <td onClick={e => editRow({ game: { ...game, date } })}>{hover.gameId === gameId ? 'Edit' : ''}</td>
             </tr>
           )
         }))
