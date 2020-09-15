@@ -11,7 +11,8 @@ form {
     display: flex;
     flex-direction: column;
     width: 100%;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
     padding: 1.35rem .75rem .4rem 1rem;
     border-radius: .35rem .35rem 0 0;
     border-bottom: solid 1px #aaa;
@@ -76,6 +77,12 @@ form {
 
 .help {
     color: black
+}
+
+.mask {
+    position: absolute;
+    bottom: calc(100% + .5rem);
+    right: .5rem;
 }
 
 .form-button {

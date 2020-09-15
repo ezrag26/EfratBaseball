@@ -107,12 +107,15 @@ const Register = () => {
           </Center>
 
           <FormRow>
-            <Input type={'text'} name={'first-name'} placeHolder={'First Name'} value={first} required={true} onChange={setFirst}/>
+            <Input type={'text'} name={'first-name'} placeHolder={'First Name'} value={first} required={true} onChange={setFirst} autofocus={true}/>
+          </FormRow>
+
+          <FormRow>
             <Input type={'text'} name={'last-name'} placeHolder={'Last Name'} value={last} required={true} onChange={setLast}/>
           </FormRow>
 
           <FormRow>
-            <div style={{ margin: 'auto 0 0' }}>
+            <div style={{ margin: 'auto 0' }}>
               <DropDownMenu items={carriers} selection={carrier} setSelection={setCarrier}/>
             </div>
             <Input type={'text'} name={'phone'} placeHolder={'Phone Number'} value={phone} required={true} onChange={maskPhone} helpText={'Phone Number must be 7 numbers in the format xxx-xxxx'}/>
@@ -126,6 +129,9 @@ const Register = () => {
 
           <FormRow>
             <Input type={'password'} name={'password'} placeHolder={'Password'} value={password} required={true} onChange={setPassword}/>
+          </FormRow>
+
+          <FormRow>
             <Input type={'password'} name={'confirm-password'} placeHolder={'Confirm Password'} value={confirmPassword} required={true} onChange={v => {
               if (v !== password.substr(0, v.length)) return setConfirmPassword(v, 'Passwords do not match to this point')
               setConfirmPassword(v)
