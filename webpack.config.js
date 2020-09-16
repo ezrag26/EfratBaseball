@@ -8,10 +8,12 @@ module.exports = {
     schedule: "./site/schedule/index.js",
     standings: "./site/standings/index.js",
     gallery: "./site/gallery/index.js",
+    "admin_index": "./site/admin/index.js",
     "admin_login": "./site/admin/login/index.js",
     "admin_leagues": "./site/admin/leagues/index.js",
     "admin_teams": "./site/admin/teams/index.js",
-    "admin_schedule": "./site/admin/schedule/index.js"
+    "admin_schedule": "./site/admin/schedule/index.js",
+    "admin_gallery": "./site/admin/gallery/index.js"
   },
   output: {
     path: path.resolve(__dirname, "public", "dist"),

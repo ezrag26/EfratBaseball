@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
-import NonAdminHeader from "../NonAdminHeader"
-import ComingSoon from "../helpers/coming-soon";
-import { randomBits } from '../helpers/unique'
-import { Center, Stack} from "../helpers/Typography";
+import AdminHeader from "../AdminHeader"
+import ComingSoon from "../../helpers/coming-soon";
+import { randomBits } from '../../helpers/unique'
+import { Center, Stack} from "../../helpers/Typography";
 
 const EnlargedImage = ({ enlarge, setEnlarge }) => {
   return (
@@ -28,7 +28,7 @@ const Gallery = ({ urls }) => {
 
   return (
     <>
-      <NonAdminHeader />
+      <AdminHeader />
       {
         (
           <Center>

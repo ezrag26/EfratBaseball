@@ -106,11 +106,6 @@ router.get('/teams', admin, (req, res) => {
   res.sendFile(path.resolve(__dirname, "..", "..", "site", "admin", "teams", "index.html"))
 })
 
-router.get('/leagues/:leagueId/teams', admin, (req, res) => {
-  console.log(`GET /admin/leagues/:leagueId/teams`)
-  res.sendFile(path.resolve(__dirname, "..", "..", "site", "admin", "leagues", "index.html"))
-})
-
 router.post('/leagues/:leagueId/teams', admin, (req, res) => {
   const { leagueId } = req.params
   console.log(`POST /admin/leagues/${leagueId}/teams`)
@@ -154,14 +149,9 @@ router.get('/schedule', admin, (req, res) => {
   res.sendFile(path.resolve(__dirname, "..", "..", "site", "admin", "schedule", "index.html"))
 })
 
-router.get('/leagues/:leagueId/schedule', admin, (req, res) => {
-  console.log(`GET /admin/leagues/:leagueId/schedule`)
-  res.sendFile(path.resolve(__dirname, "..", "..", "site", "admin", "schedule", "index.html"))
-})
-
 router.get('/gallery', admin, (req, res) => {
   console.log(`GET /admin/gallery`)
-  res.sendFile(path.resolve(__dirname, "..", "..", "site", "admin", "schedule", "index.html"))
+  res.sendFile(path.resolve(__dirname, "..", "..", "site", "admin", "gallery", "index.html"))
 })
 
 module.exports = router

@@ -15,21 +15,23 @@ const Standings = () => {
 
   const calcWinPercentage = ({ wins, losses, ties }) => (wins / (wins + losses + ties)) || 0
 
-  const calcGamesBack = ({ winLossDiffLeader, teamStats }) => {
+  const calcGamesBack = ({ WLDiffLeader, teamStats }) => {
     // Doesn't take into account ties because GB can't really be calculated with ties
-    const gamesBack = (((winLossDiffLeader.wins - winLossDiffLeader.losses) - (teamStats.wins - teamStats.losses)) / 2)
+    const gamesBack = (((WLDiffLeader.wins - WLDiffLeader.losses) - (teamStats.wins - teamStats.losses)) / 2)
     return gamesBack ? gamesBack.toFixed(1) : '--'
   }
+
+  const winDiff = ({ wins, losses, ties }) => wins - (losses + ties)
+
+  const runDiff = ({ rs, ra }) => rs - ra
 
   const sortByWinDifferential = (stats) => {
     return Object.keys(stats).sort((aId, bId) => {
       const a = stats[aId]
       const b = stats[bId]
-      const aWinDiff = a.wins - (a.losses + a.ties)
-      const bWinDiff = b.wins - (b.losses + b.ties)
-      const diff = bWinDiff - aWinDiff
 
-      return diff ? diff : (b.rs - b.ra) - (a.rs - a.ra) // tie-break
+      return winDiff({ wins: b.wins, losses: b.losses, ties: b.ties }) - winDiff({ wins: a.wins, losses: a.losses, ties: a.ties }) ||
+        runDiff({ rs: b.rs, ra: b.ra }) - runDiff({ rs: a.rs, ra: a.ra }) // tie-break
     })
       .reduce((reduced, id) => ({ ...reduced, [id]: stats[id] }), {})
   }
@@ -97,7 +99,7 @@ const Standings = () => {
                     <td>{losses}</td>
                     <td>{ties}</td>
                     <td>{calcWinPercentage({ wins, losses, ties }).toFixed(3)}</td>
-                    <td>{calcGamesBack({ winLossDiffLeader: Object.values(stats)[0], teamStats: { wins, losses } })}</td>
+                    <td>{calcGamesBack({ WLDiffLeader: Object.values(stats)[0], teamStats: { wins, losses } })}</td>
                     <td>{rs}</td>
                     <td>{ra}</td>
                     <td>{rs - ra}</td>
