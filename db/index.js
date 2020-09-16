@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize')
 const sequelize = new Sequelize('postgres://dev:dev@localhost:5432/dev')
+const bcrypt = require('bcrypt')
 
 const { League, Team, Game, User, LeagueUpdate, TeamUpdate, GameUpdate, AuthToken } = require('./models')({ sequelize, DataTypes })
 
@@ -19,9 +20,12 @@ AuthToken.belongsTo(User)
 //   .then(() => TeamUpdate.sync({ force: true }))
 //   .then(() => Game.sync({ force: true }))
 //   .then(() => GameUpdate.sync({ force: true }))
-//   .then(() => User.sync({ force: true }))
+// User.sync({ force: true })
 //   .then(() => AuthToken.sync({ force: true }))
-//   .then(() => User.create({ role: 'superadmin', firstName: '', lastName: '', email: 'admin@efratbaseball.com', password: 'admin', carrier: '', phone: '' }))
+//   .then(() => bcrypt.hash('admin', 10))
+//   .then(hashedPassword =>
+//     User.create({ role: 'superadmin', firstName: '', lastName: '', email: 'admin@efratbaseball.com', password: hashedPassword, carrier: '', phone: '' })
+//   )
 
 const gameStats = ({ runs, oppRS }) => {
   const thisOtherRunDiff = runs - oppRS
