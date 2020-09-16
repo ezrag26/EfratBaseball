@@ -54,8 +54,8 @@ app.post('/login', guest, (req, res) => {
   getUserByEmail({ email })
     .then(user => {
       bcrypt.compare(password, user.password)
-        .then(isSame => {
-          if (isSame) {
+        .then(isSamePassword => {
+          if (isSamePassword) {
             req.session.userId = user.id
             res.redirect('/')
           } else {

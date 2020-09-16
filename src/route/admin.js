@@ -56,8 +56,8 @@ router.post('/login', guest, (req, res) => {
   getUserByEmail({ email })
     .then(user => {
       bcrypt.compare(password, user.password)
-        .then(isSame => {
-          if (user.role !== 'user' && isSame) {
+        .then(isSamePassword => {
+          if (user.role !== 'user' && isSamePassword) {
             req.session.userId = user.id
             res.redirect('/admin')
           } else {
