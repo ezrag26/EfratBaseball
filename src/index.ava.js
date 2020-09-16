@@ -78,7 +78,7 @@ test.serial('adds games to a league', t => {
         .then(games => Promise.all(games.map(game => addGame({ ...game }))))
         .then(games => getTeams({ leagueId })
           .then(teams => {
-            games = games.map(({ id, gameId, ...rest }) => rest)
+            games = games.map(({ gameId, ...rest }) => rest)
             t.deepEqual(games[0], { date: '2019-05-14', time: 0, isFinal: false, awayId: findIdByTeamName({ teams, name: 'Giants' }), homeId: findIdByTeamName({ teams, name: 'Rays' }), awayRS: 0, homeRS: 0 })
             t.deepEqual(games[1], { date: '2019-05-14', time: 514, isFinal: false, awayId: findIdByTeamName({ teams, name: 'Rays' }), homeId: findIdByTeamName({ teams, name: 'Padres' }), awayRS: 0, homeRS: 0 })
             t.deepEqual(games[2], { date: '2019-05-14', time: MINS_DAY - 1, isFinal: false, awayId: findIdByTeamName({ teams, name: 'Padres' }), homeId: findIdByTeamName({ teams, name: 'Giants' }), awayRS: 0, homeRS: 0 })
@@ -105,7 +105,7 @@ test.serial('retrieves schedule for specified leagueId', t => {
     .then(([schedule, teams]) => {
       const schedWithoutId = Object.keys(schedule).reduce(( reduced, date) => ({
         ...reduced,
-        [date]: schedule[date].map(({ id, gameId, ...game}) => game )
+        [date]: schedule[date].map(({ gameId, ...game}) => game )
       }), {})
       t.deepEqual(schedWithoutId, {
         '2019-05-14': [

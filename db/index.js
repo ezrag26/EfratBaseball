@@ -65,21 +65,23 @@ module.exports = {
   addUser: ({ firstName, lastName, email, carrier, phone, password }) =>
     User.create({ firstName, lastName, email, carrier, phone, password, role: 'user' }),
 
-  addLeague: () =>
+  addLeague: ({ name, youngestAge, oldestAge }) =>
     League.create()
-      .then(({ id }) => id),
+      .then(({ id: leagueId }) => LeagueUpdate.create({ leagueId, name, youngestAge, oldestAge }))
+      .then(({ leagueId, name, youngestAge, oldestAge }) => ({ id: leagueId, name, youngestAge, oldestAge })),
 
   editLeague: ({ leagueId, name, youngestAge, oldestAge }) =>
     LeagueUpdate.create({ leagueId, name, youngestAge, oldestAge })
       .then(({ leagueId, name, youngestAge, oldestAge }) => ({ id: leagueId, name, youngestAge, oldestAge })),
 
   getLeagues: ({ sort }) => League.findAll({ attributes: [ 'id' ] })
-    .then(leagues => Promise.all(leagues.map(({ id }) => LeagueUpdate.findOne({ where: { leagueId: id }, order: [['createdAt', 'DESC']] })))
-      .then(leagues => leagues.map(({ leagueId, name, youngestAge, oldestAge }) => ({ id: leagueId, name, youngestAge, oldestAge })))),
+    .then(leagues => Promise.all(leagues.map(({ id }) => LeagueUpdate.findOne({ where: { leagueId: id }, order: [['createdAt', 'DESC']] }))))
+    .then(leagues => leagues.map(({ leagueId, name, youngestAge, oldestAge }) => ({ id: leagueId, name, youngestAge, oldestAge }))),
 
-  addTeam: ({ leagueId }) =>
+  addTeam: ({ leagueId, name, color }) =>
     Team.create({ leagueId })
-      .then(({ id }) => id),
+      .then(({ id: teamId }) => TeamUpdate.create({ teamId, name, color }))
+      .then(({ teamId, name, color }) => ({ id: teamId, name, color })),
 
   editTeam: ({ teamId, name, color }) =>
     TeamUpdate.create({ teamId, name, color })
@@ -116,7 +118,7 @@ module.exports = {
         games.map(game => gameUpdates.find(gameUpdate => game.id === gameUpdate.gameId))
           .filter(game => teams.some(team => team.id === game.awayId || team.id === game.homeId))
           .reduce((schedule, game) => {
-            const { date, createdAt, updatedAt, deletedAt, ...details } = game
+            const { date, id, createdAt, updatedAt, deletedAt, ...details } = game
 
             schedule[date] = schedule[date] || []
             schedule[date].push(details)

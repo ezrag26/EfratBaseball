@@ -91,8 +91,7 @@ router.post('/leagues', admin, (req, res) => {
   console.log(`POST /admin/leagues`)
   const { name, youngestAge, oldestAge } = req.body
 
-  return addLeague()
-    .then(id => editLeague({ leagueId: id, name, youngestAge, oldestAge }))
+  return addLeague({ name, youngestAge, oldestAge })
     .then(league => res.send(league))
 })
 
@@ -116,8 +115,7 @@ router.post('/leagues/:leagueId/teams', admin, (req, res) => {
 
   const { name, color } = req.body
 
-  return addTeam({ leagueId })
-    .then(teamId => editTeam({ teamId, name, color }))
+  return addTeam({ leagueId, name, color })
     .then(team => res.send(team))
 })
 
