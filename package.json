@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/ezrag26/EfratBaseball#readme",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "connect-pg-simple": "^6.2.1",
     "express": "^4.17.1",

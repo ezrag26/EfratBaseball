@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const path = require('path')
+const bcrypt = require('bcrypt')
 const { guest } = require('../middleware/authentication/authentication')('/admin')
 require('dotenv').config()
 const {
@@ -54,12 +55,15 @@ router.post('/login', guest, (req, res) => {
   const { email, password } = req.body
   getUserByEmail({ email })
     .then(user => {
-      if (user.role !== 'user' && user.password === password) {
-        req.session.userId = user.id
-        res.redirect('/admin')
-      } else {
-        res.redirect('login')
-      }
+      bcrypt.compare(password, user.password)
+        .then(isSamePassword => {
+          if (user.role !== 'user' && isSamePassword) {
+            req.session.userId = user.id
+            res.redirect('/admin')
+          } else {
+            res.redirect('login')
+          }
+        })
     })
     .catch(err => {
       res.redirect('login')

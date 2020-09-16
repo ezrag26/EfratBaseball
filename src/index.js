@@ -1,11 +1,15 @@
 const express = require('express')
 const path = require('path')
-const fs = require('fs').promises
 const session = require('express-session')
 const pgSession = require('connect-pg-simple')(session)
+const bcrypt = require('bcrypt')
+
 const admin = require('./route/admin')
 const { guest, loggedIn } = require('./middleware/authentication/authentication')()
 const { validate } = require('./middleware/validation/validate')
+
+require('dotenv').config()
+const { PORT, SESS_SECRET, IN_PROD, PASS_SALT } = process.env
 
 const {
   addUser,
@@ -16,9 +20,6 @@ const {
   getStats,
 } = require('../db')
 
-require('dotenv').config()
-const { PORT, SECRET, IN_PROD, DEV_HOST } = process.env
-
 const app = express()
 
 app.use(session({
@@ -26,7 +27,7 @@ app.use(session({
   name: 'session',
   resave: false,
   saveUninitialized: false,
-  secret: SECRET,
+  secret: SESS_SECRET,
   cookie: {
     maxAge: 1000 * 60 * 60 * 24, // 1 day
     sameSite: true
@@ -52,12 +53,15 @@ app.post('/login', guest, (req, res) => {
   const { email, password } = req.body
   getUserByEmail({ email })
     .then(user => {
-      if (user.password === password) {
-        req.session.userId = user.id
-        res.redirect('/')
-      } else {
-        res.redirect('/login')
-      }
+      bcrypt.compare(password, user.password)
+        .then(isSamePassword => {
+          if (isSamePassword) {
+            req.session.userId = user.id
+            res.redirect('/')
+          } else {
+            res.redirect('/login')
+          }
+        })
     })
     .catch(err => res.redirect('/login'))
 })
@@ -69,7 +73,8 @@ app.post('/register', validate, (req, res) => {
   getUserByEmail({ email })
     .then(user => {
       if (user) res.sendStatus(200)
-      else addUser({ firstName, lastName, email, carrier, phone, password })
+      else bcrypt.hash(password, PASS_SALT)
+        .then(hashedPassword => addUser({ firstName, lastName, email, carrier, phone, password: hashedPassword }))
         .then(user => res.sendStatus(200))
     })
 })
