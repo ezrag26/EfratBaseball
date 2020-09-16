@@ -73,7 +73,7 @@ app.post('/register', validate, (req, res) => {
   getUserByEmail({ email })
     .then(user => {
       if (user) res.sendStatus(200)
-      else bcrypt.hash(password, PASS_SALT)
+      else bcrypt.hash(password, parseInt(PASS_SALT))
         .then(hashedPassword => addUser({ firstName, lastName, email, carrier, phone, password: hashedPassword }))
         .then(user => res.sendStatus(200))
     })
