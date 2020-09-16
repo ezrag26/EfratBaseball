@@ -13,9 +13,9 @@ const AdminHeader = () => {
   return (
     <Header logo={{ href: '/admin', url: '/images/baseball.png', alt: 'admin-homepage' }}
             nav={[
+              { text: 'Schedule', href: '/admin/schedule' },
               { text: 'Leagues', href: '/admin/leagues' },
               { text: 'Teams', href: '/admin/teams' },
-              { text: 'Schedule', href: '/admin/schedule' },
               { text: 'Gallery', href: '/admin/gallery' }
             ]}
             account={
