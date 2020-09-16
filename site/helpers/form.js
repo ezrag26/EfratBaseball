@@ -32,7 +32,7 @@ const Input = ({ type, name, placeHolder, value = '', autofocus, required, onCha
   )
 }
 
-const DropDownMenu = ({ selection, setSelection, items }) => {
+const DropDownMenu = ({ selection = {}, setSelection, items = [] }) => {
   const [hideDropdown, setHideDropdown] = useState(true)
   const dropdownRef = useRef(null)
 
@@ -43,7 +43,7 @@ const DropDownMenu = ({ selection, setSelection, items }) => {
   return (
     <div className={'dropdown'}>
       <div className={'dropdown-btn'} style={{ borderRadius: !hideDropdown ? '5px 5px 0 0' : '' }} onClick={() => setHideDropdown(false)}>
-        <div>{selection?.name || 'No Items'}</div>
+        <div>{selection.name || ''}</div>
         <div style={{ backgroundColor: !hideDropdown ? 'rgba(0, 0, 0, .1)' : '', borderRadius: !hideDropdown ? '0 5px 0 0' : '' }}>&#x25BE;</div>
       </div>
 
