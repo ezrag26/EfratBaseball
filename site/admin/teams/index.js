@@ -41,9 +41,9 @@ const Table = ({ items, addTeam, saveEdit }) => {
   }
 
   return (
-    <table style={{ margin: 'auto', width: '70%', tableLayout: 'fixed' }}>
+    <table className={'table large narrow center'}>
       <thead>
-      <tr>
+      <tr className={'tr bg-primary color-secondary'}>
         {['Name', 'Color', ''].map(col =>
           <td key={col}>{col}</td>
         )}
@@ -76,7 +76,7 @@ const Table = ({ items, addTeam, saveEdit }) => {
           const value = e.target.value
           setNewItem(prev => ({ ...prev, color: value}))
         }}/></td>
-        <td><input type={'submit'} value={'Add Team'} onClick={e => {
+        <td><input className={'button medium primary'} type={'submit'} value={'Add Team'} onClick={e => {
           if (!isValidEntry({ name: newItem.name , color: newItem.color })) return
 
           addTeam({ name: newItem.name, color: newItem.color })

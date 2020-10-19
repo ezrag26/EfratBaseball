@@ -27,7 +27,7 @@ form {
 
 .input:focus-within {
     background-color: #ddd;
-    border-bottom: solid 1px darkred;
+    border-bottom: solid 1px var(--primary);
 }
 
 .input:not(:only-child):not(:first-child) {
@@ -56,7 +56,7 @@ form {
 .input input:focus + .label, .label.raise {
     top: .5rem;
     font-size: .75rem;
-    color: darkred;
+    color: var(--primary);
     opacity: 1;
 }
 

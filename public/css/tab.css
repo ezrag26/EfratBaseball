@@ -1,8 +1,0 @@
-.tab {
-    padding: 1rem;
-}
-
-.tab:hover {
-    cursor: pointer;
-    background-color: rgba(0, 0, 0, .05);
-}

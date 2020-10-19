@@ -1,6 +1,5 @@
 table {
     border-collapse: collapse;
-    /*border: solid 1px black;*/
 }
 
 .standings tr {
@@ -8,7 +7,7 @@ table {
 }
 
 .standings thead {
-    background-color: darkred;
+    background-color: var(--primary);
     color: #f2f2f2;
 }
 
@@ -27,33 +26,32 @@ table {
 }
 
 .atSign {
-    /*padding: 0;*/
     text-align: center;
     font-size: 2rem;
 }
-
-/*.tr {*/
-/*    opacity: .6;*/
-/*}*/
-
-/*.tr:hover {*/
-/*    opacity: 1;*/
-/*}*/
 
 .tr:not(:last-child) {
     border-bottom: 2px solid grey;
 }
 
 .tr.edit {
-    border: 3px solid darkred;
+    border: solid 3px var(--primary);
 }
 
 .tr.fade {
     opacity: 0.35;
 }
 
-.tr td {
+.tr td:first-child {
+
+}
+
+.tr td:not(:last-child) {
     padding: 1rem 0;
+}
+
+.tr td:last-child {
+    text-align: center;
 }
 
 .tr > :first-child {
@@ -71,7 +69,8 @@ table {
     min-width: 40px;
 }
 
-.tr.disabled > * > input {
+.tr.disabled,
+.tr.disabled > * > * {
     cursor: not-allowed;
 }
 
@@ -79,3 +78,19 @@ table {
     background-color: inherit;
     border: none;
 }
+
+/* New table classes */
+
+.table.small { font-size: .875rem; }
+.table.medium { font-size: 1rem; }
+.table.large { font-size: 1.5rem; }
+
+.table.narrow { width: var(--main-width); }
+.table.wide { width: 90%; }
+
+.table.center { margin: auto; }
+
+.tr.bg-primary { background-color: var(--primary); }
+.tr.bg-secondary { background-color: var(--secondary); }
+.tr.color-primary { color: var(--primary); }
+.tr.color-secondary { color: var(--secondary); }

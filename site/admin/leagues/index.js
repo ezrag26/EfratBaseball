@@ -31,9 +31,9 @@ const Table = ({ items, addLeague, saveEdit }) => {
   }
 
   return (
-    <table style={{ margin: 'auto', width: '70%', tableLayout: 'fixed' }}>
+    <table className={'table large narrow center'}>
       <thead>
-      <tr>
+      <tr className={'tr bg-primary color-secondary'}>
         {['Name', ''].map(col =>
           <td key={col}>{col}</td>
         )}
@@ -60,7 +60,7 @@ const Table = ({ items, addLeague, saveEdit }) => {
           const value = e.target.value
           setNewItem(prev => ({ ...prev, name: value}))
         }}/></td>
-        <td><input type={'submit'} value={'Add League'} onClick={e => {
+        <td><input className={'button medium primary'} type={'submit'} value={'Add League'} onClick={e => {
           if (!isValidEntry({ name: newItem.name })) return
 
           addLeague({ name: newItem.name })
@@ -91,52 +91,50 @@ const Leagues = () => {
         </Stack.Small>
       </Center>
 
-      <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-        <Table
-          items={
-            leagues.reduce((reduced, { id, ...rest }) => ({
-              ...reduced,
-              [id]: rest
-            }), {})
-          }
+      <Table
+        items={
+          leagues.reduce((reduced, { id, ...rest }) => ({
+            ...reduced,
+            [id]: rest
+          }), {})
+        }
 
-          addLeague={({ name }) => addLeague({ name })
-            .then(league => setLeagues(leagues => leagues.concat(league)))
-          }
+        addLeague={({ name }) => addLeague({ name })
+          .then(league => setLeagues(leagues => leagues.concat(league)))
+        }
 
-          saveEdit={({ leagueId, name }) => {
-            editLeague({ leagueId, name })
-              .then(editedLeague => {
-                setLeagues(leagues => leagues.map(league => {
-                  if (league.id === editedLeague.id) league.name = editedLeague.name
-                  return league
-                }))
-              })
-          }}
-        />
-        {/*<table style={{ width: '80%' }}>*/}
-        {/*  <thead>*/}
-        {/*    <tr>*/}
-        {/*      <td>League Name</td>*/}
-        {/*      <td>Age Range (Yrs)</td>*/}
-        {/*      <td></td>*/}
-        {/*      <td></td>*/}
-        {/*    </tr>*/}
-        {/*  </thead>*/}
-        {/*  <tbody>*/}
-        {/*    {*/}
-        {/*      leagues.map(league =>*/}
-        {/*        <tr key={league.id} style={{ border: 'solid 1px grey' }}>*/}
-        {/*          <td>{league.name}</td>*/}
-        {/*          <td>{league.youngest} - {league.oldest}</td>*/}
-        {/*          <td>Edit</td>*/}
-        {/*          <td>Remove</td>*/}
-        {/*        </tr>*/}
-        {/*      )*/}
-        {/*    }*/}
-        {/*  </tbody>*/}
-        {/*</table>*/}
-      </div>
+        saveEdit={({ leagueId, name }) => {
+          editLeague({ leagueId, name })
+            .then(editedLeague => {
+              setLeagues(leagues => leagues.map(league => {
+                if (league.id === editedLeague.id) league.name = editedLeague.name
+                return league
+              }))
+            })
+        }}
+      />
+      {/*<table style={{ width: '80%' }}>*/}
+      {/*  <thead>*/}
+      {/*    <tr>*/}
+      {/*      <td>League Name</td>*/}
+      {/*      <td>Age Range (Yrs)</td>*/}
+      {/*      <td></td>*/}
+      {/*      <td></td>*/}
+      {/*    </tr>*/}
+      {/*  </thead>*/}
+      {/*  <tbody>*/}
+      {/*    {*/}
+      {/*      leagues.map(league =>*/}
+      {/*        <tr key={league.id} style={{ border: 'solid 1px grey' }}>*/}
+      {/*          <td>{league.name}</td>*/}
+      {/*          <td>{league.youngest} - {league.oldest}</td>*/}
+      {/*          <td>Edit</td>*/}
+      {/*          <td>Remove</td>*/}
+      {/*        </tr>*/}
+      {/*      )*/}
+      {/*    }*/}
+      {/*  </tbody>*/}
+      {/*</table>*/}
     </>
   )
 }

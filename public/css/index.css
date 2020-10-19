@@ -1,10 +1,17 @@
 * {
     box-sizing: border-box;
     margin: 0;
+    --primary: #8b0000;
+    --primary-light: #960000;
+    --primary-dark: #780000;
+    --secondary: #f2f2f2;
+    --secondary-light: #ffffff;
+    --secondary-dark: #e1e1e1;
+    --main-width: 60%;
 }
 
 body {
-    background-color: #f2f2f2;
+    background-color: var(--secondary);
 }
 
 .hidden {
