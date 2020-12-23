@@ -6,6 +6,7 @@ import { DropDownMenu } from "../../helpers/form";
 import { Center, Stack } from "../../helpers/Typography";
 import { randomBits } from '../../helpers/unique'
 import { sortAscending } from '../../helpers/schedule'
+import { Table } from '../../helpers/Table'
 
 const minsToHours = mins => ( mins / 60 )
 
@@ -70,7 +71,7 @@ const TableCell = ({ children, type = 'text', placeholder = '', value, size, onC
   )
 }
 
-const Table = ({ items, teams, addGame, saveEdit }) => {
+const CreateTable = ({ items, teams, addGame, saveEdit }) => {
   const [editingId, setEditingId] = useState('')
   const [newItem, setNewItem] = useState({ date: "", time: "" })
   const [edit, setEdit] = useState({})
@@ -300,8 +301,14 @@ const Schedule = () => {
         </Stack.Small>
       </Center>
 
-      {
       <Table
+        cols={ ['Date', 'Time', 'Away', 'Away RS','', 'Home', 'Home RS', 'Final', ''] }
+        entries={[
+
+        ]}
+      />
+      {
+      <CreateTable
         items={schedule}
         teams={teams}
         addGame={({ date, time, awayId, homeId }) =>

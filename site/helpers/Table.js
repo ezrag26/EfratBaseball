@@ -86,3 +86,5 @@ const Table = ({ cols, entries, saveEdit, cancelEdit, removeEntry, newRow, addEn
     </table>
   )
 }
+
+export { Table }
