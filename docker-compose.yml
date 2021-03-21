@@ -2,12 +2,19 @@ version: "3"
 
 services:
   postgres:
-    image: postgres
+    build:
+      context: db
+      dockerfile: Dockerfile
     environment:
-      - POSTGRES_USER=dev
-      - POSTGRES_PASSWORD=dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      DB_USER: dev
+      DB_DATABASE: dev
+      DB_PASSWORD: dev
+    user: postgres
     ports:
-      - "5432:5432"
+      - "5431:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
 

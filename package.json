@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "docker-up": "docker-compose up",
+		"docker-down": "docker-compose down",
     "dev:server": "webpack-dev-server --mode=development",
     "watch-client": "webpack --mode development --watch",
     "watch-server": "nodemon --watch src --watch db",

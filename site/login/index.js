@@ -23,10 +23,10 @@ const Login = () => {
           </Center>
 
           <FormRow>
-            <Input type={'text'} name={'email'} placeHolder={'Email'} value={email} onChange={setEmail} autofocus={true}/>
+            <Input type={'text'} name={'email'} placeholder={'Email'} value={email} onChange={setEmail} autofocus={true}/>
           </FormRow>
           <FormRow>
-            <Input type={'password'} name={'password'} placeHolder={'Password'} value={password} onChange={setPassword}/>
+            <Input type={'password'} name={'password'} placeholder={'Password'} value={password} onChange={setPassword}/>
           </FormRow>
 
           <Stack.Medium>

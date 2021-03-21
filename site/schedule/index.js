@@ -3,10 +3,11 @@ import ReactDOM from 'react-dom'
 import DateTime from 'luxon/src/datetime'
 
 import NonAdminHeader from "../NonAdminHeader";
-import { fetchLeagues, fetchSchedule, fetchTeams } from '../helpers/api'
-import { randomBits } from '../helpers/unique'
 import { DropDownMenu } from "../helpers/form";
 import { Center, Stack } from "../helpers/Typography";
+
+import { fetchLeagues, fetchSchedule, fetchTeams } from '../helpers/api'
+import { randomBits } from '../helpers/unique'
 import { sortAscending } from '../helpers/schedule'
 
 const formatMMMM_DD_YYYY = (date) => {
@@ -56,7 +57,7 @@ const Schedule = () => {
 
   return (
     <>
-      <NonAdminHeader />
+      <NonAdminHeader current={'Schedule'}/>
 
       <Center>
         <Stack.Small>
@@ -76,27 +77,29 @@ const Schedule = () => {
             schedule ?
               Object.keys(schedule)
                 .map(date => (
-                  <div key={randomBits()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
-                    <div style={{ fontSize: '2rem' }}>{formatMMMM_DD_YYYY(date)}</div>
-                    <div style={{ width: '100%', backgroundColor: 'white', padding: '2rem', margin: '1rem 0 3rem', border: 'solid 1px lightgrey' }}>
-                      <table className={'schedule'} style={{ width: 'inherit' }}>
-                        <tbody>
-                        {
-                          schedule[date].map(game => {
-                            const { time, awayId, homeId, isFinal, awayRS, homeRS } = game
-                            return (
-                              <tr key={randomBits()}>
-                                <td style={{ backgroundColor: teamInfo[awayId]?.color, width: '25%' }}>{teamInfo[awayId]?.name}<span> {isFinal ? awayRS : ''}</span></td>
-                                <td className={'atSign'} style={{ width: '5%' }}>@</td>
-                                <td style={{ backgroundColor: teamInfo[homeId]?.color, width: '25%' }}>{teamInfo[homeId]?.name}<span> {isFinal ? homeRS : ''}</span></td>
-                                <td>{isFinal ? 'F' : minsTo12HH_MM(time)}</td>
-                              </tr>
-                            )
-                          })
-                        }
-                        </tbody>
-                      </table>
-                    </div>
+                  <div key={randomBits()} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', margin: '0 0 3rem' }}>
+										<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', width: '100%' }}>
+	                    <div style={{ position: 'sticky', position: '-webkit-sticky', top: 0, textAlign: 'right', fontSize: '1.5rem', whiteSpace: 'nowrap', padding: '0 1em 1em 0', marginTop: '.75rem', minWidth: '20%' }}>{formatMMMM_DD_YYYY(date)}</div>
+	                    <div style={{ width: '100%' }}>
+	                      <table className={'table'} style={{ width: 'inherit' }}>
+	                        <tbody>
+	                        {
+	                          schedule[date].map(game => {
+	                            const { time, awayId, homeId, isFinal, awayRS, homeRS } = game
+	                            return (
+	                              <tr key={randomBits()} className={'tr'}>
+	                                <td style={{ borderLeft: `solid .5rem ${teamInfo[awayId]?.color}`, borderRadius: '0', width: '25%' }}>{teamInfo[awayId]?.name}<span className={'rs'}> {isFinal ? ` - ${awayRS}` : ''}</span></td>
+	                                {/*<td className={'atSign'} style={{ width: '5%' }}>@</td>*/}
+	                                <td style={{ borderLeft: `solid .5rem ${teamInfo[homeId]?.color}`, width: '25%' }}>{teamInfo[homeId]?.name}<span className={'rs'}> {isFinal ? ` - ${homeRS}` : ''}</span></td>
+	                                <td>{isFinal ? 'F' : minsTo12HH_MM(time)}</td>
+	                              </tr>
+	                            )
+	                          })
+	                        }
+	                        </tbody>
+	                      </table>
+	                    </div>
+										</div>
                   </div>
                 ))
             : <div>There are no games scheduled for this league</div>
@@ -108,4 +111,3 @@ const Schedule = () => {
 }
 
 ReactDOM.render(<Schedule />, document.querySelector('#root'))
-

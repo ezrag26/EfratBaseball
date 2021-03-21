@@ -1,8 +1,8 @@
 import React from "react";
 
-const Button = ({ text, href }) => {
+const Button = ({ text, current, href }) => {
   return (
-    <a className={'header-button'} href={`${href}`}>{text}</a>
+    <a className={`header-button ${current === text ? 'current' : ''}`} href={`${href}`}>{text}</a>
   )
 }
 

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import Header from "./Header";
 import { fetchGetJson } from './helpers/request'
 
-const NonAdminHeader = () => {
+const NonAdminHeader = ({ current }) => {
   const [loggedIn, setLoggedIn] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
 
@@ -28,6 +28,7 @@ const NonAdminHeader = () => {
         { text: 'Standings', href: '/standings' },
         { text: 'Gallery', href: '/gallery' }
       ]}
+			current={current}
       account={
         !loggedIn ? [
           { text: 'Login', href: '/login' },

@@ -1,12 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react'
 import ReactDOM from 'react-dom'
+
 import AdminHeader from "../AdminHeader";
-import { fetchLeagues, fetchTeams, fetchSchedule, addGame, editGame } from '../../helpers/api'
-import { DropDownMenu } from "../../helpers/form";
+import { FormRow, Input, DropDownMenu } from "../../helpers/form";
 import { Center, Stack } from "../../helpers/Typography";
+import { TableCell } from '../../helpers/table'
+import {
+	ContainedButton,
+	SecondaryContainedButton,
+	OutlineButton,
+	TextButton,
+	SubmitButton,
+	FloatingActionButton,
+	ActionButton
+} from '../../helpers/button'
+import { CHECKMARK , X, PLUS } from '../../helpers/constants'
+import { DatePicker } from '../../helpers/date-picker'
+
+import { fetchLeagues, fetchTeams, fetchSchedule, addGame, editGame } from '../../helpers/api'
 import { randomBits } from '../../helpers/unique'
 import { sortAscending } from '../../helpers/schedule'
-import { Table } from '../../helpers/Table'
 
 const minsToHours = mins => ( mins / 60 )
 
@@ -45,40 +58,32 @@ const _12HH_MM_RE = new RegExp(/^(0?[1-9]|\d|1[0-2]):[0-5][0-9][aApP][mM]$/)
 const YYYY_MM_DD_RE = new RegExp(/^\d{4}-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])$/)
 
 const isValidDate = (date) => {
-  if (!YYYY_MM_DD_RE.test(date)) {
-    // console.error('Date must be a valid date in the format yyyy-MM-dd')
-    return false
-  }
-  return true
+	// console.error('Date must be a valid date in the format yyyy-MM-dd')
+  // return YYYY_MM_DD_RE.test(date)
+	return date != false
 }
 
 const isValidTime = (time) => {
-  if (!_12HH_MM_RE.test(time)) {
-    // console.error('Time must be a valid time in the format HH:MM and must directly followed by AM or PM (no space in between)')
-    return false
-  }
-  return true
+	// console.error('Time must be a valid time in the format HH:MM and must be directly followed by AM or PM (no space in between)')
+  return _12HH_MM_RE.test(time)
 }
 
-const TableCell = ({ children, type = 'text', placeholder = '', value, size, onChange, disabled = false }) => {
-  return (
-    <td>
-    {
-      children ||
-      <input type={type} placeholder={placeholder} value={value} size={size} onChange={e => onChange(e.target.value)} disabled={disabled}/>
-    }
-    </td>
-  )
-}
-
-const CreateTable = ({ items, teams, addGame, saveEdit }) => {
+const CreateTable = ({ items, teams, addGame, saveEdit, removeGame }) => {
   const [editingId, setEditingId] = useState('')
-  const [newItem, setNewItem] = useState({ date: "", time: "" })
+  const [newItem, setNewItem] = useState({ date: '', time: '' })
   const [edit, setEdit] = useState({})
-  const [hoverId, setHoverId] = useState('')
   const [teamInfo, setTeamInfo] = useState()
 
   const editField = ({ setter, field, value }) => setter(prev => ({ ...prev, [field]: value }))
+
+	const setEditField = ({ field, value }) => editField({ setter: setEdit, field, value })
+
+	const setNewItemField = ({ field, value }) => editField({ setter: setNewItem, field, value })
+
+	useEffect(() => {
+		const now = new Date()
+		setNewItem({ date: now.toLocaleDateString(), time: minsTo12HH_MM(now / 1000 / 60 - now.getTimezoneOffset()) })
+	}, [])
 
   useEffect(() => {
     setEditingId('')
@@ -105,6 +110,20 @@ const CreateTable = ({ items, teams, addGame, saveEdit }) => {
     })
   }
 
+	const addNewGame = e => {
+		const { date, time, away, home } = newItem
+
+		if (!isValidDate(date) || !isValidTime(time)) return
+
+		e.target.value = 'Adding Game...'
+
+		setTimeout(() => {
+			addGame({ date, time: formatTimeForRequest(time), awayId: away.id, homeId: home.id })
+			// TODO: check if add was successful...
+			setNewItem({ date: "", time: "", away: teamInfo[0], home: teamInfo[1] })
+		}, 1000)
+	}
+
   const isValidNewGame = () => {
     return isValidDate(newItem.date) && isValidTime(newItem.time)
   }
@@ -114,23 +133,27 @@ const CreateTable = ({ items, teams, addGame, saveEdit }) => {
     const game = items[date]?.filter(game => gameId === game.gameId)[0] || undefined
 
     return !game ||
-      game.time !== time ||
-      game.awayId !== awayId ||
-      game.homeId !== homeId ||
-      game.awayRS !== awayRS ||
-      game.homeRS !== homeRS ||
-      game.isFinal !== isFinal
+      time !== game.time ||
+      awayId !== game.awayId ||
+      homeId !== game.homeId ||
+      (awayRS != game.awayRS && awayRS >= 0) ||
+      (homeRS != game.homeRS && homeRS >= 0) ||
+      isFinal !== game.isFinal
   }
 
+	const formatEditForRequest = ({ edit }) => {
+		const { date, time, away, home, awayRS, homeRS, isFinal } = edit
+		return { date, time: formatTimeForRequest(time), awayId: away.id, homeId: home.id, awayRS: awayRS || 0, homeRS: homeRS || 0, isFinal }
+	}
+
   const save = ({ gameId }) => {
-    const { date, time, away, home, awayRS, homeRS, isFinal } = edit
+    if (!isValidDate(edit.date) || !isValidTime(edit.time)) return
 
-    if (!isValidDate(date) || !isValidTime(time)) return
-
-    const formattedEdit = { date, time: formatTimeForRequest(time), awayId: away.id, homeId: home.id, awayRS, homeRS, isFinal }
+    const formattedEdit = formatEditForRequest({ edit })
 
     if (isValidEdit({ gameId, edit: formattedEdit })) {
       saveEdit({ gameId, edit: formattedEdit })
+			// should check first to make sure the edit was successful...
       setEditingId('')
       setEdit({})
     }
@@ -146,10 +169,10 @@ const CreateTable = ({ items, teams, addGame, saveEdit }) => {
   }
 
   return (
-    <table className={'table large wide center'}>
+    <table className={'table wide center'}>
       <thead>
         <tr className={'tr bg-primary color-secondary'}>
-          {['Date', 'Time', 'Away', 'Away RS','', 'Home', 'Home RS', 'Final', ''].map(col =>
+          {['Date', 'Time', 'Away', 'Away RS', 'Home', 'Home RS', 'Final', ''].map(col =>
             <td key={randomBits()}>{col}</td>
           )}
         </tr>
@@ -157,97 +180,85 @@ const CreateTable = ({ items, teams, addGame, saveEdit }) => {
       <tbody>
       {
         Object.keys(items).map(date => items[date].map(game => {
-          const { gameId } = game
+          const { gameId, time, awayId, awayRS, homeId, homeRS, isFinal } = game
           return editingId === gameId ? (
             <tr className={'tr edit'} key={gameId}>
-              <TableCell placeholder={'yyyy-MM-dd'} value={edit.date} onChange={value => editField({ setter: setEdit, field: 'date', value })}/>
-              <TableCell value={edit.time} onChange={value => editField({ setter: setEdit, field: 'time', value })}/>
-              <TableCell>
-                <DropDownMenu items={teamInfo} selection={edit.away} setSelection={value => {
-                  editField({ setter: setEdit, field: 'away', value })
-                }}/>
-              </TableCell>
-              <TableCell value={edit.awayRS} size={3} onChange={value => editField({ setter: setEdit, field: 'awayRS', value })}/>
-              <td className={'atSign'}>@</td>
-              <TableCell>
-                <DropDownMenu items={teamInfo} selection={edit.home} setSelection={value => {
-                  editField({ setter: setEdit, field: 'home', value })
-                }}/>
-              </TableCell>
-              <TableCell value={edit.homeRS} size={3} onChange={value => editField({ setter: setEdit, field: 'homeRS', value })}/>
-              <TableCell>
-                <input type={'checkbox'} checked={edit.isFinal} onChange={e => {
-                  const value = e.target.checked
-                  editField({ setter: setEdit, field: 'isFinal', value })
-                }}/>
-              </TableCell>
+						{
+							[
+								{ field: 'date', type: 'date' },
+								{ field: 'time' },
+								{ field: 'away', type: 'dropdown', dropDownItems: teamInfo, form: true },
+								{ field: 'awayRS' },
+								{ field: 'home', type: 'dropdown', dropDownItems: teamInfo, form: true },
+								{ field: 'homeRS' },
+								{ field: 'isFinal', type: 'checkbox' }
+							].map(cell => {
+								return <TableCell
+									key={cell.field}
+									type={cell.type}
+									dropDownItems={cell.dropDownItems}
+									form={cell.form}
+									value={edit[cell.field]}
+									onChange={value => setEditField({ field: cell.field, value })} />
+							})
+						}
               <td>
                 <div style={{ display: 'flex' }}>
-                  <div className={`button small primary`} onClick={e => save({ gameId })}>Save</div>
-                  <div className={'button small secondary'} onClick={e => cancel({ gameId })}>Cancel</div>
-                  <div className={'button small secondary'} onClick={e => remove({ gameId })}>Remove</div>
+                  <ContainedButton onClick={e => save({ gameId })} display={CHECKMARK} disabled={!isValidEdit({ gameId, edit: formatEditForRequest({ edit }) })}/>
+                  <OutlineButton onClick={e => cancel({ gameId })} display={X} />
+                  {removeGame && <TextButton onClick={e => remove({ gameId })} display={'Remove'} />}
                 </div>
               </td>
             </tr>
           ) : (
-            <tr className={'tr disabled'} key={gameId} onMouseOver={() => editingId || setHoverId(gameId)} onMouseLeave={() => setHoverId('')}>
-              <TableCell value={date} disabled={true}/>
-              <TableCell value={formatDisplayTime(game.time)} disabled={true}/>
-              {/* if not using ReactDOM.unstable_batchUpdates() => teams[game.home/awayId]?.name as the component will update with teams that are not in the schedule since schedule will still not be updated until next render */}
-              <TableCell value={teams[game.awayId].name} disabled={true}/>
-              <TableCell value={game.awayRS} disabled={true}/>
-              <td className={'atSign'}>@</td>
-              <TableCell value={teams[game.homeId].name} disabled={true}/>
-              <TableCell value={game.homeRS} disabled={true}/>
-              <TableCell>
-                <input type={'checkbox'} checked={game.isFinal} disabled={true}/>
-              </TableCell>
+            <tr className={`tr disabled ${editingId ? 'fade' : ''} editable`} key={gameId}>
+							{
+								[
+									{ value: date},
+									{ value: formatDisplayTime(time) },
+									{ value: teams[awayId].name },
+									{ value: awayRS },
+									{ value: teams[homeId].name },
+									{ value: homeRS },
+									{ value: isFinal ? 'Final' : '' }
+								].map(cell => {
+									return <TableCell key={randomBits()} type={cell.type} value={cell.value} disabled={true} />
+								})
+							}
               <td>
-                {
-                  hoverId === gameId &&
-                  <div style={{ display: 'flex' }}>
-                    <div className={'button small primary'} onClick={e => editRow({ game: { ...game, date } })}>Edit</div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+										<ActionButton display={'•••'} onClick={e => editRow({ game: { ...game, date } })} />
                   </div>
-                }
               </td>
             </tr>
           )
         }))
       }
         <tr className={'tr'}>
-          <TableCell placeholder={'ex. 2020-05-31'} value={newItem.date} onChange={value => editField({ setter: setNewItem, field: 'date', value })}/>
-          <TableCell placeholder={'ex. 10:00AM'} value={newItem.time} onChange={value => editField({ setter: setNewItem, field: 'time', value })}/>
-          {/*<TableCell placeholder={'Away'} value={newItem.awayId} onChange={value => editField({ setter: setNewItem, field: 'awayId', value })}/>*/}
-          <TableCell>
-            <DropDownMenu items={teamInfo} selection={newItem.away} setSelection={value => {
-              editField({ setter: setNewItem, field: 'away', value })
-            }}/>
-          </TableCell>
-          <td></td>
-          <td className={'atSign'}>@</td>
-          {/*<TableCell placeholder={'Home'} value={newItem.homeId} onChange={value => editField({ setter: setNewItem, field: 'homeId', value })}/>*/}
-          <TableCell>
-            <DropDownMenu items={teamInfo} selection={newItem.home} setSelection={value => {
-              editField({ setter: setNewItem, field: 'home', value })
-            }}/>
-          </TableCell>
-          <td></td>
-          <td></td>
-          <TableCell>
-            <input className={`button medium primary ${!isValidNewGame() && 'disabled'}`} type={'submit'} value={'Add Game'} onClick={e => {
-              const { date, time, away, home } = newItem
-
-              if (!isValidDate(date) || !isValidTime(time)) return
-
-              e.target.value = 'Adding Game...'
-
-              setTimeout(() => {
-                addGame({ date, time: formatTimeForRequest(time), awayId: away.id, homeId: home.id })
-                setNewItem({ date: "", time: "", away: teamInfo[0], home: teamInfo[1] })
-              }, 1000)
-
-            }} disabled={!isValidNewGame()}/>
-          </TableCell>
+					{/*
+						[
+							{ field: 'date', placeholder: 'ex. 2020-05-31' },
+							{ field: 'time', placeholder: 'ex. 10:00AM' },
+							{ field: 'away', type: 'dropdown', dropDownItems: teamInfo, form: true },
+							{ disabled: true },
+							{ field: 'home', type: 'dropdown', dropDownItems: teamInfo, form: true },
+							{ disabled: true },
+							{ disabled: true }
+						].map(cell => {
+							return <TableCell
+								key={randomBits()}
+								type={cell.type}
+								placeholder={cell.placeholder}
+								dropDownItems={cell.dropDownItems}
+								form={cell.form}
+								value={newItem[cell.field]}
+								disabled={cell.disabled}
+								onChange={value => setNewItemField({ field: cell.field, value })} />
+						})
+					*/}
+          {/*<td>
+						<input className={`button medium primary ${!isValidNewGame() && 'disabled'}`} type={'submit'} value={'Add Game'} onClick={addNewGame} disabled={!isValidNewGame()}/>
+					</td>*/}
         </tr>
       </tbody>
     </table>
@@ -259,6 +270,10 @@ const Schedule = () => {
   const [league, setLeague] = useState({})
   const [teams, setTeams] = useState({})
   const [schedule, setSchedule] = useState({})
+	// const [edit, setEdit] = useState({})
+	const [teamInfo, setTeamInfo] = useState()
+	const [newGameModal, setNewGameModal] = useState()
+	const [newGame, setNewGame] = useState({ date: '', time: '' })
 
   useEffect(() => {
     fetchLeagues()
@@ -276,7 +291,7 @@ const Schedule = () => {
       fetchSchedule({ leagueId: league.id })
     ])
       .then(([teams, schedule]) => {
-        ReactDOM.unstable_batchedUpdates(() => { // need teams and schedule to update in same render, otherwise might try to access team not in the schedule
+        ReactDOM.unstable_batchedUpdates(() => { // need teams and schedule to update in same render, otherwise won't find teams in the schedule
           setTeams(teams)
           setSchedule(sortAscending({ schedule }))
         })
@@ -286,12 +301,57 @@ const Schedule = () => {
   useEffect(() => {
   },[teams, schedule])
 
+	useEffect(() => {
+    setTeamInfo(Object.keys(teams).map(teamId => ({ id: teamId, name: teams[teamId].name })))
+  }, [teams])
+
+	useEffect(() => {
+		if (!newGameModal || !teamInfo) return
+
+		const now = new Date()
+		setNewGame({ date: now.toLocaleDateString(), time: minsTo12HH_MM(((now.getTime() / 1000) / 60) - now.getTimezoneOffset()) })
+	}, [newGameModal])
+
+	// const createEntries = () => {
+	// 	return Object.keys(schedule).reduce((acc, date) => acc.concat(schedule[date].map(game => {
+	// 		const { gameId, time, awayId, awayRS, homeId, homeRS, isFinal } = game
+	// 		const cells = edit.id === gameId ? [
+	// 			{ current: edit.date || date, set: value => setEdit(prev => ({ ...prev, 'date': value }))},
+	// 			{ current: edit.time || time, set: value => setEdit(prev => ({ ...prev, 'time': value }))},
+	// 			{ dropDownInfo: teamInfo, current: { id: edit.away?.id || awayId, name: edit.away?.name || teams[awayId].name }, set: value => setEdit(prev => ({ ...prev, 'away': value }))},
+	// 			{ current: edit.awayRS || awayRS, set: value => setEdit(prev => ({ ...prev, 'awayRS': value }))},
+	// 			{ dropDownInfo: teamInfo, current: { id: edit.home?.id || homeId, name: edit.home?.name || teams[homeId].name }, set: value => setEdit(prev => ({ ...prev, 'home': value }))},
+	// 			{ current: edit.homeRS || homeRS, set: value => setEdit(prev => ({ ...prev, 'homeRS': value }))},
+	// 			{ current: edit.isFinal || isFinal, set: value => setEdit(prev => ({ ...prev, 'isFinal': value }))}
+	// 		] :
+	// 		[
+	// 			{ current: date, set: value => setEdit(prev => ({ ...prev, 'date': value }))},
+	// 			{ current: time, set: value => setEdit(prev => ({ ...prev, 'time': value }))},
+	// 			{ dropDownInfo: teamInfo, current: { id: awayId, name: teams[awayId].name }, set: value => setEdit(prev => ({ ...prev, 'away': value }))},
+	// 			{ current: awayRS, set: value => setEdit(prev => ({ ...prev, 'awayRS': value }))},
+	// 			{ dropDownInfo: teamInfo, current: { id: homeId, name: teams[homeId].name }, set: value => setEdit(prev => ({ ...prev, 'home': value }))},
+	// 			{ current: homeRS, set: value => setEdit(prev => ({ ...prev, 'homeRS': value }))},
+	// 			{ current: isFinal, set: value => setEdit(prev => ({ ...prev, 'isFinal': value }))}
+	// 		]
+	//
+	// 		// console.log(cells);
+	// 		return ({
+	// 			id: gameId,
+	// 			cells
+	// 		})
+	// 	})), [])
+	// }
+
+	const openNewGameModal = () => setNewGameModal(true)
+
+	const closeNewGameModal = () => setNewGameModal(false)
+
   return (
     <>
-      <AdminHeader />
+      <AdminHeader current={'Schedule'}/>
       <Center>
         <Stack.Small>
-          <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
+          <DropDownMenu items={leagues} selection={league} setSelection={setLeague} placeholder={'Leagues'}/>
         </Stack.Small>
       </Center>
 
@@ -301,13 +361,35 @@ const Schedule = () => {
         </Stack.Small>
       </Center>
 
-      <Table
-        cols={ ['Date', 'Time', 'Away', 'Away RS','', 'Home', 'Home RS', 'Final', ''] }
-        entries={[
-
+			{/*
+				entries={[
+					{ id: '', cells: [{ current: '', set: () => {} }] }
         ]}
-      />
+			*/}
+
+      {/*<Table
+        cols={ ['Date', 'Time', 'Away', 'Away RS', 'Home', 'Home RS', 'Final', ''] }
+				entries={createEntries()}
+				edit={({ id }) => setEdit(prev => ({ ...prev, id }))}
+				saveEdit={() => {
+					const { id, ...rest } = edit
+					editGame({ gameId: id, edit: rest })
+            .then(({ date, ...editedGame }) => {
+              setSchedule(prevSched => {
+                const newSched = Object.keys(prevSched).reduce((reduced, date) => ({
+                  ...reduced,
+                  [date]: prevSched[date].filter(game => game.gameId !== editedGame.gameId)
+                }), {})
+
+                newSched[date] = newSched[date]?.concat(editedGame) || [editedGame]
+
+                return sortAscending({ schedule: newSched })
+              })
+            })
+				}}
+      />*/}
       {
+			Object.keys(schedule).length ?
       <CreateTable
         items={schedule}
         teams={teams}
@@ -337,8 +419,55 @@ const Schedule = () => {
               })
             })
         }
-      />
+      /> :
+			<Center>
+        <Stack.Small>
+          <h3>There are no games scheduled for this league</h3>
+        </Stack.Small>
+      </Center>
       }
+			<FloatingActionButton onClick={openNewGameModal} display={PLUS}/>
+			{
+				newGameModal &&
+				<form id={'new-game'} style={{ position: 'fixed', top: '200px', left: 'calc(50vw - calc(500px / 2))', backgroundColor: 'var(--secondary)' }} onSubmit={e => {
+					e.preventDefault() // prevent page from refreshing
+
+					addGame({ date: newGame.date, time: formatTimeForRequest(newGame.time), awayId: newGame.away.id, homeId: newGame.home.id })
+					.then(({ date, ...newGame }) => {
+						return setSchedule(prevSched => {
+							const newSched = { ...prevSched }
+							newSched[date] = newSched[date]?.concat(newGame) || [newGame]
+
+							return sortAscending({ schedule: newSched })
+						})
+					})
+					.then(() => {
+						closeNewGameModal()
+					})
+				}}>
+					<h1>New Game</h1>
+					<FormRow>
+						<DatePicker onChange={value => setNewGame(prev => ({ ...prev, date: value }))} />
+						{/*<Input name={'new-date'} placeholder={'Date'} value={newGame.date} onChange={value => setNewGame(prev => ({ ...prev, date: value }))} autofocus={true}/>*/}
+						<Input name={'new-time'} placeholder={'Time'} value={newGame.time} onChange={value => setNewGame(prev => ({ ...prev, time: value }))}/>
+					</FormRow>
+					<FormRow style={{ justifyContent: 'space-evenly' }}>
+						<DropDownMenu items={teamInfo} selection={newGame.away} setSelection={value => setNewGame(prev => ({ ...prev, away: value }))} form={true} placeholder={'Away'}/>
+						<DropDownMenu items={teamInfo} selection={newGame.home} setSelection={value => setNewGame(prev => ({ ...prev, home: value }))} form={true} placeholder={'Home'}/>
+					</FormRow>
+					<FormRow style={{ justifyContent: 'flex-end' }}>
+						<SubmitButton display={'Add Game'} formId={'new-game'} disabled={false} />
+						<TextButton onClick={closeNewGameModal} display={'Cancel'} />
+					</FormRow>
+				</form>
+			}
+			{/*<form style={{ position: 'fixed', top: '200px', left: 'calc(50vw - calc(500px / 2))', height: '500px', width: '500px', backgroundColor: 'yellow' }}>
+			<input placeholder={'Date'}/>
+			<input placeholder={'Time'}/>
+			<input placeholder={'Away'}/>
+			<input placeholder={'Home'}/>
+			<p style={{ position: 'absolute', bottom: '0px', right: '20px' }} onClick={closeNewGameModal}>Close</p>
+			</form>*/}
     </>
   )
 }

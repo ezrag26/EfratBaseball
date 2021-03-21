@@ -107,32 +107,32 @@ const Register = () => {
           </Center>
 
           <FormRow>
-            <Input type={'text'} name={'first-name'} placeHolder={'First Name'} value={first} required={true} onChange={setFirst} autofocus={true}/>
+            <Input type={'text'} name={'first-name'} placeholder={'First Name'} value={first} required={true} onChange={setFirst} autofocus={true}/>
           </FormRow>
 
           <FormRow>
-            <Input type={'text'} name={'last-name'} placeHolder={'Last Name'} value={last} required={true} onChange={setLast}/>
+            <Input type={'text'} name={'last-name'} placeholder={'Last Name'} value={last} required={true} onChange={setLast}/>
           </FormRow>
 
           <FormRow>
             <div style={{ margin: 'auto 0' }}>
-              <DropDownMenu items={carriers} selection={carrier} setSelection={setCarrier}/>
+              <DropDownMenu items={carriers} selection={carrier} setSelection={setCarrier} form={true}/>
             </div>
-            <Input type={'text'} name={'phone'} placeHolder={'Phone Number'} value={phone} required={true} onChange={maskPhone} helpText={'Phone Number must be 7 numbers in the format xxx-xxxx'}/>
+            <Input type={'text'} name={'phone'} placeholder={'Phone Number'} value={phone} required={true} onChange={maskPhone} helpText={'Phone Number must be 7 numbers in the format xxx-xxxx'}/>
           </FormRow>
 
           <FormRow>
-            <Input type={'text'} name={'email'} placeHolder={'Email'} value={email} required={true} onChange={setEmail} onBlur={v => {
+            <Input type={'text'} name={'email'} placeholder={'Email'} value={email} required={true} onChange={setEmail} onBlur={v => {
               if (v && !validator.isEmail(v)) return setEmail(prev => prev, 'Invalid Email')
             }} error={emailError}/>
           </FormRow>
 
           <FormRow>
-            <Input type={'password'} name={'password'} placeHolder={'Password'} value={password} required={true} onChange={setPassword}/>
+            <Input type={'password'} name={'password'} placeholder={'Password'} value={password} required={true} onChange={setPassword}/>
           </FormRow>
 
           <FormRow>
-            <Input type={'password'} name={'confirm-password'} placeHolder={'Confirm Password'} value={confirmPassword} required={true} onChange={v => {
+            <Input type={'password'} name={'confirm-password'} placeholder={'Confirm Password'} value={confirmPassword} required={true} onChange={v => {
               if (v !== password.substr(0, v.length)) return setConfirmPassword(v, 'Passwords do not match to this point')
               setConfirmPassword(v)
             }} error={confirmPasswordError}/>

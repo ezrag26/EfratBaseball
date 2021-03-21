@@ -1,5 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize')
-const sequelize = new Sequelize('postgres://dev:dev@localhost:5432/dev')
+const sequelize = new Sequelize('postgres://dev:dev@localhost:5431/dev')
 const bcrypt = require('bcrypt')
 
 const { League, Team, Game, User, LeagueUpdate, TeamUpdate, GameUpdate, AuthToken } = require('./models')({ sequelize, DataTypes })
@@ -13,7 +13,7 @@ Game.hasMany(GameUpdate)
 AuthToken.belongsTo(User)
 
 // sequelize.query('CREATE TABLE "session" (  "sid" varchar NOT NULL COLLATE "default", "sess" json NOT NULL, "expire" timestamp(6) NOT NULL)WITH (OIDS=FALSE);ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;')
-
+//
 // League.sync({ force: true })
 //   .then(() => LeagueUpdate.sync({ force: true }))
 //   .then(() => Team.sync({ force: true }))

@@ -2,14 +2,18 @@ import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 
 import AdminHeader from "../AdminHeader";
-import { fetchLeagues, fetchTeams, editTeam, addTeam } from '../../helpers/api'
 import { Center, Stack } from "../../helpers/Typography";
 import { DropDownMenu } from "../../helpers/form";
+import { TableCell } from "../../helpers/table";
+import { ContainedButton, OutlineButton, TextButton, ActionButton } from '../../helpers/button'
+import { CHECKMARK , X } from '../../helpers/constants'
+
+import { fetchLeagues, fetchTeams, editTeam, addTeam } from '../../helpers/api'
 
 const HEX_RE = new RegExp(/^#[a-fA-F0-9]{6}$/)
 
-const Table = ({ items, addTeam, saveEdit }) => {
-  const [editingId, setEditingId] = useState()
+const Table = ({ items, addTeam, saveEdit, removeEntry }) => {
+  const [editingId, setEditingId] = useState('')
   const [newItem, setNewItem] = useState({ name: '', color: '#000000' })
   const [edit, setEdit] = useState({})
 
@@ -18,7 +22,7 @@ const Table = ({ items, addTeam, saveEdit }) => {
   const editRow = ({ teamId }) => {
     if (!editingId) {
       setEditingId(teamId)
-      setEdit({...items[teamId]})
+      setEdit({ ...items[teamId] })
     }
   }
 
@@ -28,13 +32,17 @@ const Table = ({ items, addTeam, saveEdit }) => {
     const name = edit.name
     const color = edit.color
 
-    setEditingId(null)
+    setEditingId('')
 
     if (!isValidEntry({ name , color })) return
 
     if (name !== items[teamId].name || color !== items[teamId].color) saveEdit({ teamId, name, color })
 
   }
+
+	const cancel = ({ teamId }) => {
+		setEditingId('')
+	}
 
   const remove = ({ teamId }) => {
 
@@ -43,46 +51,72 @@ const Table = ({ items, addTeam, saveEdit }) => {
   return (
     <table className={'table large narrow center'}>
       <thead>
-      <tr className={'tr bg-primary color-secondary'}>
-        {['Name', 'Color', ''].map(col =>
-          <td key={col}>{col}</td>
-        )}
-      </tr>
+	      <tr className={'tr bg-primary color-secondary'}>
+	        {['Name', 'Color', ''].map(col =>
+	          <td key={col}>{col}</td>
+	        )}
+	      </tr>
       </thead>
       <tbody>
-      {
-        Object.keys(items).map(teamId => {
-          return editingId === teamId ? (
-            <tr className={'tr edit'} key={teamId}>
-              <td><input type={'text'} value={edit.name} onChange={e => editField({ field: 'name', value: e.target.value })}/></td>
-              <td><input type={'color'} value={edit.color} onChange={e => editField({ field: 'color', value: e.target.value })}/></td>
-              <td style={{ display: 'flex' }}><div onClick={e => save({ teamId })}>Save</div><div onClick={e => remove({ teamId })}>Remove</div></td>
-            </tr>
-          ) : (
-            <tr className={`tr disabled ${editingId ? 'fade' : ''}`} key={teamId}>
-              <td><input type={'text'} value={items[teamId].name} disabled={true}/></td>
-              <td><input type={'color'} value={items[teamId].color} disabled={true}/></td>
-              <td onClick={e => editRow({ teamId })}>Edit</td>
-            </tr>
-          )
-        })
-      }
-      <tr className={'tr'}>
-        <td><input type={'text'} placeholder={'Team Name'} value={newItem.name} onChange={e => {
-          const value = e.target.value
-          setNewItem(prev => ({ ...prev, name: value}))
-        }}/></td>
-        <td><input type={'color'} value={newItem.color} onChange={e => {
-          const value = e.target.value
-          setNewItem(prev => ({ ...prev, color: value}))
-        }}/></td>
-        <td><input className={'button medium primary'} type={'submit'} value={'Add Team'} onClick={e => {
-          if (!isValidEntry({ name: newItem.name , color: newItem.color })) return
-
-          addTeam({ name: newItem.name, color: newItem.color })
-          setNewItem({ name: '', color: '#000000' })
-        }}/></td>
-      </tr>
+	      {
+	        Object.keys(items).map(teamId => {
+	          return editingId === teamId ? (
+	            <tr className={'tr edit'} key={teamId}>
+								{
+									[{ field: 'name' }, { field: 'color', type: 'color' }].map(cell => {
+										return <TableCell
+											type={cell.type}
+											dropDownItems={cell.dropDownItems}
+											form={cell.form}
+											value={edit[cell.field]}
+											onChange={value => editField({ field: cell.field, value })} />
+									})
+								}
+	              <td>
+									<div style={{ display: 'flex' }}>
+										<ContainedButton display={CHECKMARK} onClick={e => save({ teamId })} />
+										<OutlineButton display={X} onClick={e => cancel({ teamId })} />
+										{removeEntry && <TextButton display={'Remove'} onClick={e => remove({ teamId })} />}
+									</div>
+								</td>
+	            </tr>
+	          ) : (
+	            <tr className={`tr disabled ${editingId ? 'fade' : ''} editable`} key={teamId}>
+								{
+									[items[teamId].name, items[teamId].color].map(value => {
+										// TODO: should probably have a better check
+										return <TableCell type={value.startsWith('#') ? 'color' : 'text'} value={value} disabled={true}/>
+									})
+								}
+	              <td>
+									<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+										<ActionButton display={'•••'} onClick={e => editRow({ teamId })} />
+									</div>
+								</td>
+	            </tr>
+	          )
+	        })
+	      }
+	      <tr className={'tr'}>
+					{
+						[{ field: 'name', placeholder: 'Team Name' }, { field: 'color', type: 'color' }].map(cell => {
+							return <TableCell
+								type={cell.type}
+								placeholder={cell.placeholder}
+								dropDownItems={cell.dropDownItems}
+								value={newItem[cell.field]}
+								disabled={cell.disabled}
+								onChange={value => setNewItem(prev => ({ ...prev, [cell.field]: value }))} />
+						})
+					}
+	        <td>
+						<ContainedButton display={'Add Team'} onClick={e => {
+		          addTeam({ name: newItem.name, color: newItem.color })
+							// TODO: check if add was successful...
+		          setNewItem({ name: '', color: '#000000' })
+		        }} disabled={!isValidEntry({ name: newItem.name , color: newItem.color })}/>
+					</td>
+	      </tr>
       </tbody>
     </table>
   )
@@ -110,7 +144,7 @@ const Teams = () => {
 
   return (
     <>
-      <AdminHeader />
+      <AdminHeader current={'Teams'}/>
       <Center>
         <Stack.Small>
           <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>

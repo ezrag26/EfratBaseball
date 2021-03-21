@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Header from "../Header";
 import { fetchGetJson } from "../helpers/request";
 
-const AdminHeader = () => {
+const AdminHeader = ({ current }) => {
   const [loggedIn, setLoggedIn] = useState(false)
 
   useEffect(() => {
@@ -14,10 +14,11 @@ const AdminHeader = () => {
     <Header logo={{ href: '/admin', url: '/images/baseball.png', alt: 'admin-homepage' }}
             nav={[
               { text: 'Schedule', href: '/admin/schedule' },
-              { text: 'Leagues', href: '/admin/leagues' },
               { text: 'Teams', href: '/admin/teams' },
+							{ text: 'Leagues', href: '/admin/leagues' },
               { text: 'Gallery', href: '/admin/gallery' }
             ]}
+						current={current}
             account={
               !loggedIn ? [
                 { text: 'Login', href: '/admin/login' },

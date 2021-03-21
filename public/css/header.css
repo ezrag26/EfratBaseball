@@ -20,10 +20,14 @@ a {
     padding: 10px;
     margin: auto 2px;
     text-decoration: none;
-    color: #f2f2f2;
+    color: var(--secondary);
+}
+
+.header-button.current {
+	border-bottom: solid 2px var(--secondary);
 }
 
 .header-button:hover {
     cursor: pointer;
-    border-bottom: solid 2px #f2f2f2;
+    border-bottom: solid 2px var(--secondary);
 }

@@ -1,7 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { randomBits } from "./unique";
+import { DropDownMenu } from "./form"
+import { DatePicker } from './date-picker'
 
-const Table = ({ cols, entries, saveEdit, cancelEdit, removeEntry, newRow, addEntry }) => {
+const TableCell = ({ children, type = 'text', placeholder = '', value, size, onChange, disabled = false, dropDownItems = [], form }) => {
+	switch (type) {
+		case 'dropdown':
+			return <td><DropDownMenu items={dropDownItems} selection={value} setSelection={e => onChange(e)} form={form} placeholder={placeholder}/></td>
+			break;
+		case 'checkbox':
+			return <td><input type={type} placeholder={placeholder} checked={value} onChange={e => onChange(e.target.checked)} disabled={disabled}/></td>
+			break;
+		case 'date':
+			return <td><DatePicker value={value} onChange={e => onChange(e)}/></td>
+			break;
+		default:
+			return <td><input type={type} placeholder={placeholder} value={value} size={size} onChange={e => onChange(e.target.value)} disabled={disabled}/></td>
+			break;
+	}
+  // return (
+  //   <td>
+  //   {
+  //     children ||
+  //     <input type={type} placeholder={placeholder} value={value} size={size} onChange={e => onChange(e.target.value)} disabled={disabled}/>
+  //   }
+  //   </td>
+  // )
+}
+
+const Table = ({ cols, entries, edit, saveEdit, cancelEdit = () => {}, removeEntry, newRow, addEntry }) => {
   const [editingId, setEditingId] = useState('')
   const [hoverId, setHoverId] = useState('')
 
@@ -21,50 +48,61 @@ const Table = ({ cols, entries, saveEdit, cancelEdit, removeEntry, newRow, addEn
   }
 
   const editRow = ({ id }) => {
+		edit({ id })
     setEditingId(id)
   }
 
   return (
     <table className={'table large wide center'}>
       <thead>
-      <tr className={'tr bg-primary color-secondary'}>
-        {cols.map(col =>
-          <td key={randomBits()}>{col}</td>
-        )}
-      </tr>
+	      <tr className={'tr bg-primary color-secondary'}>
+	        {cols.map(col =>
+	          <td key={randomBits()}>{col}</td>
+	        )}
+	      </tr>
       </thead>
       <tbody>
       {
         entries.map(row => {
           const { id, cells } = row
+					// console.log(cells);
           return (
-            <tr className={`tr ${editingId === id && 'edit'}`} key={id} onMouseOver={() => editingId || setHoverId(id)}
-                onMouseLeave={() => setHoverId('')}>
+            <tr className={`tr ${editingId === id ? 'edit' : 'disabled'}`} key={id} onMouseOver={() => editingId || setHoverId(id)} onMouseLeave={() => setHoverId('')}>
               {
-                cells.map(cell => {
-                  return <td key={randomBits()}>{cell}</td>
+                cells?.map((cell, i) => {
+									// console.log(cell);
+                  return (
+										editingId !== id ?
+										<td key={randomBits()}>{cell.dropDownInfo ? cell.current.name : cell.current}</td> : (
+											cell.dropDownInfo ?
+											<TableCell>
+												<DropDownMenu key={randomBits()} items={cell.dropDownInfo} selection={cell.current} setSelection={value => cell.set({ value })} />
+											</TableCell> :
+											<TableCell value={cell.current} onChange={value => cell.set({ value })} />
+										)
+									)
                 })
               }
               <td>
-                <div style={{ display: 'flex' }}>
                 {
                   editingId === id ? (
-                    <>
+                    <div style={{ display: 'flex' }}>
                       <div className={`button small primary`} onClick={e => save({ id })}>Save</div>
                       <div className={'button small secondary'} onClick={e => cancel({ id })}>Cancel</div>
                       <div className={'button small secondary'} onClick={e => remove({ id })}>Remove</div>
-                    </>
+                    </div>
                   ) : (
                     hoverId === id &&
-                    <div className={'button small primary'} onClick={e => editRow({ id })}>Edit</div>
+										<div style={{ display: 'flex' }}>
+	                    <div className={'button small primary'} onClick={e => editRow({ id })}>Edit</div>
+										</div>
                   )
                 }
-                </div>
               </td>
             </tr>
           )
         })
-      }
+      }{/*
         <tr className={'tr'}>
         {
           newRow.map(cell => {
@@ -81,10 +119,10 @@ const Table = ({ cols, entries, saveEdit, cancelEdit, removeEntry, newRow, addEn
 
             }} disabled={!newRow.isValid()}/>
           </td>
-        </tr>
+        </tr>*/}
       </tbody>
     </table>
   )
 }
 
-export { Table }
+export { Table, TableCell }

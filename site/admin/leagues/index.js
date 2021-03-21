@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
-import AdminHeader from "../AdminHeader";
-import { fetchLeagues, addLeague, editLeague } from '../../helpers/api'
-import { Center, Stack } from "../../helpers/Typography";
 
-const Table = ({ items, addLeague, saveEdit }) => {
-  const [editing, setEditing] = useState({ leagueId: undefined })
+import AdminHeader from "../AdminHeader";
+import { TableCell } from '../../helpers/table'
+import { ContainedButton, OutlineButton, TextButton, ActionButton } from '../../helpers/button'
+import { Center, Stack } from "../../helpers/Typography";
+import { CHECKMARK , X } from '../../helpers/constants'
+
+import { fetchLeagues, addLeague, editLeague } from '../../helpers/api'
+
+const Table = ({ items, addLeague, saveEdit, removeEntry }) => {
+  const [editingId, setEditingId] = useState('')
   const [newItem, setNewItem] = useState({ name: '' })
   const [edit, setEdit] = useState({})
 
   const isValidEntry = ({ name }) => name
 
   const editRow = ({ leagueId }) => {
-    setEditing({ leagueId })
+    setEditingId(leagueId)
     setEdit({ ...items[leagueId] })
   }
 
@@ -21,10 +26,14 @@ const Table = ({ items, addLeague, saveEdit }) => {
   const save = ({ leagueId }) => {
     const name = edit.name
 
-    setEditing({ leagueId: null })
+    setEditingId('')
 
     if (isValidEntry({ name }) && name !== items[leagueId].name) saveEdit({ leagueId, name })
   }
+
+	const cancel = () => {
+		setEditingId('')
+	}
 
   const remove = ({ leagueId }) => {
 
@@ -40,33 +49,65 @@ const Table = ({ items, addLeague, saveEdit }) => {
       </tr>
       </thead>
       <tbody>
-      {
-        Object.keys(items).map(leagueId => {
-          return editing.leagueId === leagueId ? (
-            <tr className={'tr edit'} key={leagueId}>
-              <td><input type={'text'} value={edit.name} onChange={e => editField({ field: 'name', value: e.target.value })}/></td>
-              <td style={{ display: 'flex' }}><div onClick={e => save({ leagueId })}>Save</div><div onClick={e => remove({ leagueId })}>Remove</div></td>
-            </tr>
-          ) : (
-            <tr className={'tr disabled'} key={leagueId}>
-              <td><input type={'text'} value={items[leagueId].name} disabled={true}/></td>
-              <td onClick={e => editRow({ leagueId })}>Edit</td>
-            </tr>
-          )
-        })
-      }
-      <tr className={'tr'}>
-        <td><input type={'text'} placeholder={'League Name'} value={newItem.name} onChange={e => {
-          const value = e.target.value
-          setNewItem(prev => ({ ...prev, name: value}))
-        }}/></td>
-        <td><input className={'button medium primary'} type={'submit'} value={'Add League'} onClick={e => {
-          if (!isValidEntry({ name: newItem.name })) return
-
-          addLeague({ name: newItem.name })
-          setNewItem({ name: '' })
-        }}/></td>
-      </tr>
+	      {
+	        Object.keys(items).map(leagueId => {
+	          return editingId === leagueId ? (
+	            <tr className={'tr edit'} key={leagueId}>
+								{
+									[{ field: 'name' }].map(cell => {
+										return <TableCell
+											type={cell.type}
+											dropDownItems={cell.dropDownItems}
+											form={cell.form}
+											value={edit[cell.field]}
+											onChange={value => editField({ field: cell.field, value })} />
+									})
+								}
+	              <td>
+									<div style={{ display: 'flex' }}>
+										<ContainedButton display={CHECKMARK} onClick={e => save({ leagueId })} />
+										<OutlineButton display={X} onClick={e => cancel({ leagueId })} />
+										{removeEntry && <TextButton display={'Remove'} onClick={e => remove({ leagueId })} />}
+									</div>
+								</td>
+	            </tr>
+	          ) : (
+	            <tr className={`tr disabled ${editingId ? 'fade' : ''} editable`} key={leagueId}>
+								{
+									[items[leagueId].name].map(v => {
+										return <TableCell type={typeof v === 'boolean' ? 'checkbox' : 'text'} value={v} disabled={true} />
+									})
+								}
+	              <td>
+									<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+										<ActionButton display={'•••'} onClick={e => editRow({ leagueId })} />
+									</div>
+								</td>
+	            </tr>
+	          )
+	        })
+	      }
+	      <tr className={'tr'}>
+					{
+						[{ field: 'name', placeholder: 'League Name' }].map(cell => {
+							return <TableCell
+								type={cell.type}
+								placeholder={cell.placeholder}
+								dropDownItems={cell.dropDownItems}
+								form={cell.form}
+								value={newItem[cell.field]}
+								disabled={cell.disabled}
+								onChange={value => setNewItem(prev => ({ ...prev, [cell.field]: value }))} />
+						})
+					}
+	        <td>
+						<ContainedButton display={'Add League'} onClick={e => {
+		          addLeague({ name: newItem.name })
+							//TODO: check if add was successful...
+		          setNewItem({ name: '' })
+		        }} disabled={!isValidEntry({ name: newItem.name })} />
+					</td>
+	      </tr>
       </tbody>
     </table>
   )
@@ -84,7 +125,7 @@ const Leagues = () => {
 
   return (
     <>
-      <AdminHeader />
+      <AdminHeader current={'Leagues'}/>
       <Center>
         <Stack.Small>
           <h1>Leagues</h1>

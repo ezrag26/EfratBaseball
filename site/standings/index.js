@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 
 import NonAdminHeader from "../NonAdminHeader";
-import { fetchLeagues, fetchStats, fetchTeams } from '../helpers/api'
 import { DropDownMenu } from "../helpers/form";
 import { Center, Stack } from "../helpers/Typography";
+
+import { fetchLeagues, fetchStats, fetchTeams } from '../helpers/api'
 import { randomBits } from '../helpers/unique'
 
 const Standings = () => {
@@ -61,7 +62,7 @@ const Standings = () => {
 
   return (
     <>
-      <NonAdminHeader />
+      <NonAdminHeader current={'Standings'}/>
       <Center>
         <Stack.Small>
           <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
@@ -77,9 +78,9 @@ const Standings = () => {
       <Center>
         {
           Object.keys(stats).length ?
-          <table className={'standings'} style={{ minWidth: '80%' }}>
+          <table className={'table standings wide center'} style={{ minWidth: '80%' }}>
             <thead>
-              <tr>
+              <tr className={'tr bg-primary color-secondary'}>
                 {
                   ['', 'W', 'L', 'T', 'W%', 'GB', 'RS', 'RA', 'RD'].map(column =>
                     <td key={randomBits()}>{column}</td>
@@ -93,8 +94,8 @@ const Standings = () => {
                 const { wins, losses, ties, rs, ra } = stats[teamId]
                 const { name, color } = teams[teamId]
                 return (
-                  <tr key={randomBits()}>
-                    <td style={{ backgroundColor: color }}>{name}</td>
+                  <tr key={randomBits()} className={'tr bg-secondary'}>
+                    <td style={{ borderLeft: `solid .5rem ${color}` }}>{name}</td>
                     <td>{wins}</td>
                     <td>{losses}</td>
                     <td>{ties}</td>
@@ -102,7 +103,7 @@ const Standings = () => {
                     <td>{calcGamesBack({ WLDiffLeader: Object.values(stats)[0], teamStats: { wins, losses } })}</td>
                     <td>{rs}</td>
                     <td>{ra}</td>
-                    <td>{rs - ra}</td>
+                    <td style={{ borderRight: `solid .5rem ${color}` }}>{rs - ra}</td>
                   </tr>
                 )
               })

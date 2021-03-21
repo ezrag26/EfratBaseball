@@ -23,13 +23,13 @@ const {
 const app = express()
 
 app.use(session({
-  store: new pgSession({ conString: 'postgres://dev:dev@localhost:5432/dev' }),
+  store: new pgSession({ conString: 'postgres://dev:dev@localhost:5431/dev' }),
   name: 'session',
   resave: false,
   saveUninitialized: false,
   secret: SESS_SECRET,
   cookie: {
-    maxAge: 1000 * 60 * 60 * 24, // 1 day
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 1 day
     sameSite: true
   }
 }))

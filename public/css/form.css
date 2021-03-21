@@ -10,9 +10,8 @@ form {
     position: relative;
     display: flex;
     flex-direction: column;
-    width: 100%;
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
+    /* width: 100%; */
+		flex-grow: 1;
     padding: 1.35rem .75rem .4rem 1rem;
     border-radius: .35rem .35rem 0 0;
     border-bottom: solid 1px #aaa;
