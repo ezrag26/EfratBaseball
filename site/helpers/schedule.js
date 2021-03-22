@@ -6,16 +6,11 @@ const sortByTimeAscending = ({ games }) => games.sort((a, b) => {
 })
 
 const sortByDateAscending = ({ schedule }) => {
-  return Object.keys(schedule).sort((a, b) =>
-    DateTime.fromJSDate(new Date(a)).diff(DateTime.fromJSDate(new Date(b)))
+  return schedule.sort((a, b) =>
+    DateTime.fromJSDate(new Date(a.date)).diff(DateTime.fromJSDate(new Date(b.date)))
   )
 }
 
-const sortAscending = ({ schedule }) =>
-  sortByDateAscending({ schedule })
-    .reduce((reduced, date) => ({
-      ...reduced,
-      [date]: sortByTimeAscending({ games: schedule[date] })
-    }), {})
+const sortAscending = ({ schedule }) => sortByDateAscending({ schedule: sortByTimeAscending({ games: schedule }) })
 
 export { sortAscending }

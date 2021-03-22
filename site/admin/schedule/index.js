@@ -68,9 +68,8 @@ const isValidTime = (time) => {
   return _12HH_MM_RE.test(time)
 }
 
-const CreateTable = ({ items, teams, addGame, saveEdit, removeGame }) => {
+const Table = ({ items, teams, saveEdit, removeGame }) => {
   const [editingId, setEditingId] = useState('')
-  const [newItem, setNewItem] = useState({ date: '', time: '' })
   const [edit, setEdit] = useState({})
   const [teamInfo, setTeamInfo] = useState()
 
@@ -78,25 +77,12 @@ const CreateTable = ({ items, teams, addGame, saveEdit, removeGame }) => {
 
 	const setEditField = ({ field, value }) => editField({ setter: setEdit, field, value })
 
-	const setNewItemField = ({ field, value }) => editField({ setter: setNewItem, field, value })
-
-	useEffect(() => {
-		const now = new Date()
-		setNewItem({ date: now.toLocaleDateString(), time: minsTo12HH_MM(now / 1000 / 60 - now.getTimezoneOffset()) })
-	}, [])
-
   useEffect(() => {
     setEditingId('')
     setEdit({})
 
     setTeamInfo(Object.keys(teams).map(teamId => ({ id: teamId, name: teams[teamId].name })))
   }, [teams])
-
-  useEffect(() => {
-    if (!teamInfo) return
-
-    setNewItem(prev => ({ ...prev, away: teamInfo[0], home: teamInfo[1] }))
-  }, [teamInfo])
 
   const editRow = ({ game }) => {
     const { gameId, ...g } = game
@@ -110,29 +96,11 @@ const CreateTable = ({ items, teams, addGame, saveEdit, removeGame }) => {
     })
   }
 
-	const addNewGame = e => {
-		const { date, time, away, home } = newItem
+  const isValidEdit = ({ edit }) => {
+    const { gameId, date, time, awayId, homeId, awayRS, homeRS, isFinal } = edit
+    const game = items.filter(game => gameId === game.gameId)[0] || undefined
 
-		if (!isValidDate(date) || !isValidTime(time)) return
-
-		e.target.value = 'Adding Game...'
-
-		setTimeout(() => {
-			addGame({ date, time: formatTimeForRequest(time), awayId: away.id, homeId: home.id })
-			// TODO: check if add was successful...
-			setNewItem({ date: "", time: "", away: teamInfo[0], home: teamInfo[1] })
-		}, 1000)
-	}
-
-  const isValidNewGame = () => {
-    return isValidDate(newItem.date) && isValidTime(newItem.time)
-  }
-
-  const isValidEdit = ({ gameId, edit }) => {
-    const { date, time, awayId, homeId, awayRS, homeRS, isFinal } = edit
-    const game = items[date]?.filter(game => gameId === game.gameId)[0] || undefined
-
-    return !game ||
+    return date !== game.date ||
       time !== game.time ||
       awayId !== game.awayId ||
       homeId !== game.homeId ||
@@ -141,18 +109,18 @@ const CreateTable = ({ items, teams, addGame, saveEdit, removeGame }) => {
       isFinal !== game.isFinal
   }
 
-	const formatEditForRequest = ({ edit }) => {
+	const formatEditForRequest = ({ gameId, edit }) => {
 		const { date, time, away, home, awayRS, homeRS, isFinal } = edit
-		return { date, time: formatTimeForRequest(time), awayId: away.id, homeId: home.id, awayRS: awayRS || 0, homeRS: homeRS || 0, isFinal }
+		return { gameId, date, time: formatTimeForRequest(time), awayId: away.id, homeId: home.id, awayRS: awayRS || 0, homeRS: homeRS || 0, isFinal }
 	}
 
   const save = ({ gameId }) => {
     if (!isValidDate(edit.date) || !isValidTime(edit.time)) return
 
-    const formattedEdit = formatEditForRequest({ edit })
+    const formattedEdit = formatEditForRequest({ gameId, edit })
 
-    if (isValidEdit({ gameId, edit: formattedEdit })) {
-      saveEdit({ gameId, edit: formattedEdit })
+    if (isValidEdit({ edit: formattedEdit })) {
+      saveEdit({ edit: formattedEdit })
 			// should check first to make sure the edit was successful...
       setEditingId('')
       setEdit({})
@@ -179,8 +147,8 @@ const CreateTable = ({ items, teams, addGame, saveEdit, removeGame }) => {
       </thead>
       <tbody>
       {
-        Object.keys(items).map(date => items[date].map(game => {
-          const { gameId, time, awayId, awayRS, homeId, homeRS, isFinal } = game
+				items.map(game => {
+          const { date, gameId, time, awayId, awayRS, homeId, homeRS, isFinal } = game
           return editingId === gameId ? (
             <tr className={'tr edit'} key={gameId}>
 						{
@@ -204,7 +172,7 @@ const CreateTable = ({ items, teams, addGame, saveEdit, removeGame }) => {
 						}
               <td>
                 <div style={{ display: 'flex' }}>
-                  <ContainedButton onClick={e => save({ gameId })} display={CHECKMARK} disabled={!isValidEdit({ gameId, edit: formatEditForRequest({ edit }) })}/>
+                  <ContainedButton onClick={e => save({ gameId })} display={CHECKMARK} disabled={!isValidEdit({ edit: formatEditForRequest({ gameId, edit }) })}/>
                   <OutlineButton onClick={e => cancel({ gameId })} display={X} />
                   {removeGame && <TextButton onClick={e => remove({ gameId })} display={'Remove'} />}
                 </div>
@@ -227,39 +195,13 @@ const CreateTable = ({ items, teams, addGame, saveEdit, removeGame }) => {
 							}
               <td>
                   <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-										<ActionButton display={'•••'} onClick={e => editRow({ game: { ...game, date } })} />
+										<ActionButton display={'•••'} onClick={e => editRow({ game: { ...game } })} />
                   </div>
               </td>
             </tr>
           )
-        }))
+        })
       }
-        <tr className={'tr'}>
-					{/*
-						[
-							{ field: 'date', placeholder: 'ex. 2020-05-31' },
-							{ field: 'time', placeholder: 'ex. 10:00AM' },
-							{ field: 'away', type: 'dropdown', dropDownItems: teamInfo, form: true },
-							{ disabled: true },
-							{ field: 'home', type: 'dropdown', dropDownItems: teamInfo, form: true },
-							{ disabled: true },
-							{ disabled: true }
-						].map(cell => {
-							return <TableCell
-								key={randomBits()}
-								type={cell.type}
-								placeholder={cell.placeholder}
-								dropDownItems={cell.dropDownItems}
-								form={cell.form}
-								value={newItem[cell.field]}
-								disabled={cell.disabled}
-								onChange={value => setNewItemField({ field: cell.field, value })} />
-						})
-					*/}
-          {/*<td>
-						<input className={`button medium primary ${!isValidNewGame() && 'disabled'}`} type={'submit'} value={'Add Game'} onClick={addNewGame} disabled={!isValidNewGame()}/>
-					</td>*/}
-        </tr>
       </tbody>
     </table>
   )
@@ -269,7 +211,7 @@ const Schedule = () => {
   const [leagues, setLeagues] = useState([])
   const [league, setLeague] = useState({})
   const [teams, setTeams] = useState({})
-  const [schedule, setSchedule] = useState({})
+  const [schedule, setSchedule] = useState([])
 	// const [edit, setEdit] = useState({})
 	const [teamInfo, setTeamInfo] = useState()
 	const [newGameModal, setNewGameModal] = useState()
@@ -293,7 +235,8 @@ const Schedule = () => {
       .then(([teams, schedule]) => {
         ReactDOM.unstable_batchedUpdates(() => { // need teams and schedule to update in same render, otherwise won't find teams in the schedule
           setTeams(teams)
-          setSchedule(sortAscending({ schedule }))
+          setSchedule(sortAscending({ schedule: Object.keys(schedule)
+					.reduce((acc, date) => ([...acc, ...schedule[date].map(game => ({ date, ...game }))]), []) }))
         })
       })
   }, [league])
@@ -389,33 +332,15 @@ const Schedule = () => {
 				}}
       />*/}
       {
-			Object.keys(schedule).length ?
-      <CreateTable
+			schedule.length ?
+      <Table
         items={schedule}
         teams={teams}
-        addGame={({ date, time, awayId, homeId }) =>
-          addGame({ date, time, awayId, homeId })
-            .then(({ date, ...newGame }) => {
-              setSchedule(prevSched => {
-                const newSched = { ...prevSched }
-                newSched[date] = newSched[date]?.concat(newGame) || [newGame]
-
-                return sortAscending({ schedule: newSched })
-              })
-            })
-        }
-        saveEdit={({ gameId, edit }) =>
+        saveEdit={({ edit: { gameId, ...edit } }) =>
           editGame({ gameId, edit })
-            .then(({ date, ...editedGame }) => {
+            .then((editedGame) => {
               setSchedule(prevSched => {
-                const newSched = Object.keys(prevSched).reduce((reduced, date) => ({
-                  ...reduced,
-                  [date]: prevSched[date].filter(game => game.gameId !== editedGame.gameId)
-                }), {})
-
-                newSched[date] = newSched[date]?.concat(editedGame) || [editedGame]
-
-                return sortAscending({ schedule: newSched })
+                return prevSched.map(game => game.gameId !== editedGame.gameId ? game : editedGame)
               })
             })
         }
@@ -432,13 +357,28 @@ const Schedule = () => {
 				<form id={'new-game'} style={{ position: 'fixed', top: '200px', left: 'calc(50vw - calc(500px / 2))', backgroundColor: 'var(--secondary)' }} onSubmit={e => {
 					e.preventDefault() // prevent page from refreshing
 
-					addGame({ date: newGame.date, time: formatTimeForRequest(newGame.time), awayId: newGame.away.id, homeId: newGame.home.id })
-					.then(({ date, ...newGame }) => {
-						return setSchedule(prevSched => {
-							const newSched = { ...prevSched }
-							newSched[date] = newSched[date]?.concat(newGame) || [newGame]
+					// TODO: validate game
 
-							return sortAscending({ schedule: newSched })
+					// const isValidNewGame = () => {
+					// 	return isValidDate(newItem.date) && isValidTime(newItem.time)
+					// }
+
+					// const { date, time, away, home } = newGame
+					//
+					// 	if (!isValidDate(date) || !isValidTime(time)) return
+					//
+					// 	e.target.value = 'Adding Game...'
+					//
+					// 	setTimeout(() => {
+					// 		addGame({ date, time: formatTimeForRequest(time), awayId: away.id, homeId: home.id })
+					// 		// TODO: check if add was successful...
+					// 		setNewItem({ date: "", time: "", away: teamInfo[0], home: teamInfo[1] })
+					// 	}, 1000)
+
+					addGame({ date: newGame.date, time: formatTimeForRequest(newGame.time), awayId: newGame.away.id, homeId: newGame.home.id })
+					.then((game) => {
+						return setSchedule(prevSched => {
+							return [...prevSched, game]
 						})
 					})
 					.then(() => {
@@ -448,7 +388,6 @@ const Schedule = () => {
 					<h1>New Game</h1>
 					<FormRow>
 						<DatePicker onChange={value => setNewGame(prev => ({ ...prev, date: value }))} />
-						{/*<Input name={'new-date'} placeholder={'Date'} value={newGame.date} onChange={value => setNewGame(prev => ({ ...prev, date: value }))} autofocus={true}/>*/}
 						<Input name={'new-time'} placeholder={'Time'} value={newGame.time} onChange={value => setNewGame(prev => ({ ...prev, time: value }))}/>
 					</FormRow>
 					<FormRow style={{ justifyContent: 'space-evenly' }}>
@@ -461,13 +400,6 @@ const Schedule = () => {
 					</FormRow>
 				</form>
 			}
-			{/*<form style={{ position: 'fixed', top: '200px', left: 'calc(50vw - calc(500px / 2))', height: '500px', width: '500px', backgroundColor: 'yellow' }}>
-			<input placeholder={'Date'}/>
-			<input placeholder={'Time'}/>
-			<input placeholder={'Away'}/>
-			<input placeholder={'Home'}/>
-			<p style={{ position: 'absolute', bottom: '0px', right: '20px' }} onClick={closeNewGameModal}>Close</p>
-			</form>*/}
     </>
   )
 }

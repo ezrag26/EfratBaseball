@@ -28,6 +28,8 @@ const minsTo12HH_MM = mins => {
   return `${hrs < 10 ? `0${hrs}` : hrs}:${min < 10 ? `0${min}` : min}${AM_PM}`
 }
 
+const sortDateAscending = (a, b) => DateTime.fromJSDate(new Date(a)).diff(DateTime.fromJSDate(new Date(b)))
+
 const Schedule = () => {
   const [leagues, setLeagues] = useState([])
   const [league, setLeague] = useState({})
@@ -51,7 +53,7 @@ const Schedule = () => {
       .then(([teams, schedule]) => {
         setTeamInfo(teams)
 
-        Object.keys(schedule).length !== 0 ? setSchedule(sortAscending({ schedule })) : setSchedule(null)
+        Object.keys(schedule).length !== 0 ? setSchedule(Object.keys(schedule).reduce((acc, date) => ({ ...acc, [date]: sortAscending({ schedule: schedule[date] }) }), {})) : setSchedule(null)
     })
   }, [league])
 
@@ -75,7 +77,7 @@ const Schedule = () => {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '80%' }}>
           {
             schedule ?
-              Object.keys(schedule)
+              Object.keys(schedule).sort(sortDateAscending)
                 .map(date => (
                   <div key={randomBits()} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', margin: '0 0 3rem' }}>
 										<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', width: '100%' }}>
