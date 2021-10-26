@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { randomBits } from "./unique";
 import { DropDownMenu } from "./form"
-import { DatePicker } from './date-picker'
+import { DatePicker } from '../components/date-picker'
 
 const TableCell = ({ children, type = 'text', placeholder = '', value, size, onChange, disabled = false, dropDownItems = [], form }) => {
 	switch (type) {

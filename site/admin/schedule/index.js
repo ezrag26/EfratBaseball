@@ -19,7 +19,7 @@ import { DatePicker } from '../../components/date-picker'
 
 import { fetchLeagues, fetchTeams, fetchSchedule, addGame, editGame } from '../../helpers/api'
 import { randomBits } from '../../helpers/unique'
-import { sortAscending } from '../../helpers/schedule']
+import { sortAscending } from '../../helpers/schedule'
 import { formatYYYY_MM_DD_to_YYYY_MMM_DD } from '../../helpers/date'
 
 const minsToHours = mins => ( mins / 60 )
