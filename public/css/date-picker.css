@@ -18,6 +18,10 @@
 	background-color: var(--secondary-dark);
 }
 
+.picker > *:first-child > * {
+	cursor: pointer;
+}
+
 .calendar {
 	display: grid;
 	grid-template-columns: repeat(7, 1fr);

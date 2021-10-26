@@ -15,11 +15,12 @@ import {
 	ActionButton
 } from '../../helpers/button'
 import { CHECKMARK , X, PLUS } from '../../helpers/constants'
-import { DatePicker } from '../../helpers/date-picker'
+import { DatePicker } from '../../components/date-picker'
 
 import { fetchLeagues, fetchTeams, fetchSchedule, addGame, editGame } from '../../helpers/api'
 import { randomBits } from '../../helpers/unique'
-import { sortAscending } from '../../helpers/schedule'
+import { sortAscending } from '../../helpers/schedule']
+import { formatYYYY_MM_DD_to_YYYY_MMM_DD } from '../../helpers/date'
 
 const minsToHours = mins => ( mins / 60 )
 
@@ -186,7 +187,7 @@ const Table = ({ items, teams, saveEdit, removeGame }) => {
             <tr className={`tr disabled ${editingId ? 'fade' : ''} editable`} key={gameId}>
 							{
 								[
-									{ value: date},
+									{ value: formatYYYY_MM_DD_to_YYYY_MMM_DD(date)},
 									{ value: formatDisplayTime(time) },
 									{ value: teams[awayId].name },
 									{ value: awayRS },
