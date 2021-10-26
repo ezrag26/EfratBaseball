@@ -76,8 +76,8 @@ module.exports = {
       .then(res => res.json())
   },
 
-  fetchSchedule: ({ leagueId }) => {
-    return fetchGetJson({ url: `http://${DEV_HOST}/leagues/${leagueId}/schedule` })
+  fetchSchedule: ({ leagueId, page, numItems }) => {
+    return fetchGetJson({ url: `http://${DEV_HOST}/leagues/${leagueId}/schedule?page=${page}&numItems=${numItems}` })
       .then(res => res.json())
     // return XMLHttpRequestAsPromise({
     //   method: 'GET',
@@ -99,9 +99,9 @@ module.exports = {
       .then(res => res.json())
   },
 
-  editTeam: ({ teamId, name, color }) => {
+  editTeam: ({ leagueId, teamId, name, color }) => {
     return fetchPostJson({
-      url: `/admin/teams/${teamId}`,
+      url: `/admin/leagues/${leagueId}/teams/${teamId}`,
       body: {
         name,
         color

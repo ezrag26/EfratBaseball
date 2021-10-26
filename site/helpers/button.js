@@ -20,8 +20,8 @@ const TextButton = ({ onClick, display, disabled }) => {
 	return <Button className={'text'} onClick={onClick} display={display} disabled={disabled}/>
 }
 
-const SubmitButton = ({ formId, display, disabled }) => {
-	return <Button type={'submit'} formId={formId} display={display} disabled={disabled}/>
+const SubmitButton = ({ onClick, formId, display, disabled }) => {
+	return <Button type={'submit'} onClick={onClick} formId={formId} display={display} disabled={disabled}/>
 }
 
 const FloatingActionButton = ({ onClick, display, disabled }) => {

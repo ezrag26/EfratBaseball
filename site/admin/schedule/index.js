@@ -68,6 +68,10 @@ const isValidTime = (time) => {
   return _12HH_MM_RE.test(time)
 }
 
+const isValidNewGame = ({ date, time, awayId, homeId }) => {
+	return isValidDate(date) && isValidTime(time) && awayId && homeId
+}
+
 const Table = ({ items, teams, saveEdit, removeGame }) => {
   const [editingId, setEditingId] = useState('')
   const [edit, setEdit] = useState({})
@@ -212,10 +216,14 @@ const Schedule = () => {
   const [league, setLeague] = useState({})
   const [teams, setTeams] = useState({})
   const [schedule, setSchedule] = useState([])
-	// const [edit, setEdit] = useState({})
 	const [teamInfo, setTeamInfo] = useState()
+
 	const [newGameModal, setNewGameModal] = useState()
 	const [newGame, setNewGame] = useState({ date: '', time: '' })
+
+	const [submitting, setSubmitting] = useState(false)
+
+	const [messages, setMessages] = useState([])
 
   useEffect(() => {
     fetchLeagues()
@@ -249,45 +257,19 @@ const Schedule = () => {
   }, [teams])
 
 	useEffect(() => {
-		if (!newGameModal || !teamInfo) return
+		if (!teamInfo) return
+
+		if (!newGameModal) setNewGame({ date: '', time: '' })
 
 		const now = new Date()
 		setNewGame({ date: now.toLocaleDateString(), time: minsTo12HH_MM(((now.getTime() / 1000) / 60) - now.getTimezoneOffset()) })
 	}, [newGameModal])
 
-	// const createEntries = () => {
-	// 	return Object.keys(schedule).reduce((acc, date) => acc.concat(schedule[date].map(game => {
-	// 		const { gameId, time, awayId, awayRS, homeId, homeRS, isFinal } = game
-	// 		const cells = edit.id === gameId ? [
-	// 			{ current: edit.date || date, set: value => setEdit(prev => ({ ...prev, 'date': value }))},
-	// 			{ current: edit.time || time, set: value => setEdit(prev => ({ ...prev, 'time': value }))},
-	// 			{ dropDownInfo: teamInfo, current: { id: edit.away?.id || awayId, name: edit.away?.name || teams[awayId].name }, set: value => setEdit(prev => ({ ...prev, 'away': value }))},
-	// 			{ current: edit.awayRS || awayRS, set: value => setEdit(prev => ({ ...prev, 'awayRS': value }))},
-	// 			{ dropDownInfo: teamInfo, current: { id: edit.home?.id || homeId, name: edit.home?.name || teams[homeId].name }, set: value => setEdit(prev => ({ ...prev, 'home': value }))},
-	// 			{ current: edit.homeRS || homeRS, set: value => setEdit(prev => ({ ...prev, 'homeRS': value }))},
-	// 			{ current: edit.isFinal || isFinal, set: value => setEdit(prev => ({ ...prev, 'isFinal': value }))}
-	// 		] :
-	// 		[
-	// 			{ current: date, set: value => setEdit(prev => ({ ...prev, 'date': value }))},
-	// 			{ current: time, set: value => setEdit(prev => ({ ...prev, 'time': value }))},
-	// 			{ dropDownInfo: teamInfo, current: { id: awayId, name: teams[awayId].name }, set: value => setEdit(prev => ({ ...prev, 'away': value }))},
-	// 			{ current: awayRS, set: value => setEdit(prev => ({ ...prev, 'awayRS': value }))},
-	// 			{ dropDownInfo: teamInfo, current: { id: homeId, name: teams[homeId].name }, set: value => setEdit(prev => ({ ...prev, 'home': value }))},
-	// 			{ current: homeRS, set: value => setEdit(prev => ({ ...prev, 'homeRS': value }))},
-	// 			{ current: isFinal, set: value => setEdit(prev => ({ ...prev, 'isFinal': value }))}
-	// 		]
-	//
-	// 		// console.log(cells);
-	// 		return ({
-	// 			id: gameId,
-	// 			cells
-	// 		})
-	// 	})), [])
-	// }
-
 	const openNewGameModal = () => setNewGameModal(true)
 
 	const closeNewGameModal = () => setNewGameModal(false)
+
+	const shouldDisable = () => submitting
 
   return (
     <>
@@ -303,34 +285,7 @@ const Schedule = () => {
           <h1>Games</h1>
         </Stack.Small>
       </Center>
-
-			{/*
-				entries={[
-					{ id: '', cells: [{ current: '', set: () => {} }] }
-        ]}
-			*/}
-
-      {/*<Table
-        cols={ ['Date', 'Time', 'Away', 'Away RS', 'Home', 'Home RS', 'Final', ''] }
-				entries={createEntries()}
-				edit={({ id }) => setEdit(prev => ({ ...prev, id }))}
-				saveEdit={() => {
-					const { id, ...rest } = edit
-					editGame({ gameId: id, edit: rest })
-            .then(({ date, ...editedGame }) => {
-              setSchedule(prevSched => {
-                const newSched = Object.keys(prevSched).reduce((reduced, date) => ({
-                  ...reduced,
-                  [date]: prevSched[date].filter(game => game.gameId !== editedGame.gameId)
-                }), {})
-
-                newSched[date] = newSched[date]?.concat(editedGame) || [editedGame]
-
-                return sortAscending({ schedule: newSched })
-              })
-            })
-				}}
-      />*/}
+			{/*<ContainedButton onClick={openNewGameModal} display={'New Game'}/>*/}
       {
 			schedule.length ?
       <Table
@@ -356,34 +311,6 @@ const Schedule = () => {
 				newGameModal &&
 				<form id={'new-game'} style={{ position: 'fixed', top: '200px', left: 'calc(50vw - calc(500px / 2))', backgroundColor: 'var(--secondary)' }} onSubmit={e => {
 					e.preventDefault() // prevent page from refreshing
-
-					// TODO: validate game
-
-					// const isValidNewGame = () => {
-					// 	return isValidDate(newItem.date) && isValidTime(newItem.time)
-					// }
-
-					// const { date, time, away, home } = newGame
-					//
-					// 	if (!isValidDate(date) || !isValidTime(time)) return
-					//
-					// 	e.target.value = 'Adding Game...'
-					//
-					// 	setTimeout(() => {
-					// 		addGame({ date, time: formatTimeForRequest(time), awayId: away.id, homeId: home.id })
-					// 		// TODO: check if add was successful...
-					// 		setNewItem({ date: "", time: "", away: teamInfo[0], home: teamInfo[1] })
-					// 	}, 1000)
-
-					addGame({ date: newGame.date, time: formatTimeForRequest(newGame.time), awayId: newGame.away.id, homeId: newGame.home.id })
-					.then((game) => {
-						return setSchedule(prevSched => {
-							return [...prevSched, game]
-						})
-					})
-					.then(() => {
-						closeNewGameModal()
-					})
 				}}>
 					<h1>New Game</h1>
 					<FormRow>
@@ -395,11 +322,40 @@ const Schedule = () => {
 						<DropDownMenu items={teamInfo} selection={newGame.home} setSelection={value => setNewGame(prev => ({ ...prev, home: value }))} form={true} placeholder={'Home'}/>
 					</FormRow>
 					<FormRow style={{ justifyContent: 'flex-end' }}>
-						<SubmitButton display={'Add Game'} formId={'new-game'} disabled={false} />
+						<SubmitButton onClick={() => {
+							const { date, time, away, home } = newGame
+
+							if (!isValidNewGame({ date, time, awayId: away?.id, homeId: home?.id })) return
+
+							setSubmitting(true)
+
+							addGame({ date, time: formatTimeForRequest(time), awayId: away.id, homeId: home.id })
+							.then((game) => {
+								setSchedule(prevSched => {
+									return [...prevSched, game]
+								})
+								setSubmitting(false)
+								setMessages(prev => {
+									return [[randomBits(), 'Game added successfully'], ...prev]
+								})
+								return Promise.resolve()
+							})
+							.then(() => {
+								closeNewGameModal()
+							})
+						}} display={submitting ? 'Adding...' : 'Add Game'} formId={'new-game'} disabled={shouldDisable()} />
 						<TextButton onClick={closeNewGameModal} display={'Cancel'} />
 					</FormRow>
 				</form>
 			}
+			<div style={{ position: 'fixed', bottom: '30px', right: '0' }}>
+			{
+				messages.map(message => {
+					return (
+					<div style={{ position: 'relative', padding: '1rem 2rem', marginRight: '1rem', marginTop: '1rem', backgroundColor: 'var(--secondary-dark)', border: 'solid 1px green', color: 'green' }}><span style={{ borderRadius: '50%', position: 'absolute', top: '5%', right: '5%' }} onClick={() => setMessages(prev => prev.filter(item => item[0] !== message[0]))}>X</span>{message[1]}</div>)
+				})
+			}
+			</div>
     </>
   )
 }

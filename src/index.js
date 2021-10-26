@@ -34,8 +34,18 @@ app.use(session({
   }
 }))
 
+const cache = {
+	schedule: {},
+	teams: {},
+	stats: {}
+}
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use((req, res, next) => {
+	res.locals.cache = cache
+	next()
+})
 app.use('/admin', admin)
 
 app.get('/me', loggedIn, (req, res) => {
@@ -129,8 +139,13 @@ app.get('/leagues/:leagueId/teams', (req, res) => {
   const { leagueId } = req.params
   console.log(`GET /leagues/${leagueId}/teams`)
 
+	if (cache.teams[leagueId]) return res.send(cache.teams[leagueId])
+
   getTeams({ leagueId })
-    .then(teams => res.send(teams))
+    .then(teams => {
+			cache.teams[leagueId] = teams
+			return res.send(teams)
+		})
 })
 
 // app.post('/leagues/:leagueId/games', (req, res) => {
@@ -143,19 +158,31 @@ app.get('/leagues/:leagueId/teams', (req, res) => {
 // })
 
 app.get('/leagues/:leagueId/schedule', (req, res) => {
-  const { leagueId } = req.params
+  const { leagueId, page, numItems } = req.params
 
   console.log(`GET /leagues/${leagueId}/schedule`)
-  getSchedule({ leagueId })
-    .then(schedule => res.send(schedule))
+
+	if (cache.schedule[leagueId]) return res.send(cache.schedule[leagueId])
+
+  getSchedule({ leagueId, page, numItems })
+		.then(schedule => {
+			cache.schedule[leagueId] = schedule
+			return res.send(schedule)
+		})
 })
 
 app.get('/leagues/:leagueId/stats', (req, res) => {
   const { leagueId } = req.params
 
   console.log(`GET /${leagueId}/stats`)
+
+	if (cache.stats[leagueId]) return res.send(cache.stats[leagueId])
+
   getStats({ leagueId })
-    .then(stats => res.send(stats))
+    .then(stats => {
+			cache.stats[leagueId] = stats
+			return res.send(stats)
+		})
 })
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`))

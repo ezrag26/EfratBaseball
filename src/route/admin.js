@@ -9,6 +9,7 @@ const {
   getUserById,
   addLeague,
   editLeague,
+	getLeagueIdByTeamId,
   addTeam,
   editTeam,
   addGame,
@@ -116,17 +117,23 @@ router.post('/leagues/:leagueId/teams', admin, (req, res) => {
   const { name, color } = req.body
 
   return addTeam({ leagueId, name, color })
-    .then(team => res.send(team))
+		.then(team => {
+			res.locals.cache.teams[leagueId] = null
+			return res.send(team)
+		})
 })
 
-router.post('/teams/:teamId', admin, (req, res) => {
+router.post('/leagues/:leagueId/teams/:teamId', admin, (req, res) => {
   const { leagueId, teamId } = req.params
-  console.log(`POST /admin/leagues/${leagueId}/teams${teamId}`)
+  console.log(`POST /admin/leagues/${leagueId}/teams/${teamId}`)
 
   const { name, color } = req.body
 
   return editTeam({ teamId, name, color })
-    .then(team => res.send(team))
+		.then(team => {
+			res.locals.cache.teams[leagueId] = null
+			return res.send(team)
+		})
 })
 
 router.post('/games', admin, (req, res) => {
@@ -134,7 +141,14 @@ router.post('/games', admin, (req, res) => {
   const { date = null, time = null, awayId, homeId, isFinal = false, awayRS = 0, homeRS = 0 } = req.body
 
   addGame({ date, time, awayId, homeId, isFinal, awayRS, homeRS })
-    .then(game => res.send(game))
+		.then(game => {
+			getLeagueIdByTeamId({ teamId: homeId })
+			.then(id => {
+				res.locals.cache.schedule[id] = null
+				res.locals.cache.stats[id] = null
+				return res.send(game)
+			})
+		})
 })
 
 router.post('/games/:gameId', admin, (req, res) => {
@@ -143,7 +157,14 @@ router.post('/games/:gameId', admin, (req, res) => {
   const { date = null, time = null, awayId, homeId, isFinal = false, awayRS = 0, homeRS = 0 } = req.body
 
   editGame({ gameId, date, time, awayId, homeId, isFinal, awayRS, homeRS })
-    .then(game => res.send(game))
+		.then(game => {
+			getLeagueIdByTeamId({ teamId: homeId })
+			.then(id => {
+				res.locals.cache.schedule[id] = null
+				res.locals.cache.stats[id] = null
+				return res.send(game)
+			})
+		})
 })
 
 router.get('/schedule', admin, (req, res) => {

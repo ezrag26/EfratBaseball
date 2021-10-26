@@ -78,6 +78,10 @@ module.exports = {
     .then(leagues => Promise.all(leagues.map(({ id }) => LeagueUpdate.findOne({ where: { leagueId: id }, order: [['createdAt', 'DESC']] }))))
     .then(leagues => leagues.map(({ leagueId, name, youngestAge, oldestAge }) => ({ id: leagueId, name, youngestAge, oldestAge }))),
 
+	getLeagueIdByTeamId: ({ teamId: id }) =>
+		Team.findOne({ where: { id }, attributes: [ 'leagueId' ] })
+		.then(team => team.leagueId),
+
   addTeam: ({ leagueId, name, color }) =>
     Team.create({ leagueId })
       .then(({ id: teamId }) => TeamUpdate.create({ teamId, name, color }))
@@ -108,7 +112,7 @@ module.exports = {
       .then(({ gameId, date, time, isFinal, awayId, homeId, awayRS, homeRS }) =>
         ({ gameId, date, time, isFinal, awayId, homeId, awayRS, homeRS })),
 
-  getSchedule: ({ leagueId, options: { groupByDate, sortDateAscending } = {} }) =>
+  getSchedule: ({ leagueId, page = 1, numItems = 20, options: { groupByDate, sortDateAscending } = {} }) =>
     Promise.all([
       Team.findAll({ where: { leagueId }, attributes: ['id'] }),
       Game.findAll({ attributes: ['id'] }),

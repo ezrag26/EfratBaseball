@@ -164,7 +164,7 @@ const Teams = () => {
           addTeam={({ name, color }) => addTeam({ leagueId: league.id, name, color })
               .then(team => setTeams(teams => ({ ...teams, [team.id]: { name: team.name, color: team.color } })))
           }
-          saveEdit={({ teamId, name, color }) => editTeam({ teamId, name, color })
+          saveEdit={({ teamId, name, color }) => editTeam({ leagueId: league.id, teamId, name, color })
               .then(team => setTeams(teams => ({ ...teams, [team.id]: { name: team.name, color: team.color } })))
           }
         />
