@@ -4,6 +4,14 @@ const bcrypt = require('bcrypt')
 
 const { League, Team, Game, User, LeagueUpdate, TeamUpdate, GameUpdate, AuthToken } = require('./models')({ sequelize, DataTypes })
 
+require('dotenv').config()
+
+const {
+	SUPER_ADMIN_EMAIL,
+	SUPER_ADMIN_PASS,
+	PASS_SALT
+} = process.env
+
 League.hasMany(Team)
 GameUpdate.belongsTo(Team, { as: 'away' })
 GameUpdate.belongsTo(Team, { as: 'home' })
@@ -22,9 +30,9 @@ AuthToken.belongsTo(User)
 //   .then(() => GameUpdate.sync({ force: true }))
 // User.sync({ force: true })
 //   .then(() => AuthToken.sync({ force: true }))
-//   .then(() => bcrypt.hash('admin', 10))
+//   .then(() => bcrypt.hash(SUPER_ADMIN_PASS, parseInt(PASS_SALT)))
 //   .then(hashedPassword =>
-//     User.create({ role: 'superadmin', firstName: '', lastName: '', email: 'admin@efratbaseball.com', password: hashedPassword, carrier: '', phone: '' })
+//     User.create({ role: 'superadmin', firstName: '', lastName: '', email: SUPER_ADMIN_EMAIL, password: hashedPassword, carrier: '', phone: '' })
 //   )
 
 const gameStats = ({ runs, oppRS }) => {
