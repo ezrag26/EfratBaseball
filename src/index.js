@@ -9,7 +9,17 @@ const { guest, loggedIn } = require('./middleware/authentication/authentication'
 const { validate } = require('./middleware/validation/validate')
 
 require('dotenv').config()
-const { PORT, SESS_SECRET, IN_PROD, PASS_SALT } = process.env
+const {
+	PORT,
+	SESS_SECRET,
+	IN_PROD,
+	PASS_SALT,
+	DB_HOST,
+	DB_PORT,
+	DB_USER,
+	DB_PASS,
+	DB_NAME
+} = process.env
 
 const {
   addUser,
@@ -23,7 +33,7 @@ const {
 const app = express()
 
 app.use(session({
-  store: new pgSession({ conString: 'postgres://dev:dev@localhost:5431/dev' }),
+  store: new pgSession({ conString: `postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}` }),
   name: 'session',
   resave: false,
   saveUninitialized: false,
