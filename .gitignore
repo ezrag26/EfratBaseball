@@ -3,3 +3,4 @@
 .env
 *public/dist*
 .DS_Store
+*.log*

@@ -1,16 +1,19 @@
-const { Sequelize, DataTypes } = require('sequelize')
-const sequelize = new Sequelize('postgres://dev:dev@localhost:5431/dev')
 const bcrypt = require('bcrypt')
 
-const { League, Team, Game, User, LeagueUpdate, TeamUpdate, GameUpdate, AuthToken } = require('./models')({ sequelize, DataTypes })
-
+const { Sequelize, DataTypes } = require('sequelize')
 require('dotenv').config()
-
 const {
-	SUPER_ADMIN_EMAIL,
-	SUPER_ADMIN_PASS,
-	PASS_SALT
+        SUPER_ADMIN_EMAIL,
+        SUPER_ADMIN_PASS,
+        PASS_SALT,
+	DB_HOST,
+	DB_PORT,
+	DB_PASS,
+	DB_USER,
+	DB_NAME
 } = process.env
+const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}`)
+const { League, Team, Game, User, LeagueUpdate, TeamUpdate, GameUpdate, AuthToken } = require('./models')({ sequelize, DataTypes })
 
 League.hasMany(Team)
 GameUpdate.belongsTo(Team, { as: 'away' })

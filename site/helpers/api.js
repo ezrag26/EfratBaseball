@@ -1,6 +1,6 @@
 const { fetchGetJson, fetchPostJson } = require('./request')
 // const { DEV_HOST } = process.env
-const DEV_HOST = 'dev.efratbaseball.com:8010'
+const DEV_HOST = 'www.israelsportscenter.com:80' || 'dev.efratbaseball.com:8010'
 module.exports = {
   addLeague: ({ name }) => {
     return fetchPostJson({
