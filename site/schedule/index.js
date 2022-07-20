@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import DateTime from 'luxon/src/datetime'
 
 import NonAdminHeader from "../NonAdminHeader";
+import BasePageHeader from '../BasePageHeader'
 import { DropDownMenu } from "../helpers/form";
 import { Center, Stack } from "../helpers/Typography";
 
@@ -67,11 +68,7 @@ const Schedule = () => {
         </Stack.Small>
       </Center>
 
-      <Center>
-        <Stack.Small>
-          <h1>Schedule</h1>
-        </Stack.Small>
-      </Center>
+      <BasePageHeader title={'Schedule'} />
 
       <Center>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '80%' }}>
