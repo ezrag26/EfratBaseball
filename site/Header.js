@@ -6,10 +6,12 @@ const Header = ({ logo, nav, current, account }) => {
   return (
     <header>
       <div>
-        { logo && <a href={logo.href}><img src={logo.url} alt={logo.alt} style={{ width: '50px' }}/></a> }
+        { logo && <a href={logo.href}><img src={logo.url} alt={logo.alt} style={{ width: '50px', marginRight: '1rem' }}/></a> }
         <div>
           { nav && nav.map(navItem => <Button key={randomBits()} current={current} text={navItem.text} href={navItem.href}/>) }
         </div>
+			</div>
+			<div>
         <div>
           { account && account.map(accountItem => <Button key={randomBits()} text={accountItem.text} href={accountItem.href}/>) }
         </div>

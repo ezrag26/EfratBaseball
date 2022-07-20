@@ -1,14 +1,15 @@
 header {
     background-color: var(--primary);
-    padding: 1rem 0;
+    padding: .5rem 1rem;
+		display: flex;
+		justify-content: space-between;
 }
 
 header > div {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    width: var(--main-width);
-    margin: auto;
+    /* width: var(--main-width);
+    margin: auto; */
 }
 
 a {
