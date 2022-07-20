@@ -36,15 +36,17 @@ const {
 
 const app = express()
 
-// serve the API with signed certificate on 443 (SSL/HTTPS) port
-const httpsServer = https.createServer({
-  key: fs.readFileSync(path.join(process.cwd(), '/certs/privkey.pem')),
-  cert: fs.readFileSync(path.join(process.cwd(), '/certs/fullchain.pem')),
-}, app);
+if (IN_PROD === 'true') {
+	// serve the API with signed certificate on 443 (SSL/HTTPS) port
+	const httpsServer = https.createServer({
+	  key: fs.readFileSync(path.join(process.cwd(), '/certs/privkey.pem')),
+	  cert: fs.readFileSync(path.join(process.cwd(), '/certs/fullchain.pem')),
+	}, app);
 
-httpsServer.listen(443, () => {
-    console.log('HTTPS Server running on port 443');
-});
+	httpsServer.listen(443, () => {
+	    console.log('HTTPS Server running on port 443');
+	});
+}
 
 app.use(session({
   store: new pgSession({ conString: `postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}` }),
