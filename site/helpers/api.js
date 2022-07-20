@@ -1,6 +1,7 @@
 const { fetchGetJson, fetchPostJson } = require('./request')
 // const { DEV_HOST } = process.env
-const DEV_HOST = 'www.israelsportscenter.com:80' || 'dev.efratbaseball.com:8010'
+const PROTOCOL = 'https'
+const DEV_HOST = 'www.israelsportscenter.com' || 'dev.efratbaseball.com:8010'
 module.exports = {
   addLeague: ({ name }) => {
     return fetchPostJson({
@@ -23,7 +24,7 @@ module.exports = {
   },
 
   fetchLeagues: () => {
-    return fetchGetJson({ url: `http://${DEV_HOST}/leagues?sort=name` })
+    return fetchGetJson({ url: `/leagues?sort=name` })
       .then(res => res.json())
     // return XMLHttpRequestAsPromise({
     //   method: 'GET',
@@ -35,7 +36,7 @@ module.exports = {
   },
 
   fetchStats: ({ leagueId }) => {
-    return fetchGetJson({url: `http://${DEV_HOST}/leagues/${leagueId}/stats`})
+    return fetchGetJson({url: `/leagues/${leagueId}/stats`})
       .then(res => res.json())
     // return XMLHttpRequestAsPromise({
     //   method: 'GET',
@@ -48,7 +49,7 @@ module.exports = {
 
   addGame: ({ date, time, awayId, homeId }) => {
     return fetchPostJson({
-      url: `http://${DEV_HOST}/admin/games`,
+      url: `/admin/games`,
       body: {
         date,
         time,
@@ -62,7 +63,7 @@ module.exports = {
   editGame: ({ gameId, edit }) => {
     const { date, time, awayId, homeId, awayRS, homeRS, isFinal } = edit
     return fetchPostJson({
-      url: `http://${DEV_HOST}/admin/games/${gameId}`,
+      url: `/admin/games/${gameId}`,
       body: {
         date,
         time,
@@ -77,7 +78,7 @@ module.exports = {
   },
 
   fetchSchedule: ({ leagueId, page, numItems }) => {
-    return fetchGetJson({ url: `http://${DEV_HOST}/leagues/${leagueId}/schedule?page=${page}&numItems=${numItems}` })
+    return fetchGetJson({ url: `/leagues/${leagueId}/schedule?page=${page}&numItems=${numItems}` })
       .then(res => res.json())
     // return XMLHttpRequestAsPromise({
     //   method: 'GET',
@@ -111,7 +112,7 @@ module.exports = {
   },
 
   fetchTeams: ({ leagueId }) => {
-    return fetchGetJson({ url: `http://${DEV_HOST}/leagues/${leagueId}/teams` })
+    return fetchGetJson({ url: `/leagues/${leagueId}/teams` })
       .then(res => res.json())
     // return XMLHttpRequestAsPromise({
     //   method: 'GET',
