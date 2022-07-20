@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import ReactDOM from 'react-dom'
 
 import AdminHeader from "../AdminHeader";
+import BasePageHeader from '../../BasePageHeader'
 import { FormRow, Input, DropDownMenu } from "../../helpers/form";
 import { Center, Stack } from "../../helpers/Typography";
 import { TableCell } from '../../helpers/table'
@@ -281,11 +282,7 @@ const Schedule = () => {
         </Stack.Small>
       </Center>
 
-      <Center>
-        <Stack.Small>
-          <h1>Games</h1>
-        </Stack.Small>
-      </Center>
+      <BasePageHeader title={'Games'} />
 			{/*<ContainedButton onClick={openNewGameModal} display={'New Game'}/>*/}
       {
 			schedule.length ?
