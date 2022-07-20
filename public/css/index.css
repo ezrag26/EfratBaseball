@@ -8,6 +8,7 @@
     --secondary-light: #ffffff;
     --secondary-dark: #e1e1e1;
     --main-width: 60%;
+		font-family: 'system-ui';
 }
 
 body {
