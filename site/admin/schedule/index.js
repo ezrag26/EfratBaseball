@@ -177,11 +177,17 @@ const Table = ({ items, teams, saveEdit, removeGame }) => {
 							})
 						}
               <td>
-                <div style={{ display: 'flex' }}>
-                  <ContainedButton onClick={e => save({ gameId })} display={CHECKMARK} disabled={!isValidEdit({ edit: formatEditForRequest({ gameId, edit }) })}/>
-                  <OutlineButton onClick={e => cancel({ gameId })} display={X} />
-                  {removeGame && <TextButton onClick={e => remove({ gameId })} display={'Remove'} />}
-                </div>
+								<div style={{ display: 'flex' }}>
+									<div style={{ color: 'green' }}>
+										<i onClick={e => save({ gameId })} className={`fa-solid fa-check icon ${
+											!isValidEdit({ edit: formatEditForRequest({ gameId, edit }) }) ? 'disabled' : ''
+										}`}></i>
+									</div>
+									<div style={{ color: 'red' }}>
+										<i onClick={e => cancel({ gameId })} className={'fa-solid fa-xmark icon'}></i>
+									</div>
+									{removeGame && <TextButton onClick={e => remove({ gameId })} display={'Remove'} />}
+								</div>
               </td>
             </tr>
           ) : (
@@ -200,9 +206,7 @@ const Table = ({ items, teams, saveEdit, removeGame }) => {
 								})
 							}
               <td>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-										<ActionButton display={'•••'} onClick={e => editRow({ game: { ...game } })} />
-                  </div>
+                  <i className={'fa-solid fa-ellipsis icon'} onClick={e => editRow({ game: { ...game } })}></i>
               </td>
             </tr>
           )
