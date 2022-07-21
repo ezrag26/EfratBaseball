@@ -21,11 +21,11 @@ const AdminHeader = ({ current }) => {
 						current={current}
             account={
               !loggedIn ? [
-                { text: 'Login', href: '/admin/login' },
-                { text: 'Non-Admin', href: '/' }
+                { text: 'Non-Admin', href: '/' },
+								{ text: 'Login', href: '/admin/login' }
               ] : [
-                { text: 'Logout', href: '/admin/logout' },
-                { text: 'Non-Admin', href: '/' }
+								{ text: 'Non-Admin', href: '/' },
+                { text: 'Logout', href: '/admin/logout' }
               ]
             }
     />

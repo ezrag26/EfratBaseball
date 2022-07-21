@@ -34,8 +34,8 @@ const NonAdminHeader = ({ current }) => {
           { text: 'Login', href: '/login' },
           { text: 'Register', href: '/register' }
         ] : [
-          { text: 'Logout', href: '/logout' },
-          isAdmin && { text: 'Admin', href: '/admin' }
+					isAdmin && { text: 'Admin', href: '/admin' },
+          { text: 'Logout', href: '/logout' }
         ]
       }
     />

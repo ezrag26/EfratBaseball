@@ -3,6 +3,7 @@ header {
     padding: .5rem 1rem;
 		display: flex;
 		justify-content: space-between;
+		color: var(--secondary);
 }
 
 header > div {
@@ -17,18 +18,29 @@ a {
     color: blue;
 }
 
-.header-button {
+header .nav-item {
     padding: 10px;
     margin: auto 2px;
     text-decoration: none;
-    color: var(--secondary);
+    color: inherit;
 }
 
-.header-button.current {
+header .nav-item.current {
 	border-bottom: solid 2px var(--secondary);
 }
 
-.header-button:hover {
+header .nav-item:hover {
     cursor: pointer;
     border-bottom: solid 2px var(--secondary);
+}
+
+.icon {
+	padding: 0.5rem;
+}
+
+.icon:hover, .icon:focus {
+	background-color: rgba(255, 255, 255, 0.2);
+	border-radius: 100%;
+	cursor: pointer;
+	outline: none;
 }
