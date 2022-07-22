@@ -36,16 +36,15 @@ const {
 
 const app = express()
 
-if (IN_PROD === 'true') {
-	// serve the API with signed certificate on 443 (SSL/HTTPS) port
-	const httpsServer = https.createServer({
-	  key: fs.readFileSync(path.join(process.cwd(), '/certs/privkey.pem')),
-	  cert: fs.readFileSync(path.join(process.cwd(), '/certs/fullchain.pem')),
-	}, app);
+const cookie = {
+	maxAge: 1000 * 60 * 60 * 24 * 7, // 1 day
+	sameSite: true
+}
 
-	httpsServer.listen(443, () => {
-	    console.log('HTTPS Server running on port 443');
-	});
+if (IN_PROD === 'true') {
+	cookie.secure = true
+
+	app.set('trust proxy', 1) // trust first proxy
 }
 
 app.use(session({
@@ -54,10 +53,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   secret: SESS_SECRET,
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 24 * 7, // 1 day
-    sameSite: true
-  }
+  cookie
 }))
 
 const cache = {
@@ -211,4 +207,14 @@ app.get('/leagues/:leagueId/stats', (req, res) => {
 		})
 })
 
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
+if (IN_PROD === 'true') {
+	// serve the API with signed certificate on 443 (SSL/HTTPS) port
+	const httpsServer = https.createServer({
+	  key: fs.readFileSync(path.join(process.cwd(), '/certs/privkey.pem')),
+	  cert: fs.readFileSync(path.join(process.cwd(), '/certs/fullchain.pem')),
+	}, app)
+
+	httpsServer.listen(443, () => console.log('HTTPS Server running on port 443'))
+} else {
+	app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
+}
