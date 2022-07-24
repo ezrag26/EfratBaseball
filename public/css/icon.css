@@ -1,0 +1,19 @@
+.icon {
+	padding: 0.5rem;
+  border-radius: 100%;
+  outline: none;
+}
+
+.icon:hover, .icon:focus {
+	background-color: rgba(255, 255, 255, 0.2);
+	cursor: pointer;
+}
+
+.icon.fab {
+  color: white;
+  background-color: var(--primary);
+}
+
+.icon.fab:hover {
+  background-color: var(--primary-light);
+}
