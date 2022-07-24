@@ -28,7 +28,7 @@ const Header = ({ logo, nav, current, account }) => {
   return (
     <header>
       <div>
-        { logo && <a href={logo.href}><img src={logo.url} alt={logo.alt} style={{ width: '50px', marginRight: '1rem' }}/></a> }
+        { logo && <a href={logo.href}><img src={logo.url} alt={logo.alt} style={{ width: '40px', marginRight: '1rem' }}/></a> }
         <div>
           { nav && nav.map(navItem => <NavItem key={randomBits()} current={current === navItem.text} text={navItem.text} href={navItem.href}/>) }
         </div>
