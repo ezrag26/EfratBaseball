@@ -15,7 +15,7 @@ import {
 	FloatingActionButton,
 	ActionButton
 } from '../../helpers/button'
-import { CHECKMARK , X, PLUS } from '../../helpers/constants'
+import { X } from '../../helpers/constants'
 import { DatePicker } from '../../components/date-picker'
 
 import { fetchLeagues, fetchTeams, fetchSchedule, addGame, editGame } from '../../helpers/api'
@@ -308,7 +308,7 @@ const Schedule = () => {
         </Stack.Small>
       </Center>
       }
-			<FloatingActionButton onClick={openNewGameModal} display={PLUS}/>
+      <i className={'fa-solid fa-plus icon fab'} style={{ padding: '.75rem' }} onClick={openNewGameModal}></i>
 			{
 				newGameModal &&
 				<form id={'new-game'} style={{ position: 'fixed', top: '200px', left: 'calc(50vw - calc(500px / 2))', backgroundColor: 'var(--secondary)' }} onSubmit={e => {
