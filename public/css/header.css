@@ -24,15 +24,16 @@ header .nav-item {
     margin: auto 5px;
     text-decoration: none;
     color: inherit;
+		opacity: 0.9;
 }
 
+header .nav-item:hover,
 header .nav-item.current {
-	border-bottom: solid 2px var(--secondary);
+	opacity: 1;
 }
 
 header .nav-item:hover {
-    cursor: pointer;
-    border-bottom: solid 2px var(--secondary);
+	cursor: pointer;
 }
 
 .icon {

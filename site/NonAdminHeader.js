@@ -22,7 +22,7 @@ const NonAdminHeader = ({ current }) => {
 
   return (
     <Header
-      logo={{ href: '/', url: '/images/baseball.png', alt: 'logo' }}
+      logo={{ href: '/', alt: 'logo' }}
       nav={[
         { text: 'Schedule', href: '/schedule' },
         { text: 'Standings', href: '/standings' },
