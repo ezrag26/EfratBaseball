@@ -53,11 +53,7 @@ const DropDownMenu = ({ selection = {}, setSelection, items = [], form, placehol
 					<div>{selection.name}</div> :
 					<div style={{ color: 'grey' }}>{placeholder}</div>
 				}
-				{
-					hideDropdown ?
-					<div>&#x25BE;</div> :
-					<div className={'mirror'}>&#x25BE;</div>
-				}
+				<i className={`fa-solid fa-caret-${hideDropdown ? 'down' : 'up' }`}></i>
       </div>
 
       <ul className={`dropdown-content ${hideDropdown ? 'hidden' : ''}`} style={{ borderRadius: form ? '0 0 5px 5px' : '' }}>
