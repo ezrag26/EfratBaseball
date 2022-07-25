@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 
 import NonAdminHeader from "../NonAdminHeader";
+import BasePageHeader from '../BasePageHeader'
 import { DropDownMenu } from "../helpers/form";
 import { Center, Stack } from "../helpers/Typography";
 
@@ -69,11 +70,7 @@ const Standings = () => {
         </Stack.Small>
       </Center>
 
-      <Center>
-        <Stack.Small>
-          <h1>Standings</h1>
-        </Stack.Small>
-      </Center>
+			<BasePageHeader title={'Standings'} />
 
       <Center>
         {
@@ -94,7 +91,7 @@ const Standings = () => {
                 const { wins, losses, ties, rs, ra } = stats[teamId]
                 const { name, color } = teams[teamId]
                 return (
-                  <tr key={randomBits()} className={'tr bg-secondary'}>
+                  <tr key={randomBits()} className={'tr'}>
                     <td style={{ borderLeft: `solid .5rem ${color}` }}>{name}</td>
                     <td>{wins}</td>
                     <td>{losses}</td>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import ReactDOM from 'react-dom'
 
 import AdminHeader from "../AdminHeader";
+import BasePageHeader from '../../BasePageHeader'
 import { FormRow, Input, DropDownMenu } from "../../helpers/form";
 import { Center, Stack } from "../../helpers/Typography";
 import { TableCell } from '../../helpers/table'
@@ -14,7 +15,7 @@ import {
 	FloatingActionButton,
 	ActionButton
 } from '../../helpers/button'
-import { CHECKMARK , X, PLUS } from '../../helpers/constants'
+import { X } from '../../helpers/constants'
 import { DatePicker } from '../../components/date-picker'
 
 import { fetchLeagues, fetchTeams, fetchSchedule, addGame, editGame } from '../../helpers/api'
@@ -176,11 +177,17 @@ const Table = ({ items, teams, saveEdit, removeGame }) => {
 							})
 						}
               <td>
-                <div style={{ display: 'flex' }}>
-                  <ContainedButton onClick={e => save({ gameId })} display={CHECKMARK} disabled={!isValidEdit({ edit: formatEditForRequest({ gameId, edit }) })}/>
-                  <OutlineButton onClick={e => cancel({ gameId })} display={X} />
-                  {removeGame && <TextButton onClick={e => remove({ gameId })} display={'Remove'} />}
-                </div>
+								<div style={{ display: 'flex' }}>
+									<div style={{ color: 'green' }}>
+										<i onClick={e => save({ gameId })} className={`fa-solid fa-check icon ${
+											!isValidEdit({ edit: formatEditForRequest({ gameId, edit }) }) ? 'disabled' : ''
+										}`}></i>
+									</div>
+									<div style={{ color: 'red' }}>
+										<i onClick={e => cancel({ gameId })} className={'fa-solid fa-xmark icon'}></i>
+									</div>
+									{removeGame && <TextButton onClick={e => remove({ gameId })} display={'Remove'} />}
+								</div>
               </td>
             </tr>
           ) : (
@@ -199,9 +206,7 @@ const Table = ({ items, teams, saveEdit, removeGame }) => {
 								})
 							}
               <td>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-										<ActionButton display={'•••'} onClick={e => editRow({ game: { ...game } })} />
-                  </div>
+                  <i className={'fa-solid fa-ellipsis icon'} onClick={e => editRow({ game: { ...game } })}></i>
               </td>
             </tr>
           )
@@ -281,11 +286,7 @@ const Schedule = () => {
         </Stack.Small>
       </Center>
 
-      <Center>
-        <Stack.Small>
-          <h1>Games</h1>
-        </Stack.Small>
-      </Center>
+      <BasePageHeader title={'Games'} />
 			{/*<ContainedButton onClick={openNewGameModal} display={'New Game'}/>*/}
       {
 			schedule.length ?
@@ -307,7 +308,7 @@ const Schedule = () => {
         </Stack.Small>
       </Center>
       }
-			<FloatingActionButton onClick={openNewGameModal} display={PLUS}/>
+      <i className={'fa-solid fa-plus icon fab'} style={{ padding: '.75rem' }} onClick={openNewGameModal}></i>
 			{
 				newGameModal &&
 				<form id={'new-game'} style={{ position: 'fixed', top: '200px', left: 'calc(50vw - calc(500px / 2))', backgroundColor: 'var(--secondary)' }} onSubmit={e => {

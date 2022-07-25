@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 
 import AdminHeader from "../AdminHeader";
+import BasePageHeader from '../../BasePageHeader'
 import { TableCell } from '../../helpers/table'
 import { ContainedButton, OutlineButton, TextButton, ActionButton } from '../../helpers/button'
 import { Center, Stack } from "../../helpers/Typography";
@@ -126,11 +127,7 @@ const Leagues = () => {
   return (
     <>
       <AdminHeader current={'Leagues'}/>
-      <Center>
-        <Stack.Small>
-          <h1>Leagues</h1>
-        </Stack.Small>
-      </Center>
+      <BasePageHeader title={'Leagues'} />
 
       <Table
         items={

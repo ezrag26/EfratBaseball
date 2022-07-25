@@ -16,7 +16,6 @@
     border-radius: 5px 5px;
     border: 1px solid var(--primary);
     cursor: pointer;
-		padding: 1rem 0;
 }
 
 .dropdown-btn.form {
@@ -25,21 +24,13 @@
     border-bottom: 1px solid var(--primary);
 }
 
-.dropdown-btn div {
-    padding: 0 1rem;
+.dropdown-btn > * {
+		padding: .75rem 0;
+		padding-left: .75rem;
 }
 
-.dropdown-btn div:last-child {
-    transition-duration: .2s;
-    border-radius: 0 5px 5px 0;
-}
-
-.mirror {
-    transform: rotateX(180deg);
-}
-
-.dropdown-btn:hover div:last-child {
-    /* background-color: rgba(0, 0, 0, .1); */
+.dropdown-btn > *:last-child {
+    padding-right: .75rem;
 }
 
 .dropdown-content {

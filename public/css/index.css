@@ -1,13 +1,14 @@
 * {
     box-sizing: border-box;
     margin: 0;
-    --primary: #0C2340;
+    --primary: #2777D6;
     --primary-light: #153966;
     --primary-dark: #071322;
     --secondary: #f2f2f2;
     --secondary-light: #ffffff;
     --secondary-dark: #e1e1e1;
     --main-width: 60%;
+		font-family: 'system-ui';
 }
 
 body {

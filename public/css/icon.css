@@ -1,0 +1,27 @@
+.icon {
+	padding: 0.5rem;
+  border-radius: 100%;
+  outline: none;
+}
+
+.icon:hover, .icon:focus {
+	background-color: rgba(255, 255, 255, 0.2);
+	cursor: pointer;
+}
+
+.icon.fab {
+  position: fixed;
+  bottom: 3rem;
+  right: 3rem;
+  color: white;
+  background-color: var(--primary);
+  box-shadow: 0 3px 3px 0 grey;
+}
+
+.icon.fab:active {
+  box-shadow: none;
+}
+
+.icon.fab:hover {
+  background-color: var(--primary-light);
+}

@@ -1,14 +1,17 @@
 header {
     background-color: var(--primary);
-    padding: 1rem 0;
+    padding: .25rem 1rem;
+		display: flex;
+		justify-content: space-between;
+		color: var(--secondary);
+		font-size: 14px;
 }
 
 header > div {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    width: var(--main-width);
-    margin: auto;
+    /* width: var(--main-width);
+    margin: auto; */
 }
 
 a {
@@ -16,18 +19,19 @@ a {
     color: blue;
 }
 
-.header-button {
-    padding: 10px;
-    margin: auto 2px;
+header .nav-item {
+    padding: 5px;
+    margin: auto 5px;
     text-decoration: none;
-    color: var(--secondary);
+    color: inherit;
+		opacity: 0.9;
 }
 
-.header-button.current {
-	border-bottom: solid 2px var(--secondary);
+header .nav-item:hover,
+header .nav-item.current {
+	opacity: 1;
 }
 
-.header-button:hover {
-    cursor: pointer;
-    border-bottom: solid 2px var(--secondary);
+header .nav-item:hover {
+	cursor: pointer;
 }

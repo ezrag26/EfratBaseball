@@ -73,7 +73,7 @@ const DatePicker = ({ value, onChange = () => {} }) => {
 
 	return (
 		<div className={'picker'} style={{ position: 'relative' }}>
-			<div style={{ display: 'flex' }} onMouseDown={e => {
+			<div style={{ display: 'flex', alignItems: 'center' }} onMouseDown={e => {
 				/* onMouseDown will close the picker properly if current state of picker is open.
 					onClick will not since it fires when mouse is released,
 					which causes the picker to blur first, set showPicker to false,
@@ -81,8 +81,8 @@ const DatePicker = ({ value, onChange = () => {} }) => {
 				setElementOffset(e.target)
 				setShowPicker(prev => !prev)
 			}}>
-				<input style={{ backgroundColor: 'inherit', border: 'none', borderRight: 'solid 1px var(--primary)', padding: '1em' }} value={formatDate(selection)} readOnly />
-				<button>Edit</button>
+				<input style={{ backgroundColor: 'inherit', border: 'none', padding: '1em', width: 'auto' }} value={formatDate(selection)} readOnly />
+        <i className={'fa-regular fa-calendar'}></i>
 			</div>
 			<div className={`calendar ${showPicker ? '' : 'hidden'}`} ref={ref} onBlur={() => setShowPicker(false)} tabIndex={-1}>
 				<div className={'nav'} style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', marginBottom: '.5rem', gridColumn: '1 / span 7', gridRow: '1 / span 2' }}>

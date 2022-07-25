@@ -1,6 +1,6 @@
 .picker {
 	color: black;
-	border: solid 1px var(--primary);
+	border-bottom: solid 1px var(--primary);
 }
 
 .picker button {
@@ -55,7 +55,9 @@
 }
 
 .nav button:hover {
-	background-color: var(--primary-dark);
+	background-color: inherit;
+  cursor: pointer;
+  color: var(--primary-dark);
 }
 
 .nav h3 {

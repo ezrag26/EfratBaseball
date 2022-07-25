@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 
 import AdminHeader from "../AdminHeader";
+import BasePageHeader	from '../../BasePageHeader'
 import { Center, Stack } from "../../helpers/Typography";
 import { DropDownMenu } from "../../helpers/form";
 import { TableCell } from "../../helpers/table";
@@ -151,11 +152,7 @@ const Teams = () => {
         </Stack.Small>
       </Center>
 
-      <Center>
-        <Stack.Small>
-          <h1>Teams</h1>
-        </Stack.Small>
-      </Center>
+      <BasePageHeader title={'Teams'} />
 
       {
         leagues.length > 0 &&
