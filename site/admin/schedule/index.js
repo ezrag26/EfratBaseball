@@ -70,8 +70,8 @@ const isValidTime = (time) => {
   return _12HH_MM_RE.test(time)
 }
 
-const isValidNewGame = ({ date, time, awayId, homeId }) => {
-	return isValidDate(date) && isValidTime(time) && awayId && homeId
+const isValidNewGame = ({ date, time, away = {}, home = {} }) => {
+	return isValidDate(date) && isValidTime(time) && away.id && home.id
 }
 
 const Table = ({ items, teams, saveEdit, removeGame }) => {
@@ -275,7 +275,9 @@ const Schedule = () => {
 
 	const closeNewGameModal = () => setNewGameModal(false)
 
-	const shouldDisable = () => submitting
+	const shouldDisable = () => {
+    return submitting || !isValidNewGame(newGame)
+  }
 
   return (
     <>
@@ -311,13 +313,13 @@ const Schedule = () => {
       <i className={'fa-solid fa-plus icon fab'} style={{ padding: '.75rem' }} onClick={openNewGameModal}></i>
 			{
 				newGameModal &&
-				<form id={'new-game'} style={{ position: 'fixed', top: '200px', left: 'calc(50vw - calc(500px / 2))', backgroundColor: 'var(--secondary)' }} onSubmit={e => {
+				<form id={'new-game'} style={{ position: 'fixed', top: 'calc(50vh - calc(376px / 2))', left: 'calc(50vw - calc(406px / 2))', backgroundColor: 'var(--secondary)' }} onSubmit={e => {
 					e.preventDefault() // prevent page from refreshing
 				}}>
 					<h1>New Game</h1>
 					<FormRow>
-						<DatePicker onChange={value => setNewGame(prev => ({ ...prev, date: value }))} />
-						<Input name={'new-time'} placeholder={'Time'} value={newGame.time} onChange={value => setNewGame(prev => ({ ...prev, time: value }))}/>
+						<Input name={'new-date'} type={'date'} placeholder={'Date'} value={newGame.date} onChange={value => setNewGame(prev => ({ ...prev, date: value }))} maxWidth={'12ch'} />
+						<Input name={'new-time'} placeholder={'Time'} value={newGame.time} onChange={value => setNewGame(prev => ({ ...prev, time: value }))} maxWidth={'12ch'}/>
 					</FormRow>
 					<FormRow style={{ justifyContent: 'space-evenly' }}>
 						<DropDownMenu items={teamInfo} selection={newGame.away} setSelection={value => setNewGame(prev => ({ ...prev, away: value }))} form={true} placeholder={'Away'}/>
@@ -327,7 +329,7 @@ const Schedule = () => {
 						<SubmitButton onClick={() => {
 							const { date, time, away, home } = newGame
 
-							if (!isValidNewGame({ date, time, awayId: away?.id, homeId: home?.id })) return
+							if (!isValidNewGame(newGame)) return
 
 							setSubmitting(true)
 

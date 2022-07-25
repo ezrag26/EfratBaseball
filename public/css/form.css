@@ -12,12 +12,17 @@ form {
     flex-direction: column;
     /* width: 100%; */
 		flex-grow: 1;
-    padding: 1.35rem .75rem .4rem 1rem;
-    border-radius: .35rem .35rem 0 0;
+    padding: .4rem .75rem .4rem 1rem;
+    border-radius: 4px 4px 0 0;
     border-bottom: solid 1px #aaa;
     background-color: white;
     outline: none;
     cursor: text;
+    transition: background-color .2s, border .2s;
+}
+
+.input.has-label {
+  padding-top: 1.35rem;
 }
 
 .input:hover {
@@ -37,7 +42,7 @@ form {
     border: 0;
     padding: 0;
     outline: none;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     background-color: inherit;
 }
 
@@ -47,20 +52,16 @@ form {
     left: 1rem;
     transition-duration: .2s;
 
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     color: black;
     opacity: .3;
 }
 
-.input input:focus + .label, .label.raise {
+.input:focus-within > .label, .label.raise {
     top: .5rem;
     font-size: .75rem;
     color: var(--primary);
-    opacity: 1;
-}
-
-.label.raise {
-    opacity: .5;
+    opacity: .7;
 }
 
 .error, .help {

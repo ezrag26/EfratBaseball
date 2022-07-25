@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 
+import { DatePicker } from '../components/date-picker'
+
 import { randomBits } from "./unique";
 
 const FormRow = ({ children, style = {} }) => {
@@ -8,28 +10,34 @@ const FormRow = ({ children, style = {} }) => {
   )
 }
 
-const Input = ({ type, name, placeholder, value = '', autofocus, required, onChange, onBlur, helpText, error }) => {
-  // const [raise, setRaise] = useState(value !== '')
-  const inputRef = useRef(null)
+const Input = ({ type = 'text', name, placeholder, value = '', autofocus, required, onChange, onBlur, helpText, error, icon, maxWidth }) => {
   const [mask, setMask] = useState(type === 'password')
 
   const handleOnBlur = e => {
-    // raise label if input has text inside
-    // setRaise(e.target.value !== '')
-    onBlur && onBlur(e.target.value)
+    onBlur && onBlur(e.target.value) // used for custom validation
   }
 
-  const onClick = () => inputRef.current.focus() // focus the input element to raise label
+  const handlePasswordMask = () => {
+    setMask(prev => !prev)
+    // e.stopPropagation()
+  }
 
   return (
     <>
-      <div className={'input'} onClick={onClick}>
-        <input type={type === 'password' ? (mask ? 'password' : 'text') : type} name={name} ref={inputRef} value={value} autoFocus={autofocus} onBlur={handleOnBlur} onChange={e => onChange(e.target.value)}/>
-        <label className={`label ${value !== '' ? 'raise' : ''}`} htmlFor={name}>{required && '*'} {placeholder}</label>
-        {type === 'password' && <p className={'mask'} onClick={e => {
-					setMask(prev => !prev)
-					e.stopPropagation() // prevent the input from becoming focused
-				}}>{mask ? 'Show' : 'Hide'}</p>}
+      <div className={`input ${placeholder ? 'has-label' : ''}`}>
+      {
+        type === 'date' ?
+        <DatePicker name={name} value={value} onChange={e => onChange(e.target.value)} maxWidth={maxWidth} /> :
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <input type={type === 'password' ? (mask ? 'password' : 'text') : type} name={name} value={value} autoFocus={autofocus} onBlur={handleOnBlur} onChange={e => onChange(e.target.value)} style={{ maxWidth }}/>
+          {
+            type === 'password' ?
+            <i className={`fa-regular fa-eye${mask ? '' : '-slash'}`} onClick={handlePasswordMask}></i> :
+            icon && <i className={icon}></i>
+          }
+        </div>
+      }
+        {placeholder && <label className={`label ${value !== '' ? 'raise' : ''}`} htmlFor={name}>{required && '*'} {placeholder}</label>}
         <p className={error ? 'error' : 'help'} onClick={e => {}}>{error ? error : helpText}</p>
       </div>
     </>

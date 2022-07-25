@@ -6,7 +6,7 @@ const NUM_MONTHS = 12
 const JAN = 1
 const DEC = 12
 
-const DatePicker = ({ value, onChange = () => {} }) => {
+const DatePicker = ({ value, onChange = () => {}, maxWidth, name }) => {
 	const [year, setYear] = useState()
 	const [month, setMonth] = useState()
 	const [selection, setSelection] = useState({ year: '', month: '', date: '' })
@@ -81,8 +81,8 @@ const DatePicker = ({ value, onChange = () => {} }) => {
 				setElementOffset(e.target)
 				setShowPicker(prev => !prev)
 			}}>
-				<input style={{ backgroundColor: 'inherit', border: 'none', padding: '1em', width: 'auto' }} value={formatDate(selection)} readOnly />
-        <i className={'fa-regular fa-calendar'}></i>
+				<input style={{ maxWidth }} value={formatDate(selection)} readOnly htmlFor={name}/>
+        <i className={'fa-regular fa-calendar icon'} style={{ padding: 0 }}></i>
 			</div>
 			<div className={`calendar ${showPicker ? '' : 'hidden'}`} ref={ref} onBlur={() => setShowPicker(false)} tabIndex={-1}>
 				<div className={'nav'} style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', marginBottom: '.5rem', gridColumn: '1 / span 7', gridRow: '1 / span 2' }}>

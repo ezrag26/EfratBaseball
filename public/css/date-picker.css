@@ -1,6 +1,6 @@
 .picker {
 	color: black;
-	border-bottom: solid 1px var(--primary);
+	/* border-bottom: solid 1px var(--primary); */
 }
 
 .picker button {
