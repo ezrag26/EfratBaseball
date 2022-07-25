@@ -15,7 +15,7 @@ const TableCell = ({ children, type = 'text', placeholder = '', value, size, onC
 			return <td><DatePicker value={value} onChange={e => onChange(e)}/></td>
 			break;
 		default:
-			return <td><input type={type} placeholder={placeholder} value={value} size={size} onChange={e => onChange(e.target.value)} disabled={disabled}/></td>
+			return <td><input style={{ outline: 'none', border: 'none', backgroundColor: 'inherit' }} size={size} type={type} placeholder={placeholder} value={value} size={size} onChange={e => onChange(e.target.value)} disabled={disabled}/></td>
 			break;
 	}
   // return (

@@ -12,12 +12,12 @@
 .tr td:last-child { border-radius: 0 4px 4px 0; }
 
 /* shadow that also makes it look like the cells have overlaying borders */
-.tr td:first-child { box-shadow: -1px 0 5px; }
+/* .tr td:first-child { box-shadow: -1px 0 5px; }
 .tr td:last-child { box-shadow: 1px 0 5px; }
 .tr td:not(:first-child),
-.tr td:not(:last-child) { box-shadow: 0 1px 5px; }
+.tr td:not(:last-child) { box-shadow: 0 1px 5px; } */
 
-.tr td { padding: .75rem 1rem; }
+.tr td { padding: .25rem 1rem; }
 .tr td:last-child { padding-right: 1rem; }
 
 .table.standings tbody td:first-child { border-right: solid 2px grey; }

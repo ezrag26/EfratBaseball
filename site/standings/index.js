@@ -91,7 +91,7 @@ const Standings = () => {
                 const { wins, losses, ties, rs, ra } = stats[teamId]
                 const { name, color } = teams[teamId]
                 return (
-                  <tr key={randomBits()} className={'tr bg-secondary'}>
+                  <tr key={randomBits()} className={'tr'}>
                     <td style={{ borderLeft: `solid .5rem ${color}` }}>{name}</td>
                     <td>{wins}</td>
                     <td>{losses}</td>
