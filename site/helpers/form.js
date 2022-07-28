@@ -11,6 +11,7 @@ const FormRow = ({ children, style = {} }) => {
 }
 
 const Input = ({ type = 'text', name, placeholder, value = '', autofocus, required, onChange, onBlur, helpText, error, icon, maxWidth }) => {
+  const ref = useRef(null)
   const [mask, setMask] = useState(type === 'password')
 
   const handleOnBlur = e => {
@@ -24,12 +25,12 @@ const Input = ({ type = 'text', name, placeholder, value = '', autofocus, requir
 
   return (
     <>
-      <div className={`input ${placeholder ? 'has-label' : ''}`}>
+      <div className={`input ${placeholder ? 'has-label' : ''}`} onClick={() => type !== 'date' && ref.current.focus()}>
       {
         type === 'date' ?
         <DatePicker name={name} value={value} onChange={e => onChange(e.target.value)} maxWidth={maxWidth} /> :
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <input type={type === 'password' ? (mask ? 'password' : 'text') : type} name={name} value={value} autoFocus={autofocus} onBlur={handleOnBlur} onChange={e => onChange(e.target.value)} style={{ maxWidth }}/>
+          <input type={type === 'password' ? (mask ? 'password' : 'text') : type} name={name} value={value} autoFocus={autofocus} onBlur={handleOnBlur} onChange={e => onChange(e.target.value)} style={{ maxWidth }} ref={ref}/>
           {
             type === 'password' ?
             <i className={`fa-regular fa-eye${mask ? '' : '-slash'}`} onClick={handlePasswordMask}></i> :
