@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
+import BasePageHeader from '../BasePageHeader'
 import NonAdminHeader from "../NonAdminHeader";
 import {FormRow, Input, DropDownMenu} from '../helpers/form'
 import { fetchPostJson } from '../helpers/request'
@@ -100,11 +101,7 @@ const Register = () => {
       <NonAdminHeader />
       <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2em' }}>
         <form onSubmit={onSubmit} onKeyPress={keyPress}>
-          <Center>
-            <Stack.Small>
-              <h1>Register</h1>
-            </Stack.Small>
-          </Center>
+          <BasePageHeader title={'Register'} />
 
           <FormRow>
             <Input type={'text'} name={'first-name'} placeholder={'First Name'} value={first} required={true} onChange={setFirst} autofocus={true}/>

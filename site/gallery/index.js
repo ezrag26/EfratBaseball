@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import NonAdminHeader from "../NonAdminHeader"
-import BasePageHeader from '../BasePageHeader'
+import BasePage from '../BasePage'
 import ComingSoon from "../helpers/coming-soon";
 import { randomBits } from '../helpers/unique'
 import { Center, Stack} from "../helpers/Typography";
@@ -32,9 +32,9 @@ const Gallery = ({ urls }) => {
       <NonAdminHeader />
       {
         (
-					<BasePageHeader>
+					<BasePage title={'Gallery'}>
 						<ComingSoon />
-					</BasePageHeader>
+					</BasePage>
         ) ||
         (
           <>

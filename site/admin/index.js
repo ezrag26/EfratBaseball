@@ -11,7 +11,7 @@ const Index = () => {
     <>
       <AdminHeader />
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto', width: '70%' }}>
-        <h1>Efrat Baseball - Admin</h1>
+        <h1>Israel Sports Center - Admin</h1>
         <Banner src={'/'}/>
         <div style={{ marginTop: '2rem' }}>
           <Lorem numParagraphs={4}/>

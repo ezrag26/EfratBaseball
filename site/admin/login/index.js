@@ -17,11 +17,7 @@ const Login = () => {
 
       <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
         <form method={'POST'} action={'/admin/login'}>
-          <Center>
-            <Stack.Small>
-              <h1>Admin Login</h1>
-            </Stack.Small>
-          </Center>
+          <BasePageHeader title={'Admin Login'} />
 
           <FormRow>
             <Input type={'email'} name={'email'} placeholder={'Email'} value={email} onChange={setEmail} autofocus={true}/>

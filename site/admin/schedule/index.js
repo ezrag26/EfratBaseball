@@ -280,13 +280,14 @@ const Schedule = () => {
   return (
     <>
       <AdminHeader current={'Schedule'}/>
+
+      <BasePageHeader title={'Games'} />
+
       <Center>
         <Stack.Small>
           <DropDownMenu items={leagues} selection={league} setSelection={setLeague} placeholder={'Leagues'}/>
         </Stack.Small>
       </Center>
-
-      <BasePageHeader title={'Games'} />
 			{/*<ContainedButton onClick={openNewGameModal} display={'New Game'}/>*/}
       {
 			schedule.length ?

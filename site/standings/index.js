@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 
 import NonAdminHeader from "../NonAdminHeader";
-import BasePageHeader from '../BasePageHeader'
+import BasePage from '../BasePage'
 import { DropDownMenu } from "../helpers/form";
 import { Center, Stack } from "../helpers/Typography";
 
@@ -64,52 +64,53 @@ const Standings = () => {
   return (
     <>
       <NonAdminHeader current={'Standings'}/>
-      <Center>
-        <Stack.Small>
-          <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
-        </Stack.Small>
-      </Center>
 
-			<BasePageHeader title={'Standings'} />
+      <BasePage title={'Standings'}>
+        <Center>
+          <Stack.Small>
+            <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
+          </Stack.Small>
+        </Center>
 
-      <Center>
-        {
-          Object.keys(stats).length ?
-          <table className={'table standings wide center'} style={{ minWidth: '80%' }}>
-            <thead>
-              <tr className={'tr bg-primary color-secondary'}>
-                {
-                  ['', 'W', 'L', 'T', 'W%', 'GB', 'RS', 'RA', 'RD'].map(column =>
-                    <td key={randomBits()}>{column}</td>
+        <Center>
+          {
+            Object.keys(stats).length ?
+            <table className={'table standings wide center'} style={{ minWidth: '80%' }}>
+              <thead>
+                <tr className={'tr bg-primary color-secondary'}>
+                  {
+                    ['', 'W', 'L', 'T', 'W%', 'GB', 'RS', 'RA', 'RD'].map(column =>
+                      <td key={randomBits()}>{column}</td>
+                    )
+                  }
+                </tr>
+              </thead>
+              <tbody>
+              {
+                Object.keys(stats).map(teamId => {
+                  const { wins, losses, ties, rs, ra } = stats[teamId]
+                  const { name, color } = teams[teamId]
+                  return (
+                    <tr key={randomBits()} className={'tr'}>
+                      <td style={{ borderLeft: `solid .5rem ${color}` }}>{name}</td>
+                      <td>{wins}</td>
+                      <td>{losses}</td>
+                      <td>{ties}</td>
+                      <td>{calcWinPercentage({ wins, losses, ties }).toFixed(3)}</td>
+                      <td>{calcGamesBack({ WLDiffLeader: Object.values(stats)[0], teamStats: { wins, losses } })}</td>
+                      <td>{rs}</td>
+                      <td>{ra}</td>
+                      <td style={{ borderRight: `solid .5rem ${color}` }}>{rs - ra}</td>
+                    </tr>
                   )
-                }
-              </tr>
-            </thead>
-            <tbody>
-            {
-              Object.keys(stats).map(teamId => {
-                const { wins, losses, ties, rs, ra } = stats[teamId]
-                const { name, color } = teams[teamId]
-                return (
-                  <tr key={randomBits()} className={'tr'}>
-                    <td style={{ borderLeft: `solid .5rem ${color}` }}>{name}</td>
-                    <td>{wins}</td>
-                    <td>{losses}</td>
-                    <td>{ties}</td>
-                    <td>{calcWinPercentage({ wins, losses, ties }).toFixed(3)}</td>
-                    <td>{calcGamesBack({ WLDiffLeader: Object.values(stats)[0], teamStats: { wins, losses } })}</td>
-                    <td>{rs}</td>
-                    <td>{ra}</td>
-                    <td style={{ borderRight: `solid .5rem ${color}` }}>{rs - ra}</td>
-                  </tr>
-                )
-              })
-            }
-            </tbody>
-          </table> :
-          <div>There are no standings for this league</div>
-        }
-      </Center>
+                })
+              }
+              </tbody>
+            </table> :
+            <div>There are no standings for this league</div>
+          }
+        </Center>
+      </BasePage>
     </>
   )
 }
