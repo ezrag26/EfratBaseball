@@ -10,12 +10,29 @@ const FormRow = ({ children, style = {} }) => {
   )
 }
 
-const Input = ({ type = 'text', name, placeholder, value = '', autofocus, required, onChange, onBlur, helpText, error, icon, maxWidth }) => {
+const Input = ({ type = 'text', name, placeholder, value = '', autofocus, required, onChange, onBlur, selection = {}, items, helpText, error, icon, maxWidth }) => {
   const ref = useRef(null)
   const [mask, setMask] = useState(type === 'password')
+  const [hideDropdown, setHideDropdown] = useState(true)
+
+  const isSelect = () => type === 'select'
+
+  const inputValue = () => isSelect() ? selection.name || '' : value
 
   const handleOnBlur = e => {
-    onBlur && onBlur(e.target.value) // used for custom validation
+    if (onBlur) {
+      onBlur(e.target.value) // used by user to validate, add error message if needed
+    }
+
+    if (isSelect()) {
+      setHideDropdown(true)
+    }
+  }
+
+  const handleOnClick = e => {
+    if (isSelect()) {
+      setHideDropdown(prev => !prev)
+    }
   }
 
   const handlePasswordMask = () => {
@@ -23,14 +40,19 @@ const Input = ({ type = 'text', name, placeholder, value = '', autofocus, requir
     // e.stopPropagation()
   }
 
+  useEffect(() => {
+    if (!hideDropdown) ref.current.focus()
+    else ref.current.blur()
+  }, [hideDropdown])
+
   return (
-    <>
-      <div className={`input ${placeholder ? 'has-label' : ''}`} onClick={() => type !== 'date' && ref.current.focus()}>
+    <div style={{ display: 'flex', flexDirection: 'column', paddingRight: '1rem' }}>
+      <div className={`input ${placeholder ? 'has-label' : ''}`} ref={ref} onBlur={handleOnBlur} onClick={handleOnClick} tabIndex={-1}>
       {
         type === 'date' ?
-        <DatePicker name={name} value={value} onChange={e => onChange(e.target.value)} maxWidth={maxWidth} /> :
+        <DatePicker name={name} value={value} onChange={onChange} maxWidth={maxWidth} /> :
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <input type={type === 'password' ? (mask ? 'password' : 'text') : type} name={name} value={value} autoFocus={autofocus} onBlur={handleOnBlur} onChange={e => onChange(e.target.value)} style={{ maxWidth }} ref={ref}/>
+          <input type={type === 'password' ? (mask ? 'password' : 'text') : type} name={name} value={inputValue()} onBlur={e => e.stopPropagation()} autoFocus={autofocus} readOnly={isSelect()} onChange={e => onChange(e.target.value)} style={{ maxWidth }} />
           {
             type === 'password' ?
             <i className={`fa-regular fa-eye${mask ? '' : '-slash'}`} onClick={handlePasswordMask}></i> :
@@ -38,10 +60,35 @@ const Input = ({ type = 'text', name, placeholder, value = '', autofocus, requir
           }
         </div>
       }
-        {placeholder && <label className={`label ${value !== '' ? 'raise' : ''}`} htmlFor={name}>{required && '*'} {placeholder}</label>}
+        {placeholder && <label className={`label ${inputValue() !== '' ? 'raise' : ''}`} htmlFor={name}>{required && '*'} {placeholder}</label>}
         <p className={error ? 'error' : 'help'} onClick={e => {}}>{error ? error : helpText}</p>
       </div>
-    </>
+      {
+        !hideDropdown &&
+        <InputSelect items={items} value={selection} onClick={onChange} />
+      }
+    </div>
+  )
+}
+
+const InputSelect = ({ items = [], value = {}, onClick }) => {
+  return (
+    <div className={'dropdown'}>
+      <ul className={`dropdown-content`}>
+        {
+          items.map(item =>
+            <li key={item.id} style={{ fontWeight: value.id === item.id ? '1000' : '' }} onMouseDown={() => {
+              // Cannot use onClick as it is fired after onBlur.
+              // onMouseDown is fired before onBlur, which is needed because
+              // otherwise the dropdown would be hidden first from the parent Input
+              // component, and therefore this event cannot be fired since it
+              // won't exist
+              onClick(item)
+            }}>{item.name}</li>
+          )
+        }
+      </ul>
+    </div>
   )
 }
 

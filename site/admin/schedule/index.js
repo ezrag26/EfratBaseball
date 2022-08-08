@@ -313,17 +313,17 @@ const Schedule = () => {
       <i className={'fa-solid fa-plus icon fab'} style={{ padding: '.75rem' }} onClick={openNewGameModal}></i>
 			{
 				newGameModal &&
-				<form id={'new-game'} style={{ position: 'fixed', top: 'calc(50vh - calc(376px / 2))', left: 'calc(50vw - calc(406px / 2))', backgroundColor: 'var(--secondary)' }} onSubmit={e => {
+				<form id={'new-game'} style={{ position: 'fixed', top: 'calc(50vh - calc(383px / 2))', left: 'calc(50vw - calc(598px / 2))', backgroundColor: 'var(--secondary)' }} onSubmit={e => {
 					e.preventDefault() // prevent page from refreshing
 				}}>
 					<h1>New Game</h1>
 					<FormRow>
-						<Input name={'new-date'} type={'date'} placeholder={'Date'} value={newGame.date} onChange={value => setNewGame(prev => ({ ...prev, date: value }))} maxWidth={'12ch'} />
-						<Input name={'new-time'} placeholder={'Time'} value={newGame.time} onChange={value => setNewGame(prev => ({ ...prev, time: value }))} maxWidth={'12ch'}/>
+						<Input name={'new-date'} type={'date'} placeholder={'Date'} value={newGame.date} onChange={value => setNewGame(prev => ({ ...prev, date: value }))} />
+						<Input name={'new-time'} placeholder={'Time'} value={newGame.time} onChange={value => setNewGame(prev => ({ ...prev, time: value }))} />
 					</FormRow>
 					<FormRow style={{ justifyContent: 'space-evenly' }}>
-						<DropDownMenu items={teamInfo} selection={newGame.away} setSelection={value => setNewGame(prev => ({ ...prev, away: value }))} form={true} placeholder={'Away'}/>
-						<DropDownMenu items={teamInfo} selection={newGame.home} setSelection={value => setNewGame(prev => ({ ...prev, home: value }))} form={true} placeholder={'Home'}/>
+						<Input type={'select'} items={teamInfo} selection={newGame.away} onChange={value => setNewGame(prev => ({ ...prev, away: value }))} placeholder={'Away'} icon={'fa-regular fa-caret-down'} />
+            <Input type={'select'} items={teamInfo} selection={newGame.home} onChange={value => setNewGame(prev => ({ ...prev, home: value }))} placeholder={'Home'} icon={'fa-regular fa-caret-down'} />
 					</FormRow>
 					<FormRow style={{ justifyContent: 'flex-end' }}>
 						<SubmitButton onClick={() => {
