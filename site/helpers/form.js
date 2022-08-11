@@ -13,26 +13,23 @@ const FormRow = ({ children, style = {} }) => {
 const Input = ({ type = 'text', name, placeholder, value = '', autofocus, required, onChange, onBlur, selection = {}, items, helpText, error, icon, maxWidth }) => {
   const ref = useRef(null)
   const [mask, setMask] = useState(type === 'password')
-  const [hideDropdown, setHideDropdown] = useState(true)
+  const [focus, setFocus] = useState(false)
 
   const isSelect = () => type === 'select'
+  const isDate = () => type === 'date'
 
   const inputValue = () => isSelect() ? selection.name || '' : value
 
   const handleOnBlur = e => {
     if (onBlur) {
-      onBlur(e.target.value) // used by user to validate, add error message if needed
+      onBlur(inputValue()) // used by user to validate, add error message if needed
     }
 
-    if (isSelect()) {
-      setHideDropdown(true)
-    }
+    setFocus(false)
   }
 
   const handleOnClick = e => {
-    if (isSelect()) {
-      setHideDropdown(prev => !prev)
-    }
+    setFocus(true)
   }
 
   const handlePasswordMask = () => {
@@ -41,18 +38,19 @@ const Input = ({ type = 'text', name, placeholder, value = '', autofocus, requir
   }
 
   useEffect(() => {
-    if (!hideDropdown) ref.current.focus()
-    else ref.current.blur()
-  }, [hideDropdown])
+    if (!ref.current) return
+
+    focus ? ref.current.focus() : ref.current.blur()
+  }, [focus])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', paddingRight: '1rem' }}>
-      <div className={`input ${placeholder ? 'has-label' : ''}`} ref={ref} onBlur={handleOnBlur} onClick={handleOnClick} tabIndex={-1}>
+    <div className={'input'} onClick={handleOnClick} tabIndex={-1}>
+      <div className={`input__box ${placeholder ? 'has-label' : ''}`}>
       {
-        type === 'date' ?
+        isDate() ?
         <DatePicker name={name} value={value} onChange={onChange} maxWidth={maxWidth} /> :
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <input type={type === 'password' ? (mask ? 'password' : 'text') : type} name={name} value={inputValue()} onBlur={e => e.stopPropagation()} autoFocus={autofocus} readOnly={isSelect()} onChange={e => onChange(e.target.value)} style={{ maxWidth }} />
+          <input type={type === 'password' ? (mask ? 'password' : 'text') : type} name={name} value={inputValue()} ref={ref}  onBlur={handleOnBlur} autoFocus={autofocus} readOnly={isSelect()} onChange={e => onChange(e.target.value)} style={{ maxWidth }} />
           {
             type === 'password' ?
             <i className={`fa-regular fa-eye${mask ? '' : '-slash'}`} onClick={handlePasswordMask}></i> :
@@ -64,8 +62,11 @@ const Input = ({ type = 'text', name, placeholder, value = '', autofocus, requir
         <p className={error ? 'error' : 'help'} onClick={e => {}}>{error ? error : helpText}</p>
       </div>
       {
-        !hideDropdown &&
-        <InputSelect items={items} value={selection} onClick={onChange} />
+        focus && isSelect() &&
+        <InputSelect items={items} value={selection} onClick={item => {
+          onChange(item)
+          setFocus(false)
+        }} />
       }
     </div>
   )
@@ -73,16 +74,14 @@ const Input = ({ type = 'text', name, placeholder, value = '', autofocus, requir
 
 const InputSelect = ({ items = [], value = {}, onClick }) => {
   return (
-    <div className={'dropdown'}>
-      <ul className={`dropdown-content`}>
+    <div className={'input-select'}>
+      <ul className={`input-select__list`}>
         {
           items.map(item =>
             <li key={item.id} style={{ fontWeight: value.id === item.id ? '1000' : '' }} onMouseDown={() => {
-              // Cannot use onClick as it is fired after onBlur.
-              // onMouseDown is fired before onBlur, which is needed because
-              // otherwise the dropdown would be hidden first from the parent Input
-              // component, and therefore this event cannot be fired since it
-              // won't exist
+              // cannot use onClick here, as the parent component blurs before
+              // the item is clicked and therefore never fires. However,
+              // onMouseDown fires before the parent blurs
               onClick(item)
             }}>{item.name}</li>
           )
