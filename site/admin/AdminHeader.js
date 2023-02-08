@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import Header from "../Header";
 import { fetchGetJson } from "../helpers/request";
+import { baseUrl } from '../helpers/api'
 
 const AdminHeader = ({ current }) => {
-  const [loggedIn, setLoggedIn] = useState(false)
+  const [user, setUser] = useState(false)
 
   useEffect(() => {
-    fetch('/admin/me')
-      .then(res => setLoggedIn(res.ok))
+    fetch(`${baseUrl}/me`)
+      .then(res => res.json())
+      .then(setUser)
   }, [])
 
   return (
@@ -21,12 +23,12 @@ const AdminHeader = ({ current }) => {
       ]}
       current={current}
       account={
-        !loggedIn ? [
+        !user ? [
           { text: 'Non-Admin', href: '/' },
           { text: 'Login', href: '/admin/login' }
         ] : [
           { text: 'Non-Admin', href: '/' },
-          { text: 'Logout', href: '/admin/logout' }
+          { text: 'Logout', href: `${baseUrl}/admin/logout` }
         ]
       }
     />

@@ -2,22 +2,15 @@ import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import Header from "./Header";
 import { fetchGetJson } from './helpers/request'
+import { baseUrl } from './helpers/api'
 
 const NonAdminHeader = ({ current }) => {
-  const [loggedIn, setLoggedIn] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
+  const [user, setUser] = useState({})
 
   useEffect(() => {
-    Promise.all([
-      fetchGetJson({ url: '/me' }).then(res => Promise.resolve(res.ok) ),
-      fetchGetJson({ url: '/admin/me' }).then(res => Promise.resolve(res.ok))
-    ])
-      .then(([loggedIn, isAdmin]) => {
-        ReactDOM.unstable_batchedUpdates(() => {
-          setLoggedIn(loggedIn)
-          setIsAdmin(isAdmin)
-        })
-      })
+    fetchGetJson({ url: `${baseUrl}/me` })
+      .then(res => res.json())
+      .then(setUser)
   }, [])
 
   return (
@@ -30,12 +23,12 @@ const NonAdminHeader = ({ current }) => {
       ]}
 			current={current}
       account={
-        !loggedIn ? [
+        !user ? [
           { text: 'Login', href: '/login' },
           { text: 'Register', href: '/register' }
         ] : [
-					isAdmin && { text: 'Admin', href: '/admin' },
-          { text: 'Logout', href: '/logout' }
+          user.role === 'superadmin' && { text: 'Admin', href: '/admin' },
+          { text: 'Logout', href: `${baseUrl}/logout` }
         ]
       }
     />

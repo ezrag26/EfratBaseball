@@ -13,7 +13,10 @@ module.exports = (route = '/') => ({
   loggedIn: (req, res, next) => {
     getUserById({ id: req.session.userId })
       .then(user => {
-        if (user) next()
+        if (user) {
+          res.locals.user = user
+          return next()
+        }
         else return res.sendStatus(401)
       })
       .catch(err => res.sendStatus(401))
