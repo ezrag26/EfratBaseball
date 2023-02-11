@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs') // cross-architecture replacement for bcrypt
 
 const { Sequelize, DataTypes } = require('sequelize')
 

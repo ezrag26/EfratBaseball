@@ -1,3 +1,4 @@
+const path = require('path')
 const dotenv = require('dotenv')
 
 const envPaths = (env = 'production') => {
@@ -5,7 +6,7 @@ const envPaths = (env = 'production') => {
     '.env',
     `.env.${env}`,
     `.env.${env}.local`
-  ] // [lowPriority ... highPriority]
+  ].map(fileName => path.resolve(__dirname, '../../', fileName)) // [lowPriority ... highPriority]
 }
 
 const cascadeEnvs = (paths = []) => paths.reduce((envs, path) => ({

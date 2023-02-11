@@ -3,7 +3,7 @@ const express = require('express')
 const path = require('path')
 const session = require('express-session')
 const pgSession = require('connect-pg-simple')(session)
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs') // cross-architecture replacement for bcrypt
 
 // private modules
 // setup environment variables before requiring other private modules that use them

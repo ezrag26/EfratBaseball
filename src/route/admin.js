@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const path = require('path')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs') // cross-architecture replacement for bcrypt
 const { guest } = require('../middleware/authentication/authentication')('/admin')
 
 const {
