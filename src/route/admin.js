@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
 const path = require('path')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs') // cross-architecture replacement for bcrypt
 const { guest } = require('../middleware/authentication/authentication')('/admin')
-require('dotenv').config()
+
 const {
   getUserByEmail,
   getUserById,
@@ -17,7 +17,7 @@ const {
 } = require('../../db/index')
 
 const admin = (req, res, next) => {
-  if (!process.env.IN_PROD && req.body.bypass) return next()
+  if (!(process.env.NODE_ENV === 'production') && req.body.bypass) return next()
 
   getUserById({ id: req.session.userId })
     .then(user => {
@@ -30,16 +30,21 @@ const admin = (req, res, next) => {
 const adminLoggedIn = (req, res, next) => {
   getUserById({ id: req.session.userId })
     .then(user => {
-      if (user.role !== 'user') return next()
+      if (user.role !== 'user') {
+        res.locals.user = user
+        return next()
+      }
       else res.sendStatus(401)
     })
     .catch(err => res.sendStatus(401))
 }
-
-router.get('/me', adminLoggedIn, (req, res, next) => {
-  console.log(`GET /admin/me`)
-  res.sendStatus(200)
-})
+//
+// router.get('/me', adminLoggedIn, (req, res, next) => {
+//   console.log(`GET /admin/me`)
+//   const { firstName, lastName, email, role } = res.locals.user
+//
+//   res.send({ firstName, lastName, email, role })
+// })
 
 router.get('/', (req, res, next) => {
   console.log(`GET /admin`)

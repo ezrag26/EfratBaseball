@@ -50,7 +50,7 @@ const Header = ({ logo, nav, current, account }) => {
           style={{ position: 'relative' }}
         >
           <DropDownMenu style={{ display: showProfile ? '' : 'none', backgroundColor: 'var(--secondary-dark)', color: 'black' }}>
-          { account && account.map(accountItem => {
+          { account && account.filter(item => item).map(accountItem => {
               return (
                 <DropDownMenuItem key={accountItem.text} href={accountItem.href}>{accountItem.text}</DropDownMenuItem>
               )

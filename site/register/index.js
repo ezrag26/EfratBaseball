@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import NonAdminHeader from "../NonAdminHeader";
 import {FormRow, Input, DropDownMenu} from '../helpers/form'
 import { fetchPostJson } from '../helpers/request'
+import { baseUrl } from '../helpers/api'
 import validator from 'validator';
 import { Stack, Center } from "../helpers/Typography";
 
@@ -12,7 +13,7 @@ const validNumber = new RegExp(/^\d{3}[^\d]?\d{4}$/)
 
 const send = ({ body }) => {
   return fetchPostJson({
-    url: '/register',
+    url: `${baseUrl}/register`,
     body
   })
 }
