@@ -17,9 +17,8 @@ const AdminHeader = ({ current }) => {
           return Promise.reject()
         }
 
-        return res
+        return res.json()
       })
-      .then(res => res.json())
       .then(user => {
         if (user.role !== 'superadmin') {
           window.location.replace(`/`)
@@ -51,6 +50,7 @@ const AdminHeader = ({ current }) => {
           { text: 'Logout', href: `${baseUrl}/admin/logout` }
         ]
       }
+      user={user}
     />
   )
 }
