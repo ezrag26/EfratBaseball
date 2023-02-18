@@ -5,12 +5,20 @@ import { fetchGetJson } from './helpers/request'
 import { baseUrl } from './helpers/api'
 
 const NonAdminHeader = ({ current }) => {
-  const [user, setUser] = useState({})
+  const [user, setUser] = useState()
 
   useEffect(() => {
     fetchGetJson({ url: `${baseUrl}/me` })
+      .then(res => {
+        if (401 === res.status) {
+          return Promise.reject()
+        }
+
+        return res
+      })
       .then(res => res.json())
       .then(setUser)
+      .catch(() => setUser(undefined))
   }, [])
 
   return (

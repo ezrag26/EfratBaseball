@@ -5,7 +5,8 @@ module.exports = (route = '/') => ({
     getUserById({ id: req.session.userId })
       .then(user => {
         if (!user) next()
-        else return res.redirect(route)
+
+        return res.redirect(route)
       })
       .catch(err => next())
   },
@@ -17,7 +18,8 @@ module.exports = (route = '/') => ({
           res.locals.user = user
           return next()
         }
-        else return res.sendStatus(401)
+
+        return res.sendStatus(401)
       })
       .catch(err => res.sendStatus(401))
   }
