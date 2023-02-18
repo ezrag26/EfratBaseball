@@ -52,7 +52,7 @@ const Header = ({ logo, nav, current, account }) => {
           <DropDownMenu style={{ display: showProfile ? '' : 'none', backgroundColor: 'var(--secondary-dark)', color: 'black' }}>
           { account && account.filter(item => item).map(accountItem => {
               return (
-                <DropDownMenuItem key={accountItem.text} href={accountItem.href}>{accountItem.text}</DropDownMenuItem>
+                <DropDownMenuItem style={{ cursor: 'pointer' }} key={accountItem.text} href={accountItem.href}>{accountItem.text}</DropDownMenuItem>
               )
             })
           }

@@ -1,0 +1,133 @@
+.input {
+  display: flex;
+  flex-direction: column;
+  cursor: default;
+  width: 100%;
+  outline: none;
+}
+
+.input:not(:only-child):not(:first-child) {
+    margin-left: 1rem;
+}
+
+.input__box {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+		flex-grow: 1;
+    padding: .4rem .75rem .4rem 1rem;
+    border-radius: 4px 4px 0 0;
+    border-bottom: solid 1px #aaa;
+    background-color: white;
+
+    transition: background-color .2s, border .2s;
+}
+
+.input__box:hover {
+  border-bottom: solid 1px black;
+}
+
+.input:focus .input__box,
+.input__box:focus-within {
+    background-color: #ddd;
+    border-bottom: solid 1px var(--primary);
+}
+
+.input__box.has-label {
+  padding-top: 1.35rem;
+}
+
+.input__box input:not([type='submit']) {
+    border: 0;
+    padding: 0;
+    outline: none;
+    font-size: 1.1rem;
+    background-color: inherit;
+    width: 100%;
+}
+
+.input:focus-within .label, .label.raise {
+    top: .5rem;
+    font-size: .75rem;
+    color: var(--primary);
+    opacity: .7;
+}
+
+.label {
+    position: absolute;
+    top: .875rem;
+    left: 1rem;
+    transition-duration: .2s;
+
+    /* width: 100%; */
+    font-size: 1.1rem;
+    color: black;
+    opacity: .3;
+}
+
+.input-select {
+    display: flex;
+    position: relative;
+		outline: none;
+		flex-grow: 1;
+}
+
+.input-select.hidden {
+  display: none;
+}
+
+.input-select > * > * {
+	white-space: nowrap;
+}
+
+.input-select__list {
+    position: absolute;
+    width: 100%;
+		max-height: 250px;
+    top: 100%;
+		overflow-y: auto;
+    background-color: white;
+    border: 1px solid var(--secondary-dark);
+    border-top: none;
+		border-radius: 5px 5px;
+    list-style: none;
+    padding: .5rem 0;
+    z-index: 1;
+    outline: none;
+}
+
+.input-select__list li {
+    padding: 1rem;
+    cursor: default;
+}
+
+.input-select__list li:hover {
+    background-color: rgba(0, 0, 0, .1);
+}
+
+.input-select__list li.placeholder {
+	background-color: inherit;
+	color: grey;
+}
+
+.error, .help {
+    position: absolute;
+    left: 1rem;
+    top: calc(100% + .5rem);
+    font-size: .75rem;
+}
+
+.error {
+    color: red;
+}
+
+.help {
+    color: black
+}
+
+.mask {
+    position: absolute;
+    bottom: calc(100% + .5rem);
+    right: .5rem;
+}

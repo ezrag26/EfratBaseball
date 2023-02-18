@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { randomBits } from "./unique";
-import { DropDownMenu } from "./form"
+import { DropDownMenu, Input } from "./form"
 import { DatePicker } from '../components/date-picker'
 
 const TableCell = ({ children, type = 'text', placeholder = '', value, size, onChange, disabled = false, dropDownItems = [], form }) => {
@@ -12,7 +12,7 @@ const TableCell = ({ children, type = 'text', placeholder = '', value, size, onC
 			return <td><input type={type} placeholder={placeholder} checked={value} onChange={e => onChange(e.target.checked)} disabled={disabled}/></td>
 			break;
 		case 'date':
-			return <td><DatePicker value={value} onChange={e => onChange(e)}/></td>
+			return <td><Input type={type} value={value} onChange={e => onChange(e)} maxWidth={'12ch'}/></td>
 			break;
 		default:
 			return <td><input style={{ outline: 'none', border: 'none', backgroundColor: 'inherit' }} size={size} type={type} placeholder={placeholder} value={value} size={size} onChange={e => onChange(e.target.value)} disabled={disabled}/></td>

@@ -15,7 +15,11 @@
     font-size: 1rem;
     border-radius: 5px 5px;
     border: 1px solid var(--primary);
-    cursor: pointer;
+    cursor: default;
+}
+
+.dropdown-btn:hover {
+  border-color: var(--primary-dark)
 }
 
 .dropdown-btn.form {
@@ -51,10 +55,10 @@
 
 .dropdown-content li {
     padding: 1rem;
+    cursor: default;
 }
 
 .dropdown-content li:hover {
-    cursor: pointer;
     background-color: rgba(0, 0, 0, .1);
 }
 
@@ -68,6 +72,5 @@
 
 .dropdown-content li.placeholder {
 	background-color: inherit;
-	cursor: auto;
 	color: grey;
 }
