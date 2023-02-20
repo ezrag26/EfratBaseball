@@ -42,6 +42,7 @@ module.exports = (env, argv) => {
     },
     output: {
       path: path.resolve(__dirname, "public", "dist"),
+      publicPath: '/dist',
       filename: "[name]_bundle.js",
       clean: true
     },
@@ -68,6 +69,7 @@ module.exports = (env, argv) => {
           pathRewrite: { '^/api': '' },
         },
       },
+      server: 'https',
     }
   }
 }

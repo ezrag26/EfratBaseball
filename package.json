@@ -9,7 +9,6 @@
     "build": "webpack --mode production",
     "dev:build": "webpack --mode development",
     "dev:serve": "webpack serve --mode development",
-    "dev:start": "npm run dev:build && npm run dev:serve",
     "server": "NODE_ENV=production nodemon --watch src --watch db",
     "dev:server": "NODE_ENV=development nodemon --watch src --watch db",
     "test": "cd test && npm run test",
