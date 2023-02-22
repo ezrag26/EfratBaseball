@@ -1,22 +1,23 @@
+// public modules
 const express = require('express')
 const path = require('path')
 const session = require('express-session')
 const pgSession = require('connect-pg-simple')(session)
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs') // cross-architecture replacement for bcrypt
 
-// import packages
-const https = require('https');
-const fs = require('fs');
+// private modules
+// setup environment variables before requiring other private modules that use them
+const { NODE_ENV } = process.env
+
+require('./env').setup(NODE_ENV)
 
 const admin = require('./route/admin')
 const { guest, loggedIn } = require('./middleware/authentication/authentication')()
 const { validate } = require('./middleware/validation/validate')
 
-require('dotenv').config()
 const {
 	PORT,
 	SESS_SECRET,
-	IN_PROD,
 	PASS_SALT,
 	DB_HOST,
 	DB_PORT,
@@ -37,11 +38,11 @@ const {
 const app = express()
 
 const cookie = {
-	maxAge: 1000 * 60 * 60 * 24 * 7, // 1 day
+	maxAge: 1000 * 60 * 60 * 24 * 7, // 7 day
 	sameSite: true
 }
 
-if (IN_PROD === 'true') {
+if (NODE_ENV === 'env') {
 	cookie.secure = true
 
 	app.set('trust proxy', 1) // trust first proxy
@@ -72,7 +73,9 @@ app.use('/admin', admin)
 
 app.get('/me', loggedIn, (req, res) => {
   console.log('GET /me')
-  res.sendStatus(200)
+  const { firstName, lastName, email, role } = res.locals.user
+
+  res.send({ firstName, lastName, email, role })
 })
 
 app.get('/login', guest, (req, res, next) => {
@@ -125,8 +128,6 @@ app.get('/logout', (req, res) => {
     res.redirect('/login')
   })
 })
-
-app.use(express.static(path.join(__dirname, "..", "public")))
 
 // app.use('/bypass', bypass)
 
@@ -207,14 +208,4 @@ app.get('/leagues/:leagueId/stats', (req, res) => {
 		})
 })
 
-if (IN_PROD === 'true') {
-	// serve the API with signed certificate on 443 (SSL/HTTPS) port
-	const httpsServer = https.createServer({
-	  key: fs.readFileSync(path.join(process.cwd(), '/certs/privkey.pem')),
-	  cert: fs.readFileSync(path.join(process.cwd(), '/certs/fullchain.pem')),
-	}, app)
-
-	httpsServer.listen(443, () => console.log('HTTPS Server running on port 443'))
-} else {
-	app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
-}
+app.listen(PORT, () => console.log(`Listening on port ${PORT}`))

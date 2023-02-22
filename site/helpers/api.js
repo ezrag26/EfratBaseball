@@ -1,11 +1,11 @@
 const { fetchGetJson, fetchPostJson } = require('./request')
-// const { DEV_HOST } = process.env
-const PROTOCOL = 'https'
-const DEV_HOST = 'www.israelsportscenter.com' || 'dev.efratbaseball.com:8010'
+
 module.exports = {
+  baseUrl: BASE_API_URL,
+
   addLeague: ({ name }) => {
     return fetchPostJson({
-      url: `/admin/leagues`,
+      url: `${BASE_API_URL}/admin/leagues`,
       body: {
         name
       }
@@ -15,7 +15,7 @@ module.exports = {
 
   editLeague: ({ leagueId, name }) => {
     return fetchPostJson({
-      url: `/admin/leagues/${leagueId}`,
+      url: `${BASE_API_URL}/admin/leagues/${leagueId}`,
       body: {
         name
       }
@@ -24,32 +24,18 @@ module.exports = {
   },
 
   fetchLeagues: () => {
-    return fetchGetJson({ url: `/leagues?sort=name` })
+    return fetchGetJson({ url: `${BASE_API_URL}/leagues?sort=name` })
       .then(res => res.json())
-    // return XMLHttpRequestAsPromise({
-    //   method: 'GET',
-    //   url: `http://${DEV_HOST}/leagues?sort=name`,
-    //   options: {
-    //     responseType: 'json'
-    //   }
-    // })
   },
 
   fetchStats: ({ leagueId }) => {
-    return fetchGetJson({url: `/leagues/${leagueId}/stats`})
+    return fetchGetJson({url: `${BASE_API_URL}/leagues/${leagueId}/stats`})
       .then(res => res.json())
-    // return XMLHttpRequestAsPromise({
-    //   method: 'GET',
-    //   url: `http://${DEV_HOST}/leagues/${leagueId}/stats`,
-    //   options: {
-    //     responseType: 'json'
-    //   }
-    // })
   },
 
   addGame: ({ date, time, awayId, homeId }) => {
     return fetchPostJson({
-      url: `/admin/games`,
+      url: `${BASE_API_URL}/admin/games`,
       body: {
         date,
         time,
@@ -63,7 +49,7 @@ module.exports = {
   editGame: ({ gameId, edit }) => {
     const { date, time, awayId, homeId, awayRS, homeRS, isFinal } = edit
     return fetchPostJson({
-      url: `/admin/games/${gameId}`,
+      url: `${BASE_API_URL}/admin/games/${gameId}`,
       body: {
         date,
         time,
@@ -78,20 +64,13 @@ module.exports = {
   },
 
   fetchSchedule: ({ leagueId, page, numItems }) => {
-    return fetchGetJson({ url: `/leagues/${leagueId}/schedule?page=${page}&numItems=${numItems}` })
+    return fetchGetJson({ url: `${BASE_API_URL}/leagues/${leagueId}/schedule?page=${page}&numItems=${numItems}` })
       .then(res => res.json())
-    // return XMLHttpRequestAsPromise({
-    //   method: 'GET',
-    //   url: `http://${DEV_HOST}/leagues/${leagueId}/schedule`,
-    //   options: {
-    //     responseType: 'json'
-    //   }
-    // })
   },
 
   addTeam: ({ leagueId, name, color }) => {
     return fetchPostJson({
-      url: `/admin/leagues/${leagueId}/teams`,
+      url: `${BASE_API_URL}/admin/leagues/${leagueId}/teams`,
       body: {
         name,
         color
@@ -102,7 +81,7 @@ module.exports = {
 
   editTeam: ({ leagueId, teamId, name, color }) => {
     return fetchPostJson({
-      url: `/admin/leagues/${leagueId}/teams/${teamId}`,
+      url: `${BASE_API_URL}/admin/leagues/${leagueId}/teams/${teamId}`,
       body: {
         name,
         color
@@ -112,14 +91,7 @@ module.exports = {
   },
 
   fetchTeams: ({ leagueId }) => {
-    return fetchGetJson({ url: `/leagues/${leagueId}/teams` })
+    return fetchGetJson({ url: `${BASE_API_URL}/leagues/${leagueId}/teams` })
       .then(res => res.json())
-    // return XMLHttpRequestAsPromise({
-    //   method: 'GET',
-    //   url: `http://${DEV_HOST}/leagues/${leagueId}/teams`,
-    //   options: {
-    //     responseType: 'json'
-    //   }
-    // })
   },
 }

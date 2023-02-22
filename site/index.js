@@ -12,7 +12,7 @@ const Index = () => {
       <NonAdminHeader />
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto', width: '70%' }}>
         <h1>Efrat Baseball</h1>
-        <Banner src={'/'} refresh={0}/>
+        <Banner src={'/'}/>
         <div style={{ marginTop: '2rem' }}>
           <Lorem numParagraphs={4}/>
         </div>

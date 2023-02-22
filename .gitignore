@@ -1,7 +1,10 @@
 .idea/
 *node_modules*
 .env
+*.env*
+!example.env
 *public/dist*
 .DS_Store
 *.log*
 certs/*
+build*
