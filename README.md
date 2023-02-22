@@ -20,8 +20,16 @@ Spin up the docker container running the database with the following command:
 Once the database is connected, in the root directory, start and watch the client and server files with the following commands:
 
   ```sh
-  npm run watch-client
-  npm run watch-server
+  npm run dev:serve
+  npm run dev:server
+  ```
+
+## Build for Production
+
+To build the client, run:
+
+  ```sh
+  npm run build
   ```
 
 ## Testing
