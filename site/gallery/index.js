@@ -3,27 +3,25 @@ import ReactDOM from 'react-dom'
 import NonAdminHeader from "../NonAdminHeader"
 import BasePage from '../BasePage'
 import ComingSoon from "../helpers/coming-soon";
-import { randomBits } from '../helpers/unique'
 import { Center, Stack} from "../helpers/Typography";
 
-const EnlargedImage = ({ enlarge, setEnlarge }) => {
+const EnlargedImage = ({ src, minimize }) => {
   return (
-    enlarge.enlarge &&
     <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', position: 'absolute', left: '0', top: window.pageYOffset, height: '100vh', width: '100vw', backgroundColor: 'grey', opacity: '0.8', overflow: 'hidden' }} onClick={() => {
       document.body.style.overflow = 'inherit' // re-enable scrolling
-      setEnlarge({ enlarge: false, url: ''})
+      minimize()
     }}>
-      <img src={enlarge.url} alt={enlarge.url} style={{ position: 'relative', height: '75vh', width: '75vw' }} onClick={(e) => { e.stopPropagation() }}/>
+      <img src={src} alt={src} style={{ position: 'relative', height: '75vh', width: '75vw' }} onClick={(e) => { e.stopPropagation() }}/>
     </div>
   )
 }
 
 const Gallery = ({ urls }) => {
-  const [enlarge, setEnlarge] = useState({ enlarge: false, url: '' })
+  const [selected, setSelected] = useState('')
 
   const enlargeImage = (e) => {
     const imgURL = e.target.getAttribute('src')
-    setEnlarge({ enlarge: true, url: imgURL })
+    setSelected(imgURL)
     document.body.style.overflow = 'hidden' // disable scrolling
   }
 
@@ -41,11 +39,13 @@ const Gallery = ({ urls }) => {
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', margin: '2rem auto', width: '80%' }}>
               {
                 urls.map(url => {
-                  return <img key={randomBits()} src={url} alt={url} style={{ width: '300px', height: '300px', margin: '1rem auto' }} onClick={e => enlargeImage(e)}/>
+                  return <img key={url} src={url} alt={url} style={{ width: '300px', height: '300px', margin: '1rem auto' }} onClick={e => enlargeImage(e)}/>
                 })
               }
             </div>
-            <EnlargedImage enlarge={enlarge} setEnlarge={setEnlarge}/>
+            {
+              selected && <EnlargedImage src={selected} minimize={() => setSelected('')}/>
+            }
           </>
         )
       }
