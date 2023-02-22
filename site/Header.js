@@ -32,7 +32,7 @@ const Header = ({ logo, nav, current, account }) => {
           logo.url ?
           <a href={logo.href}><img src={logo.url} alt={logo.alt} style={{ width: '40px', marginRight: '1rem' }}/></a>:
           <a href={logo.href} style={{ color: 'white' }}>
-          <i class="fa-regular fa-baseball fa-2x" style={{ marginRight: '1rem' }}></i>
+          <i className="fa-regular fa-baseball fa-2x" style={{ marginRight: '1rem' }}></i>
           {/*<div style={{ fontSize: '1.3rem' }}>Israel Sports Center</div>*/}
           </a>
         }
