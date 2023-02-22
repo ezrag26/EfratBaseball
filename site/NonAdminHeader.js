@@ -14,9 +14,8 @@ const NonAdminHeader = ({ current }) => {
           return Promise.reject()
         }
 
-        return res
+        return res.json()
       })
-      .then(res => res.json())
       .then(setUser)
       .catch(() => setUser(undefined))
   }, [])
@@ -39,6 +38,7 @@ const NonAdminHeader = ({ current }) => {
           { text: 'Logout', href: `${baseUrl}/logout` }
         ]
       }
+      user={user}
     />
   )
 }

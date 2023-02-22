@@ -16,7 +16,7 @@ const NavItem = ({ current, text, href }) => {
   )
 }
 
-const Header = ({ logo, nav, current, account }) => {
+const Header = ({ logo, nav, current, account, user }) => {
 	const [showProfile, setShowProfile] = useState(false)
 	const ref = useRef(null)
 
@@ -41,6 +41,7 @@ const Header = ({ logo, nav, current, account }) => {
         </div>
       </div>
       <div>
+        <p style={{ marginRight: '4px' }}>{user && (user.firstName || user.email || 'User')}</p>
         <i
           className={'fa-regular fa-user icon'}
           onClick={() => setShowProfile(!showProfile)}
