@@ -32,7 +32,7 @@ const Gallery = ({ urls }) => {
       <AdminHeader />
       {
         (
-          <BasePage>
+          <BasePage title={'Gallery - Admin'}>
             <ComingSoon />
           </BasePage>
         ) ||

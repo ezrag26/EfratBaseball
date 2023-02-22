@@ -2,11 +2,11 @@
 	padding: 0.5rem;
   border-radius: 100%;
   outline: none;
+  cursor: default;
 }
 
 .icon:hover, .icon:focus {
 	background-color: rgba(255, 255, 255, 0.2);
-	cursor: pointer;
 }
 
 .icon.fab {

@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import AdminHeader from "../AdminHeader";
+import BasePageHeader from '../../BasePageHeader'
 import { FormRow, Input } from "../../helpers/form"
 import validator from "validator";
 import { Center, Stack } from "../../helpers/Typography";
+import { baseUrl } from '../../helpers/api'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -16,7 +18,7 @@ const Login = () => {
       <AdminHeader />
 
       <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
-        <form method={'POST'} action={'/admin/login'}>
+        <form method={'POST'} action={`${baseUrl}/admin/login`}>
           <BasePageHeader title={'Admin Login'} />
 
           <FormRow>

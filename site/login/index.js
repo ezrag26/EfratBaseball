@@ -5,6 +5,7 @@ import BasePageHeader from '../BasePageHeader'
 import NonAdminHeader from "../NonAdminHeader";
 import validator from 'validator'
 import { Center, Stack } from "../helpers/Typography";
+import { baseUrl } from '../helpers/api'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -16,7 +17,7 @@ const Login = () => {
     <>
       <NonAdminHeader />
       <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2em' }}>
-        <form method={'POST'} action={'/login'}>
+        <form method={'POST'} action={`${baseUrl}/login`}>
           <BasePageHeader title={'Login'} />
 
           <FormRow>

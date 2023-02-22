@@ -16,7 +16,7 @@ const NavItem = ({ current, text, href }) => {
   )
 }
 
-const Header = ({ logo, nav, current, account }) => {
+const Header = ({ logo, nav, current, account, user }) => {
 	const [showProfile, setShowProfile] = useState(false)
 	const ref = useRef(null)
 
@@ -32,7 +32,7 @@ const Header = ({ logo, nav, current, account }) => {
           logo.url ?
           <a href={logo.href}><img src={logo.url} alt={logo.alt} style={{ width: '40px', marginRight: '1rem' }}/></a>:
           <a href={logo.href} style={{ color: 'white' }}>
-          <i class="fa-regular fa-baseball fa-2x" style={{ marginRight: '1rem' }}></i>
+          <i className="fa-regular fa-baseball fa-2x" style={{ marginRight: '1rem' }}></i>
           {/*<div style={{ fontSize: '1.3rem' }}>Israel Sports Center</div>*/}
           </a>
         }
@@ -41,6 +41,7 @@ const Header = ({ logo, nav, current, account }) => {
         </div>
       </div>
       <div>
+        <p style={{ marginRight: '4px' }}>{user && (user.firstName || user.email || 'User')}</p>
         <i
           className={'fa-regular fa-user icon'}
           onClick={() => setShowProfile(!showProfile)}
@@ -50,9 +51,9 @@ const Header = ({ logo, nav, current, account }) => {
           style={{ position: 'relative' }}
         >
           <DropDownMenu style={{ display: showProfile ? '' : 'none', backgroundColor: 'var(--secondary-dark)', color: 'black' }}>
-          { account && account.map(accountItem => {
+          { account && account.filter(item => item).map(accountItem => {
               return (
-                <DropDownMenuItem key={accountItem.text} href={accountItem.href}>{accountItem.text}</DropDownMenuItem>
+                <DropDownMenuItem style={{ cursor: 'pointer' }} key={accountItem.text} href={accountItem.href}>{accountItem.text}</DropDownMenuItem>
               )
             })
           }

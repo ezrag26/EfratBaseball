@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 
+import { DatePicker } from '../components/date-picker'
+
 import { randomBits } from "./unique";
 
 const FormRow = ({ children, style = {} }) => {
@@ -8,31 +10,84 @@ const FormRow = ({ children, style = {} }) => {
   )
 }
 
-const Input = ({ type, name, placeholder, value = '', autofocus, required, onChange, onBlur, helpText, error }) => {
-  // const [raise, setRaise] = useState(value !== '')
-  const inputRef = useRef(null)
+const Input = ({ type = 'text', name, placeholder, value = '', autofocus, required, onChange, onBlur, selection = {}, items, helpText, error, icon, maxWidth }) => {
+  const ref = useRef(null)
   const [mask, setMask] = useState(type === 'password')
+  const [focus, setFocus] = useState(false)
+
+  const isSelect = () => type === 'select'
+  const isDate = () => type === 'date'
+
+  const inputValue = () => isSelect() ? selection.name || '' : value
 
   const handleOnBlur = e => {
-    // raise label if input has text inside
-    // setRaise(e.target.value !== '')
-    onBlur && onBlur(e.target.value)
+    if (onBlur) {
+      onBlur(inputValue()) // used by user to validate, add error message if needed
+    }
+
+    setFocus(false)
   }
 
-  const onClick = () => inputRef.current.focus() // focus the input element to raise label
+  const handleOnClick = e => {
+    setFocus(true)
+  }
+
+  const handlePasswordMask = () => {
+    setMask(prev => !prev)
+    // e.stopPropagation()
+  }
+
+  useEffect(() => {
+    if (!ref.current) return
+
+    focus ? ref.current.focus() : ref.current.blur()
+  }, [focus])
 
   return (
-    <>
-      <div className={'input'} onClick={onClick}>
-        <input type={type === 'password' ? (mask ? 'password' : 'text') : type} name={name} ref={inputRef} value={value} autoFocus={autofocus} onBlur={handleOnBlur} onChange={e => onChange(e.target.value)}/>
-        <label className={`label ${value !== '' ? 'raise' : ''}`} htmlFor={name}>{required && '*'} {placeholder}</label>
-        {type === 'password' && <p className={'mask'} onClick={e => {
-					setMask(prev => !prev)
-					e.stopPropagation() // prevent the input from becoming focused
-				}}>{mask ? 'Show' : 'Hide'}</p>}
+    <div className={'input'} onClick={handleOnClick} tabIndex={-1}>
+      <div className={`input__box ${placeholder ? 'has-label' : ''}`}>
+      {
+        isDate() ?
+        <DatePicker name={name} value={value} onChange={onChange} maxWidth={maxWidth} /> :
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <input type={type === 'password' ? (mask ? 'password' : 'text') : type} name={name} value={inputValue()} ref={ref}  onBlur={handleOnBlur} autoFocus={autofocus} readOnly={isSelect()} onChange={e => onChange(e.target.value)} style={{ maxWidth }} />
+          {
+            type === 'password' ?
+            <i className={`fa-regular fa-eye${mask ? '' : '-slash'}`} onClick={handlePasswordMask}></i> :
+            icon && <i className={icon}></i>
+          }
+        </div>
+      }
+        {placeholder && <label className={`label ${inputValue() !== '' ? 'raise' : ''}`} htmlFor={name}>{required && '*'} {placeholder}</label>}
         <p className={error ? 'error' : 'help'} onClick={e => {}}>{error ? error : helpText}</p>
       </div>
-    </>
+      {
+        focus && isSelect() &&
+        <InputSelect items={items} value={selection} onClick={item => {
+          onChange(item)
+          setFocus(false)
+        }} />
+      }
+    </div>
+  )
+}
+
+const InputSelect = ({ items = [], value = {}, onClick }) => {
+  return (
+    <div className={'input-select'}>
+      <ul className={`input-select__list`}>
+        {
+          items.map(item =>
+            <li key={item.id} style={{ fontWeight: value.id === item.id ? '1000' : '' }} onMouseDown={() => {
+              // cannot use onClick here, as the parent component blurs before
+              // the item is clicked and therefore never fires. However,
+              // onMouseDown fires before the parent blurs
+              onClick(item)
+            }}>{item.name}</li>
+          )
+        }
+      </ul>
+    </div>
   )
 }
 

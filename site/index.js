@@ -13,7 +13,7 @@ const Index = () => {
     <>
       <NonAdminHeader />
       <BasePage title={'Israel Sports Center'}>
-        <Banner style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto' }} src={'/'} refresh={0}/>
+        <Banner style={{ marginLeft: 'auto', marginRight: 'auto', width: '100%' }} src={'/'}/>
         <div style={{ marginTop: '2rem' }}>
           <Lorem numParagraphs={4}/>
         </div>
