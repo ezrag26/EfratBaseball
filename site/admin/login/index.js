@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import AdminHeader from "../AdminHeader";
+import BasePageHeader from '../../BasePageHeader'
 import { FormRow, Input } from "../../helpers/form"
 import validator from "validator";
 import { Center, Stack } from "../../helpers/Typography";
@@ -18,11 +19,7 @@ const Login = () => {
 
       <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '2rem' }}>
         <form method={'POST'} action={`${baseUrl}/admin/login`}>
-          <Center>
-            <Stack.Small>
-              <h1>Admin Login</h1>
-            </Stack.Small>
-          </Center>
+          <BasePageHeader title={'Admin Login'} />
 
           <FormRow>
             <Input type={'email'} name={'email'} placeholder={'Email'} value={email} onChange={setEmail} autofocus={true}/>

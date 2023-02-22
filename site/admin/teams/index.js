@@ -146,14 +146,15 @@ const Teams = () => {
   return (
     <>
       <AdminHeader current={'Teams'}/>
+
+      <BasePageHeader title={'Teams'} />
+
       <Center>
         <Stack.Small>
           <DropDownMenu items={leagues} selection={league} setSelection={setLeague}/>
         </Stack.Small>
       </Center>
-
-      <BasePageHeader title={'Teams'} />
-
+      
       {
         leagues.length > 0 &&
         <Table

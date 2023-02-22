@@ -13,7 +13,7 @@ const vhToPx = ({ scale }) => {
 	return Math.round(document.documentElement.clientHeight * scale)
 }
 
-const Banner = ({ src = '/', refresh }) => {
+const Banner = ({ style, src = '/', refresh }) => {
 	const [banner, setBanner] = useState(src)
 
   useAutoRefresh((stop) => {
@@ -22,7 +22,7 @@ const Banner = ({ src = '/', refresh }) => {
   }, refresh, [])
 
   return (
-    <img alt={'homepage-image'} src={banner} style={{ width: '70vw', height: '50vh', marginTop: '2rem', visibility: banner === '/' ? 'hidden' : 'visible' }}/>
+    <img alt={'homepage-image'} src={banner} style={{ width: '70vw', height: '50vh', marginTop: '2rem', visibility: banner === '/' ? 'hidden' : 'visible', ...style }}/>
   )
 }
 

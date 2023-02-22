@@ -3,12 +3,12 @@ import React from 'react'
 const ComingSoon = () => {
   return (
     <>
-      <h1>
+      <h2>
         We are sorry for the inconvenience, but this page is currently under construction.
-      </h1>
-      <h1>
+      </h2>
+      <h2>
         While we work on making this page awesome, please enjoy the rest of our <a href={'/'}>site</a>.
-      </h1>
+      </h2>
     </>
   )
 }
